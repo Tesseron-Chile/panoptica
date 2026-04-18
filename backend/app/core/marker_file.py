@@ -55,7 +55,8 @@ def _validate_cwd(
         try:
             resolved.relative_to(root_resolved)
             return resolved
-        except ValueError:
+        except ValueError as exc:
+            logger.debug("cwd %s is not under allowed root %s: %s", resolved, root_resolved, exc)
             continue
     raise ValueError(
         f"working_dir {resolved!r} is outside allowed roots {[str(r) for r in allowed_roots]!r}"

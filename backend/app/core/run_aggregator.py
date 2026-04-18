@@ -98,6 +98,7 @@ class RunAggregator:
     def remove_member(self, run_id: str, *, session_id: str) -> None:
         run = self._runs.get(run_id)
         if run is None:
+            logger.debug("remove_member called for unknown run %s (session=%s)", run_id, session_id)
             return
         run.member_session_ids.discard(session_id)
 

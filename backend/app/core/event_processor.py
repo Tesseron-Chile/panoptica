@@ -115,7 +115,8 @@ def _derive_display_name(working_dir: str | None, project_root: str | None) -> s
             if cwd != root and str(cwd).startswith(str(root)):
                 return str(cwd.relative_to(root))
         return cwd.name
-    except (OSError, ValueError):
+    except (OSError, ValueError) as exc:
+        logger.debug("_derive_display_name failed for %r: %s", working_dir, exc)
         return None
 
 

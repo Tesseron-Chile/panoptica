@@ -24,7 +24,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-8: **Async-safe marker reads** — `backend/app/core/event_processor.py::_handle_marker_event`. Wrap the synchronous `read_marker` with `asyncio.to_thread`. Test: handler is called concurrently with 10 markers; event loop is not blocked longer than Nms (loosely: assert completion under a generous deadline). Session: split `marker_path_for_cwd` (sync, catches ValueError) from `read_marker` (now `await asyncio.to_thread`). Added `test_marker_event_async_safe.py` with a timing test (2 concurrent calls + 0.2s sleep mock must complete in < 0.35s) that failed before the fix.
 
-- [🔧] fix-task-9: **Log-on-swallow for silent-failure majors** — walk the 5 major silent-failure findings from PR #4 reviewer comments; add a DEBUG log per swallow site with file, exception type, and enough context to trace. Test: monkeypatch the dependency to raise; assert the DEBUG log is emitted.
+- [✅] fix-task-9: **Log-on-swallow for silent-failure majors** — walk the 5 major silent-failure findings from PR #4 reviewer comments; add a DEBUG log per swallow site with file, exception type, and enough context to trace. Test: monkeypatch the dependency to raise; assert the DEBUG log is emitted.
 
 - [ ] fix-task-10: **run_id channel-name validation** — `backend/app/core/broadcast_service.py::broadcast_run_state`. Validate `run_id` matches `^ral-[0-9]{8}-[0-9a-f]{4}$` before constructing `_run:<run_id>` channel. Reject (raise + log WARN) on mismatch. Test malicious run_id like `..:admin`.
 

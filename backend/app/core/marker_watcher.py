@@ -41,7 +41,12 @@ def _get_interval() -> float:
         return float(
             os.environ.get("PANOPTICA_MARKER_POLL_INTERVAL", str(DEFAULT_POLL_INTERVAL_SECONDS))
         )
-    except ValueError:
+    except ValueError as exc:
+        logger.debug(
+            "Invalid PANOPTICA_MARKER_POLL_INTERVAL %r, using default: %s",
+            os.environ.get("PANOPTICA_MARKER_POLL_INTERVAL"),
+            exc,
+        )
         return DEFAULT_POLL_INTERVAL_SECONDS
 
 
