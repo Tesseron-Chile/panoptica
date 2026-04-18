@@ -7,7 +7,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from claude_office_hooks.event_mapper import map_event
 
-
 _BASE_RAW = {"session_id": "sess-1", "cwd": "/tmp/proj", "source": "human"}
 
 
