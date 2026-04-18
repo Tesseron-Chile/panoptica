@@ -39,6 +39,8 @@ class _PlanState:
     run_id: str
     path: Path
     last_hash: str = ""
+    last_mtime: float = -1.0
+    last_size: int = -1
     warned: bool = False  # first-failure WARN already emitted; resets on recovery
 
 
@@ -93,9 +95,10 @@ class PlanWatcher:
                 logger.debug("plan file still missing for %s: %s", state.run_id, state.path)
             return
         try:
-            file_size = state.path.stat().st_size
+            st = state.path.stat()
         except OSError:
-            file_size = 0
+            st = None
+        file_size = st.st_size if st is not None else 0
         if file_size > MAX_PLAN_BYTES:
             logger.warning(
                 "plan file for %s exceeds size cap (%d MiB > 1 MiB), skipping: %s",
@@ -103,6 +106,12 @@ class PlanWatcher:
                 file_size // (1024 * 1024),
                 state.path,
             )
+            return
+        if (
+            st is not None
+            and st.st_mtime == state.last_mtime
+            and st.st_size == state.last_size
+        ):
             return
         try:
             content = state.path.read_text()
@@ -121,6 +130,9 @@ class PlanWatcher:
             logger.info("plan file recovered for %s: %s", state.run_id, state.path)
             state.warned = False
         h = hashlib.sha256(content.encode()).hexdigest()
+        if st is not None:
+            state.last_mtime = st.st_mtime
+            state.last_size = st.st_size
         if h == state.last_hash:
             return
         state.last_hash = h

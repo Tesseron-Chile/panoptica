@@ -85,6 +85,39 @@ async def test_plan_watcher_warn_debug_recovery_cadence(tmp_path: Path, caplog):
 
 
 @pytest.mark.asyncio
+async def test_plan_watcher_mtime_size_fastpath_skips_hash(tmp_path: Path, monkeypatch):
+    """Unchanged file: hash must be computed at most once across 3 polls."""
+    import hashlib as _hashlib
+    plan = tmp_path / "PLAN.md"
+    plan.write_text("- [ ] plan-task-1: stable\n")
+
+    hash_calls = 0
+    real_sha256 = _hashlib.sha256
+
+    def counting_sha256(data, *args, **kwargs):
+        nonlocal hash_calls
+        hash_calls += 1
+        return real_sha256(data, *args, **kwargs)
+
+    monkeypatch.setattr("app.core.plan_watcher.hashlib.sha256", counting_sha256)
+
+    updates: list = []
+
+    async def cb(run_id: str, tasks) -> None:
+        updates.append((run_id, tasks))
+
+    w = PlanWatcher(on_update=cb)
+    w.register("ral-1", plan)
+    state = w._states["ral-1"]
+
+    await w._poll_one(state)  # tick 1: establishes baseline
+    await w._poll_one(state)  # tick 2: mtime+size unchanged → skip
+    await w._poll_one(state)  # tick 3: mtime+size unchanged → skip
+
+    assert hash_calls <= 1, f"expected at most 1 hash call, got {hash_calls}"
+
+
+@pytest.mark.asyncio
 async def test_plan_watcher_rejects_oversized_file(tmp_path: Path, caplog):
     """Files over MAX_PLAN_BYTES must log WARN and not invoke the callback."""
     plan = tmp_path / "PLAN.md"
