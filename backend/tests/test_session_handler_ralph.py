@@ -1,0 +1,133 @@
+import json
+from datetime import datetime, UTC
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+from app.core.handlers.session_handler import handle_session_start, handle_session_end
+from app.core.run_aggregator import RunAggregator
+from app.models.events import Event, EventData, EventType
+from app.models.runs import Role
+
+
+def _marker_at(cwd: Path) -> None:
+    wd = cwd / "workdocs"
+    wd.mkdir(exist_ok=True)
+    (wd / ".panoptica-run.json").write_text(json.dumps({
+        "run_id": "ral-1",
+        "orchestrator_session_id": None,
+        "primary_repo": str(cwd),
+        "workdocs_dir": str(wd),
+        "started_at": "2026-04-18T14:32:07Z",
+        "ended_at": None,
+        "phase": "A",
+        "model_config": {"coder": "claude-sonnet-4-6"},
+    }))
+
+
+@pytest.mark.asyncio
+@patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
+async def test_handle_session_start_tags_session_from_env_and_marker(mock_broadcast, tmp_path):
+    _marker_at(tmp_path)
+    agg = RunAggregator()
+    sm = SimpleNamespace(session=SimpleNamespace(id="s1", run_id=None, role=None, task_id=None))
+
+    event = Event(
+        event_type=EventType.SESSION_START,
+        session_id="s1",
+        timestamp=datetime.now(UTC),
+        data=EventData(
+            project_dir=str(tmp_path),
+            run_id="ral-1",
+            ralph_role="coder",
+            ralph_task_id="plan-task-5",
+        ),
+    )
+
+    await handle_session_start(
+        sm=sm,
+        event=event,
+        ensure_task_file_poller_fn=lambda: None,
+        run_aggregator=agg,
+    )
+
+    assert sm.session.run_id == "ral-1"
+    assert sm.session.role == Role.CODER
+    assert sm.session.task_id == "plan-task-5"
+    assert "s1" in agg.get("ral-1").member_session_ids
+
+
+@pytest.mark.asyncio
+@patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
+async def test_handle_session_start_no_aggregator_is_noop(mock_broadcast, tmp_path):
+    """Passing no aggregator (old callers) must not break."""
+    sm = SimpleNamespace(session=SimpleNamespace(id="s2", run_id=None, role=None, task_id=None))
+
+    event = Event(
+        event_type=EventType.SESSION_START,
+        session_id="s2",
+        timestamp=datetime.now(UTC),
+        data=EventData(project_dir=str(tmp_path)),
+    )
+
+    await handle_session_start(
+        sm=sm,
+        event=event,
+        ensure_task_file_poller_fn=lambda: None,
+        run_aggregator=None,
+    )
+
+    assert sm.session.run_id is None
+
+
+@pytest.mark.asyncio
+@patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
+async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
+    from app.core.marker_file import read_marker, marker_path_for_cwd
+
+    agg = RunAggregator()
+    _marker_at(tmp_path)
+    marker = read_marker(marker_path_for_cwd(tmp_path))
+    agg.upsert_from_marker(marker)
+    agg.add_member("ral-1", session_id="s3", role=Role.CODER, task_id=None, is_orchestrator=False)
+
+    sm = SimpleNamespace(session=SimpleNamespace(id="s3", run_id="ral-1", role=Role.CODER, task_id=None))
+
+    event = Event(
+        event_type=EventType.SESSION_END,
+        session_id="s3",
+        timestamp=datetime.now(UTC),
+        data=EventData(),
+    )
+
+    await handle_session_end(sm=sm, event=event, run_aggregator=agg)
+
+    assert "s3" not in agg.get("ral-1").member_session_ids
+
+
+@pytest.mark.asyncio
+@patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
+async def test_handle_session_end_orchestrator_stop_ends_run(mock_broadcast, tmp_path):
+    from app.core.marker_file import read_marker, marker_path_for_cwd
+
+    agg = RunAggregator()
+    _marker_at(tmp_path)
+    marker = read_marker(marker_path_for_cwd(tmp_path))
+    agg.upsert_from_marker(marker)
+    agg.add_member("ral-1", session_id="orc-1", role=None, task_id=None, is_orchestrator=True)
+
+    sm = SimpleNamespace(session=SimpleNamespace(id="orc-1", run_id="ral-1", role=None, task_id=None))
+
+    event = Event(
+        event_type=EventType.SESSION_END,
+        session_id="orc-1",
+        timestamp=datetime.now(UTC),
+        data=EventData(),
+    )
+
+    await handle_session_end(sm=sm, event=event, run_aggregator=agg)
+
+    run = agg.get("ral-1")
+    assert run.ended_at is not None

@@ -19,6 +19,7 @@ from sqlalchemy import delete, select
 
 from app.config import get_settings
 from app.core.beads_poller import get_beads_poller, has_beads, init_beads_poller
+from app.core.run_aggregator import RunAggregator
 from app.core.broadcast_service import (
     broadcast_error,
     broadcast_event,
@@ -149,6 +150,7 @@ class EventProcessor:
         self._task_poller_initialized = False
         self._beads_poller_initialized = False
         self._beads_sessions: set[str] = set()  # Sessions with active beads polling
+        self._run_aggregator = RunAggregator()
 
     # ------------------------------------------------------------------
     # Poller lifecycle helpers
@@ -171,6 +173,10 @@ class EventProcessor:
         if not self._beads_poller_initialized:
             init_beads_poller(self._handle_beads_update)
             self._beads_poller_initialized = True
+
+    def get_run_aggregator(self) -> RunAggregator:
+        """Return the singleton RunAggregator for Ralph run tracking."""
+        return self._run_aggregator
 
     # ------------------------------------------------------------------
     # Callbacks for pollers
@@ -363,7 +369,7 @@ class EventProcessor:
         # SESSION_START – start task-file polling + beads polling
         # ------------------------------------------------------------------
         if event.event_type == EventType.SESSION_START:
-            await handle_session_start(sm, event, self._ensure_task_file_poller)
+            await handle_session_start(sm, event, self._ensure_task_file_poller, run_aggregator=self._run_aggregator)
             await self._start_beads_if_available(event.session_id)
 
         # ------------------------------------------------------------------
@@ -381,7 +387,7 @@ class EventProcessor:
         # SESSION_END – stop task-file polling + beads polling
         # ------------------------------------------------------------------
         if event.event_type == EventType.SESSION_END:
-            await handle_session_end(sm, event)
+            await handle_session_end(sm, event, run_aggregator=self._run_aggregator)
             beads = get_beads_poller()
             if beads:
                 await beads.stop_polling(event.session_id)
