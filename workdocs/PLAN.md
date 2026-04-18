@@ -22,7 +22,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-7: **Unregister _WatchedPath on run_end** — `backend/app/core/event_processor.py` + `marker_watcher.py`. On `run_end` marker event, remove the path from the watcher. Test: run_start → run_end → path no longer tracked. Session: completed cleanly; `unregister` already existed on `MarkerWatcher`; added call in `_handle_marker_event` before plan-watcher block so it runs even when `get_plan_watcher()` returns None.
 
-- [🔧] fix-task-8: **Async-safe marker reads** — `backend/app/core/event_processor.py::_handle_marker_event`. Wrap the synchronous `read_marker` with `asyncio.to_thread`. Test: handler is called concurrently with 10 markers; event loop is not blocked longer than Nms (loosely: assert completion under a generous deadline).
+- [✅] fix-task-8: **Async-safe marker reads** — `backend/app/core/event_processor.py::_handle_marker_event`. Wrap the synchronous `read_marker` with `asyncio.to_thread`. Test: handler is called concurrently with 10 markers; event loop is not blocked longer than Nms (loosely: assert completion under a generous deadline). Session: split `marker_path_for_cwd` (sync, catches ValueError) from `read_marker` (now `await asyncio.to_thread`). Added `test_marker_event_async_safe.py` with a timing test (2 concurrent calls + 0.2s sleep mock must complete in < 0.35s) that failed before the fix.
 
 - [ ] fix-task-9: **Log-on-swallow for silent-failure majors** — walk the 5 major silent-failure findings from PR #4 reviewer comments; add a DEBUG log per swallow site with file, exception type, and enough context to trace. Test: monkeypatch the dependency to raise; assert the DEBUG log is emitted.
 
