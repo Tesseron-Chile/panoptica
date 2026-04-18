@@ -13,7 +13,7 @@ Primary repo: `panoptica`. Branch: `feature/ralph-panoptica-spec-a`.
 
 - [x] plan-task-1: Run domain types — `backend/app/models/runs.py` — Session: completed cleanly
 - [x] plan-task-2: Extend Session with run_id/role/task_id — Session: completed cleanly
-- [🔧] plan-task-3: Synthetic event types + EventData extensions
+- [x] plan-task-3: Synthetic event types + EventData extensions — Session: completed cleanly
 - [ ] plan-task-4: Marker file reader (pure) — `backend/app/core/marker_file.py`
 - [ ] plan-task-5: PLAN.md parser (pure, lax) — `backend/app/core/plan_parser.py`
 - [ ] plan-task-6: Session tagger — `backend/app/core/session_tagger.py`
