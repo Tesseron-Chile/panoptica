@@ -4,9 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.plan_watcher import MAX_PLAN_BYTES
-
-from app.core.plan_watcher import PlanWatcher
+from app.core.plan_watcher import MAX_PLAN_BYTES, PlanWatcher
 from app.models.runs import PlanTaskStatus
 
 
@@ -138,7 +136,14 @@ async def test_plan_watcher_rejects_oversized_file(tmp_path: Path, caplog):
         await w._poll_one(state)
 
     assert updates == [], "callback must not be invoked for oversized file"
-    warn_records = [r for r in caplog.records if r.levelno == logging.WARNING and r.name == "app.core.plan_watcher"]
+    warn_records = [
+        r for r in caplog.records
+        if r.levelno == logging.WARNING and r.name == "app.core.plan_watcher"
+    ]
     assert warn_records, "expected a WARNING log for oversized file"
-    assert any(str(MAX_PLAN_BYTES) in r.message or "MiB" in r.message or "size" in r.message.lower() for r in warn_records), \
-        f"WARN log must mention size cap, got: {[r.message for r in warn_records]}"
+    assert any(
+        str(MAX_PLAN_BYTES) in r.message
+        or "MiB" in r.message
+        or "size" in r.message.lower()
+        for r in warn_records
+    ), f"WARN log must mention size cap, got: {[r.message for r in warn_records]}"

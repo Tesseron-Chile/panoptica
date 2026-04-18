@@ -13,12 +13,12 @@ import re
 from typing import TYPE_CHECKING, Any
 
 from app.api.websocket import manager
+from app.core.state_machine import StateMachine
+from app.models.sessions import GameState, HistoryEntry
 
 logger = logging.getLogger(__name__)
 
 _RUN_ID_RE = re.compile(r"^ral-[0-9]{8}-[0-9a-f]{4}$")
-from app.core.state_machine import StateMachine
-from app.models.sessions import GameState, HistoryEntry
 
 if TYPE_CHECKING:
     from app.core.room_orchestrator import RoomOrchestrator

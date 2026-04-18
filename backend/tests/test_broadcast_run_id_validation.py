@@ -33,7 +33,10 @@ async def test_malicious_run_id_no_broadcast(caplog):
             await broadcast_run_state("..:admin", _fake_run())
 
     mock_broadcast.assert_not_called()
-    assert any("run_id" in r.message.lower() or "invalid" in r.message.lower() for r in caplog.records)
+    assert any(
+        "run_id" in r.message.lower() or "invalid" in r.message.lower()
+        for r in caplog.records
+    )
 
 
 @pytest.mark.asyncio
@@ -46,7 +49,10 @@ async def test_spoof_run_id_no_broadcast(caplog):
             await broadcast_run_state("ral-X:spoof", _fake_run())
 
     mock_broadcast.assert_not_called()
-    assert any("run_id" in r.message.lower() or "invalid" in r.message.lower() for r in caplog.records)
+    assert any(
+        "run_id" in r.message.lower() or "invalid" in r.message.lower()
+        for r in caplog.records
+    )
 
 
 @pytest.mark.asyncio
@@ -59,7 +65,10 @@ async def test_empty_run_id_no_broadcast(caplog):
             await broadcast_run_state("", _fake_run())
 
     mock_broadcast.assert_not_called()
-    assert any("run_id" in r.message.lower() or "invalid" in r.message.lower() for r in caplog.records)
+    assert any(
+        "run_id" in r.message.lower() or "invalid" in r.message.lower()
+        for r in caplog.records
+    )
 
 
 @pytest.mark.asyncio

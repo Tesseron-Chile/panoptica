@@ -80,7 +80,11 @@ class MarkerWatcher:
             return
         if len(self._paths) >= MAX_WATCHED_PATHS:
             evicted, _ = self._paths.popitem(last=False)
-            logger.warning("MarkerWatcher evicting oldest path %s (limit=%d)", evicted, MAX_WATCHED_PATHS)
+            logger.warning(
+                "MarkerWatcher evicting oldest path %s (limit=%d)",
+                evicted,
+                MAX_WATCHED_PATHS,
+            )
         self._paths[cwd] = _WatchedPath(cwd=cwd)
 
     def unregister(self, cwd: Path) -> None:

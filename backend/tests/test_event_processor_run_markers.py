@@ -5,7 +5,6 @@ Also covers: unregistering the marker path from MarkerWatcher on run_end.
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 

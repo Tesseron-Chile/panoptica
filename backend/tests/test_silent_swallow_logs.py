@@ -2,14 +2,12 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from app.core.marker_file import _validate_cwd
 from app.core.run_aggregator import RunAggregator
-
 
 # ---------------------------------------------------------------------------
 # 1. plan_watcher._get_interval — invalid env var
@@ -85,15 +83,14 @@ def test_validate_cwd_non_matching_root_logs_debug(tmp_path, caplog):
     cwd = tmp_path / "different_tree" / "subdir"
     cwd.mkdir(parents=True)
 
-    # Two roots: first doesn't match, second matches — should log DEBUG for the first miss
-    matching_root = tmp_path
     non_matching_root = other_root / "deeper"
     non_matching_root.mkdir(parents=True)
 
-    # Use only the non-matching root so that it logs and then raises
-    with caplog.at_level(logging.DEBUG, logger="app.core.marker_file"):
-        with pytest.raises(ValueError):
-            _validate_cwd(str(cwd), allowed_roots=[non_matching_root])
+    with (
+        caplog.at_level(logging.DEBUG, logger="app.core.marker_file"),
+        pytest.raises(ValueError),
+    ):
+        _validate_cwd(str(cwd), allowed_roots=[non_matching_root])
 
     assert any(
         r.levelno == logging.DEBUG for r in caplog.records

@@ -70,5 +70,5 @@ def test_parse_plan_md_debug_logs_malformed_task_lines(caplog):
     debug_records = [r for r in caplog.records if r.levelno == logging.DEBUG]
     assert len(debug_records) == 3
     # Each record should contain the offending line content
-    for record, bad_line in zip(debug_records, malformed):
+    for record, bad_line in zip(debug_records, malformed, strict=True):
         assert bad_line[:40] in record.message
