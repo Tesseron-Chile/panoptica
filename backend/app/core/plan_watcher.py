@@ -15,6 +15,7 @@ from app.models.runs import PlanTask
 logger = logging.getLogger(__name__)
 
 DEFAULT_POLL_INTERVAL_SECONDS = 1.0
+MAX_PLAN_BYTES = 1 * 1024 * 1024  # 1 MiB
 
 PlanCallback = Callable[[str, list[PlanTask]], Awaitable[None]]
 
@@ -90,6 +91,18 @@ class PlanWatcher:
                 state.warned = True
             else:
                 logger.debug("plan file still missing for %s: %s", state.run_id, state.path)
+            return
+        try:
+            file_size = state.path.stat().st_size
+        except OSError:
+            file_size = 0
+        if file_size > MAX_PLAN_BYTES:
+            logger.warning(
+                "plan file for %s exceeds size cap (%d MiB > 1 MiB), skipping: %s",
+                state.run_id,
+                file_size // (1024 * 1024),
+                state.path,
+            )
             return
         try:
             content = state.path.read_text()
