@@ -14,7 +14,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-3: **Plan watcher first-failure WARN→DEBUG** — `backend/app/core/plan_watcher.py`. Port the pattern from `backend/app/core/beads_poller.py`. Test with a missing PLAN.md path: first poll logs WARN, subsequent failures DEBUG, recovery logs INFO.
 
-- [ ] fix-task-4: **Plan parser debug on malformed lines** — `backend/app/core/plan_parser.py::parse_plan_md`. Emit a DEBUG log per malformed line (rate-limited to first N per call to avoid flood). Test with a PLAN containing 3 malformed lines → 3 debug records.
+- [🔧] fix-task-4: **Plan parser debug on malformed lines** — `backend/app/core/plan_parser.py::parse_plan_md`. Emit a DEBUG log per malformed line (rate-limited to first N per call to avoid flood). Test with a PLAN containing 3 malformed lines → 3 debug records.
 
 - [ ] fix-task-5: **Path-traversal guard on working_dir** — `backend/app/core/marker_file.py::marker_path_for_cwd` (or caller in session_tagger / event_processor). Validate: must be absolute after `Path.resolve(strict=False)`; reject if `..` components remain; reject if outside a configured allowlist root (use `$HOME` as default root for now). Test with `/tmp/foo/../../etc/passwd` → rejection.
 
