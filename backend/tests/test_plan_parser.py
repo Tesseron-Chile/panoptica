@@ -43,3 +43,32 @@ def test_parse_plan_md_unrecognised_status_char_defaults_todo():
     content = "- [?] plan-task-1: weird\n"
     tasks = parse_plan_md(content)
     assert tasks[0].status == PlanTaskStatus.TODO
+
+
+def test_parse_plan_md_debug_logs_malformed_task_lines(caplog):
+    """Lines starting with '- [' but failing full regex → one DEBUG per line."""
+    import logging
+
+    malformed = [
+        "- [ ] plan-task-: missing id number",      # id part fails \d+
+        "- [ ] plan-task-42",                        # no colon+title
+        "- [x] plan-task-99:",                       # empty title (.+? requires ≥1 char)
+    ]
+    content = (
+        "- [x] plan-task-1: valid one\n"
+        + "\n".join(malformed)
+        + "\n- [ ] plan-task-2: valid two\n"
+    )
+
+    with caplog.at_level(logging.DEBUG, logger="app.core.plan_parser"):
+        tasks = parse_plan_md(content)
+
+    # Normal parse is unchanged
+    assert [t.id for t in tasks] == ["plan-task-1", "plan-task-2"]
+
+    # Exactly 3 DEBUG records for the malformed lines
+    debug_records = [r for r in caplog.records if r.levelno == logging.DEBUG]
+    assert len(debug_records) == 3
+    # Each record should contain the offending line content
+    for record, bad_line in zip(debug_records, malformed):
+        assert bad_line[:40] in record.message
