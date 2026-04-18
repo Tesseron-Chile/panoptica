@@ -30,7 +30,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-11: **PLAN.md size cap** — `backend/app/core/plan_parser.py` or `plan_watcher.py`. Reject files > 1 MiB with a WARN; return empty task list. Test with a 2 MiB synthesized file.
 
-- [ ] fix-task-12: **mtime+size quick-check for plan_watcher** — `backend/app/core/plan_watcher.py`. Skip hash computation when mtime and size are unchanged. Test: 3 polls against unchanged file → 1 hash call.
+- [🔧] fix-task-12: **mtime+size quick-check for plan_watcher** — `backend/app/core/plan_watcher.py`. Skip hash computation when mtime and size are unchanged. Test: 3 polls against unchanged file → 1 hash call.
 
 ## Wrap-up
 
