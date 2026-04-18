@@ -15,6 +15,7 @@ import contextlib
 import hashlib
 import logging
 import os
+from collections import OrderedDict
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,6 +31,7 @@ from app.core.marker_file import (
 logger = logging.getLogger(__name__)
 
 DEFAULT_POLL_INTERVAL_SECONDS = 1.0
+MAX_WATCHED_PATHS = 256
 
 EventCallback = Callable[[str, dict[str, Any]], Awaitable[None]]
 
@@ -61,15 +63,20 @@ class MarkerWatcher:
     """Polls a set of CWD paths for marker-file changes and fires async events."""
 
     def __init__(self, on_event: EventCallback) -> None:
-        self._paths: dict[Path, _WatchedPath] = {}
+        self._paths: OrderedDict[Path, _WatchedPath] = OrderedDict()
         self._on_event = on_event
         self._task: asyncio.Task[None] | None = None
         self._stopped = False
 
     def register(self, cwd: Path) -> None:
         cwd = Path(cwd).resolve()
-        if cwd not in self._paths:
-            self._paths[cwd] = _WatchedPath(cwd=cwd)
+        if cwd in self._paths:
+            self._paths.move_to_end(cwd)
+            return
+        if len(self._paths) >= MAX_WATCHED_PATHS:
+            evicted, _ = self._paths.popitem(last=False)
+            logger.warning("MarkerWatcher evicting oldest path %s (limit=%d)", evicted, MAX_WATCHED_PATHS)
+        self._paths[cwd] = _WatchedPath(cwd=cwd)
 
     def unregister(self, cwd: Path) -> None:
         self._paths.pop(Path(cwd).resolve(), None)

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.marker_watcher import MarkerWatcher
+from app.core.marker_watcher import MAX_WATCHED_PATHS, MarkerWatcher
 
 
 def _write(tmp: Path, phase: str, ended_at: str | None = None, run_id: str = "ral-1") -> Path:
@@ -71,6 +71,59 @@ async def test_watcher_emits_phase_change_and_end(tmp_path, monkeypatch):
     assert "run_start" in types
     assert "run_phase_change" in types
     assert "run_end" in types
+
+
+def test_register_lru_evicts_oldest(tmp_path, caplog):
+    """Registering MAX_WATCHED_PATHS+1 paths evicts the first with a WARN log."""
+    import logging
+
+    async def cb(event_type: str, payload: dict) -> None:
+        pass
+
+    w = MarkerWatcher(on_event=cb)
+    dirs = []
+    for i in range(MAX_WATCHED_PATHS + 1):
+        d = tmp_path / f"run_{i:03d}"
+        d.mkdir()
+        dirs.append(d)
+
+    with caplog.at_level(logging.WARNING, logger="app.core.marker_watcher"):
+        for d in dirs:
+            w.register(d)
+
+    oldest = dirs[0].resolve()
+    assert oldest not in w._paths, "Oldest path should have been evicted"
+
+    for d in dirs[1:]:
+        assert d.resolve() in w._paths, f"{d} should still be tracked"
+
+    warn_records = [r for r in caplog.records if r.levelno == logging.WARNING and "evict" in r.message.lower()]
+    assert len(warn_records) == 1, f"Expected exactly 1 eviction WARNING, got {len(warn_records)}"
+
+
+def test_reregister_existing_path_does_not_evict(tmp_path, caplog):
+    """Re-registering an already-tracked path should not cause eviction."""
+    import logging
+
+    async def cb(event_type: str, payload: dict) -> None:
+        pass
+
+    w = MarkerWatcher(on_event=cb)
+    dirs = []
+    for i in range(MAX_WATCHED_PATHS):
+        d = tmp_path / f"run_{i:03d}"
+        d.mkdir()
+        dirs.append(d)
+
+    for d in dirs:
+        w.register(d)
+
+    with caplog.at_level(logging.WARNING, logger="app.core.marker_watcher"):
+        w.register(dirs[0])
+
+    assert len(w._paths) == MAX_WATCHED_PATHS
+    warn_records = [r for r in caplog.records if r.levelno == logging.WARNING and "evict" in r.message.lower()]
+    assert len(warn_records) == 0
 
 
 @pytest.mark.asyncio
