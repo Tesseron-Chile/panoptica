@@ -19,11 +19,15 @@ from sqlalchemy import delete, select
 
 from app.config import get_settings
 from app.core.beads_poller import get_beads_poller, has_beads, init_beads_poller
+from app.core.marker_file import marker_path_for_cwd, read_marker
+from app.core.marker_watcher import get_marker_watcher, init_marker_watcher
+from app.core.plan_watcher import get_plan_watcher, init_plan_watcher
 from app.core.run_aggregator import RunAggregator
 from app.core.broadcast_service import (
     broadcast_error,
     broadcast_event,
     broadcast_room_state,
+    broadcast_run_state,
     broadcast_state,
 )
 from app.core.handlers import (
@@ -151,6 +155,8 @@ class EventProcessor:
         self._beads_poller_initialized = False
         self._beads_sessions: set[str] = set()  # Sessions with active beads polling
         self._run_aggregator = RunAggregator()
+        self._marker_watcher_initialized = False
+        self._plan_watcher_initialized = False
 
     # ------------------------------------------------------------------
     # Poller lifecycle helpers
@@ -173,6 +179,38 @@ class EventProcessor:
         if not self._beads_poller_initialized:
             init_beads_poller(self._handle_beads_update)
             self._beads_poller_initialized = True
+
+    def _ensure_marker_watcher(self) -> None:
+        """Initialise the marker watcher singleton if not already done."""
+        if not self._marker_watcher_initialized:
+            init_marker_watcher(self._handle_marker_event)
+            self._marker_watcher_initialized = True
+
+    def _ensure_plan_watcher(self) -> None:
+        """Initialise the plan watcher singleton if not already done."""
+        if not self._plan_watcher_initialized:
+            init_plan_watcher(self._handle_plan_update)
+            self._plan_watcher_initialized = True
+
+    async def start_watchers(self) -> None:
+        """Start marker and plan watchers. Call once from the FastAPI lifespan."""
+        self._ensure_marker_watcher()
+        self._ensure_plan_watcher()
+        mw = get_marker_watcher()
+        pw = get_plan_watcher()
+        if mw is not None:
+            await mw.start()
+        if pw is not None:
+            await pw.start()
+
+    async def stop_watchers(self) -> None:
+        """Stop marker and plan watchers. Call from the FastAPI lifespan teardown."""
+        mw = get_marker_watcher()
+        pw = get_plan_watcher()
+        if mw is not None:
+            await mw.stop()
+        if pw is not None:
+            await pw.stop()
 
     def get_run_aggregator(self) -> RunAggregator:
         """Return the singleton RunAggregator for Ralph run tracking."""
@@ -213,6 +251,55 @@ class EventProcessor:
             f"tool={event.data.tool_name}"
         )
         await self._process_event_internal(event)
+
+    async def _handle_marker_event(self, event_type: str, payload: dict) -> None:
+        """Handle marker-file change events from the MarkerWatcher.
+
+        Synthesizes an Event and feeds it through the normal process_event path
+        so StateMachine transitions and WebSocket broadcast both see it.
+        Also manages plan_watcher registration for the run lifetime.
+        """
+        run_id: str = payload["run_id"]
+        session_id = payload.get("orchestrator_session_id") or f"_run:{run_id}"
+
+        ev = Event(
+            event_type=EventType(event_type),
+            session_id=session_id,
+            data=EventData(
+                run_id=run_id,
+                orchestrator_session_id=payload.get("orchestrator_session_id"),
+                primary_repo=payload.get("primary_repo"),
+                workdocs_dir=payload.get("workdocs_dir"),
+                to_phase=payload.get("phase"),
+                from_phase=payload.get("from_phase"),
+                model_config_dict=payload.get("model_config"),
+            ),
+        )
+        await self.process_event(ev)
+
+        pw = get_plan_watcher()
+        if pw is None:
+            return
+
+        workdocs_dir = payload.get("workdocs_dir")
+        if event_type == "run_start" and workdocs_dir:
+            # Ensure the aggregator has a Run entry for this run.
+            if self._run_aggregator.get(run_id) is None:
+                primary_repo = payload.get("primary_repo")
+                if primary_repo:
+                    marker = read_marker(marker_path_for_cwd(Path(primary_repo)))
+                    if marker is not None:
+                        self._run_aggregator.upsert_from_marker(marker)
+            pw.register(run_id, Path(workdocs_dir) / "PLAN.md")
+        elif event_type == "run_end":
+            pw.unregister(run_id)
+
+    async def _handle_plan_update(self, run_id: str, tasks: list) -> None:
+        """Handle PLAN.md change notifications from the PlanWatcher."""
+        run = self._run_aggregator.get(run_id)
+        if run is not None:
+            run.plan_tasks = list(tasks)
+            await broadcast_run_state(run_id, run)
 
     # ------------------------------------------------------------------
     # Session management

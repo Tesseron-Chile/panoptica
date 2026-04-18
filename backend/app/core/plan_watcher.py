@@ -88,3 +88,16 @@ class PlanWatcher:
             await self._cb(state.run_id, tasks)
         except Exception:
             logger.exception("plan_watcher callback error for %s", state.run_id)
+
+
+_plan_watcher: PlanWatcher | None = None
+
+
+def get_plan_watcher() -> PlanWatcher | None:
+    return _plan_watcher
+
+
+def init_plan_watcher(on_update: PlanCallback) -> PlanWatcher:
+    global _plan_watcher
+    _plan_watcher = PlanWatcher(on_update=on_update)
+    return _plan_watcher

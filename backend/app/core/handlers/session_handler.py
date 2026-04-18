@@ -13,6 +13,7 @@ from pathlib import Path
 
 from app.core.broadcast_service import broadcast_state
 from app.core.marker_file import MarkerFileReadError, marker_path_for_cwd, read_marker
+from app.core.marker_watcher import get_marker_watcher
 from app.core.run_aggregator import RunAggregator
 from app.core.session_tagger import classify_session
 from app.core.state_machine import StateMachine
@@ -92,6 +93,11 @@ async def _tag_and_register_run_member(
 
     if aggregator.get(tag.run_id) is None and marker is not None:
         aggregator.upsert_from_marker(marker)
+
+    if marker is not None:
+        mw = get_marker_watcher()
+        if mw is not None:
+            mw.register(cwd)
 
     aggregator.add_member(
         tag.run_id,

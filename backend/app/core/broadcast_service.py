@@ -16,12 +16,14 @@ from app.models.sessions import GameState, HistoryEntry
 
 if TYPE_CHECKING:
     from app.core.room_orchestrator import RoomOrchestrator
+    from app.models.runs import Run
 
 __all__ = [
     "broadcast_state",
     "broadcast_event",
     "broadcast_error",
     "broadcast_room_state",
+    "broadcast_run_state",
 ]
 
 
@@ -73,6 +75,25 @@ async def broadcast_room_state(room_id: str, orchestrator: RoomOrchestrator) -> 
             "state": merged_state.model_dump(mode="json", by_alias=True),
         },
         room_id,
+    )
+
+
+async def broadcast_run_state(run_id: str, run: Run) -> None:
+    """Broadcast Ralph run state to all clients subscribed to the run channel.
+
+    Uses the synthetic channel ``_run:<run_id>`` so the frontend (Plan 2) can
+    subscribe without needing a specific session_id.
+
+    Args:
+        run_id: The Ralph run identifier.
+        run: The Run model to broadcast.
+    """
+    await manager.broadcast(
+        {
+            "type": "run_state",
+            "run": run.model_dump(mode="json", by_alias=True),
+        },
+        f"_run:{run_id}",
     )
 
 

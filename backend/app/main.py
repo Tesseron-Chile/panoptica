@@ -70,9 +70,11 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         await _migrate_schema(conn)
 
     git_service.start()
+    await event_processor.start_watchers()
 
     yield
 
+    await event_processor.stop_watchers()
     await git_service.stop()
     await get_engine().dispose()
 
