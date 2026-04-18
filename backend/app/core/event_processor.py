@@ -278,12 +278,14 @@ class EventProcessor:
         primary_repo = payload.get("primary_repo")
         if primary_repo and event_type in {"run_start", "run_phase_change", "run_end"}:
             try:
-                marker = read_marker(marker_path_for_cwd(Path(primary_repo)))
+                marker_path = marker_path_for_cwd(Path(primary_repo))
             except ValueError as exc:
                 logger.warning("Rejected unsafe primary_repo %r: %s", primary_repo, exc)
-                marker = None
-            if marker is not None:
-                self._run_aggregator.upsert_from_marker(marker)
+                marker_path = None
+            if marker_path is not None:
+                marker = await asyncio.to_thread(read_marker, marker_path)
+                if marker is not None:
+                    self._run_aggregator.upsert_from_marker(marker)
 
         if event_type == "run_end" and primary_repo:
             mw = get_marker_watcher()
