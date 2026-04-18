@@ -17,7 +17,7 @@ Primary repo: `panoptica`. Branch: `feature/ralph-panoptica-spec-a`.
 - [x] plan-task-4: Marker file reader (pure) — `backend/app/core/marker_file.py` — Session: completed cleanly
 - [x] plan-task-5: PLAN.md parser (pure, lax) — `backend/app/core/plan_parser.py` — Session: completed cleanly
 - [x] plan-task-6: Session tagger — `backend/app/core/session_tagger.py` — Session: completed cleanly
-- [🔧] plan-task-7: Run aggregator — `backend/app/core/run_aggregator.py`
+- [x] plan-task-7: Run aggregator — `backend/app/core/run_aggregator.py` — Session: completed cleanly
 - [ ] plan-task-8: Marker-file watcher — `backend/app/core/marker_watcher.py`
 - [ ] plan-task-9: PLAN.md watcher — `backend/app/core/plan_watcher.py`
 - [ ] plan-task-10: Wire tagger + aggregator into session_start / session_end
