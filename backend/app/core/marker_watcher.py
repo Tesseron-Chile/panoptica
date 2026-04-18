@@ -100,7 +100,11 @@ class MarkerWatcher:
             logger.exception("marker_watcher loop crashed")
 
     async def _poll_once(self, state: _WatchedPath) -> None:
-        path = marker_path_for_cwd(state.cwd)
+        try:
+            path = marker_path_for_cwd(state.cwd)
+        except ValueError as e:
+            logger.warning("Rejected unsafe cwd %r in marker watcher: %s", state.cwd, e)
+            return
         try:
             marker = read_marker(path)
         except MarkerFileReadError as e:

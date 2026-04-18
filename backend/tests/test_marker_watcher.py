@@ -31,6 +31,7 @@ def _write(tmp: Path, phase: str, ended_at: str | None = None, run_id: str = "ra
 
 @pytest.mark.asyncio
 async def test_watcher_emits_run_start(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("PANOPTICA_MARKER_POLL_INTERVAL", "0.05")
     events: list[tuple[str, dict]] = []
 
@@ -48,6 +49,7 @@ async def test_watcher_emits_run_start(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_watcher_emits_phase_change_and_end(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("PANOPTICA_MARKER_POLL_INTERVAL", "0.05")
     events: list[tuple[str, dict]] = []
 

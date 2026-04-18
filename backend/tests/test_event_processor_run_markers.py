@@ -47,8 +47,10 @@ async def test_all_three_marker_events_reach_aggregator(
     mock_pe: AsyncMock,
     _mock_pw,
     tmp_path: Path,
+    monkeypatch,
 ) -> None:
     """run_start, run_phase_change, and run_end must each call upsert_from_marker."""
+    monkeypatch.setenv("HOME", str(tmp_path))
     ep = EventProcessor()
     agg = RunAggregator()
     ep._run_aggregator = agg

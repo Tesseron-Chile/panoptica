@@ -35,6 +35,7 @@ def _write_plan(cwd: Path, *lines: str) -> None:
 
 
 async def test_ralph_smoke_end_to_end(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("PANOPTICA_MARKER_POLL_INTERVAL", "0.05")
     monkeypatch.setenv("PANOPTICA_PLAN_POLL_INTERVAL", "0.05")
 

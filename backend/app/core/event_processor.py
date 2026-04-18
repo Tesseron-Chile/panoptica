@@ -277,7 +277,11 @@ class EventProcessor:
 
         primary_repo = payload.get("primary_repo")
         if primary_repo and event_type in {"run_start", "run_phase_change", "run_end"}:
-            marker = read_marker(marker_path_for_cwd(Path(primary_repo)))
+            try:
+                marker = read_marker(marker_path_for_cwd(Path(primary_repo)))
+            except ValueError as exc:
+                logger.warning("Rejected unsafe primary_repo %r: %s", primary_repo, exc)
+                marker = None
             if marker is not None:
                 self._run_aggregator.upsert_from_marker(marker)
 

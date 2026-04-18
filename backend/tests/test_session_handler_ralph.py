@@ -34,8 +34,9 @@ def _marker_at(cwd: Path) -> None:
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
 async def test_handle_session_start_tags_session_from_env_and_marker(
-    mock_broadcast: AsyncMock, tmp_path: Path
+    mock_broadcast: AsyncMock, tmp_path: Path, monkeypatch
 ) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
     _marker_at(tmp_path)
     agg = RunAggregator()
     sm = StateMachine()
@@ -93,8 +94,9 @@ async def test_handle_session_start_no_aggregator_is_noop(
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
 async def test_handle_session_end_removes_member(
-    mock_broadcast: AsyncMock, tmp_path: Path
+    mock_broadcast: AsyncMock, tmp_path: Path, monkeypatch
 ) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
     from app.core.marker_file import marker_path_for_cwd, read_marker
 
     agg = RunAggregator()
@@ -122,8 +124,9 @@ async def test_handle_session_end_removes_member(
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
 async def test_handle_session_end_orchestrator_stop_ends_run(
-    mock_broadcast: AsyncMock, tmp_path: Path
+    mock_broadcast: AsyncMock, tmp_path: Path, monkeypatch
 ) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
     from app.core.marker_file import marker_path_for_cwd, read_marker
 
     agg = RunAggregator()
@@ -150,8 +153,9 @@ async def test_handle_session_end_orchestrator_stop_ends_run(
 
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
-async def test_real_state_machine_carries_ralph_attribution(mock_broadcast, tmp_path):
+async def test_real_state_machine_carries_ralph_attribution(mock_broadcast, tmp_path, monkeypatch):
     """Real StateMachine (not SimpleNamespace) must receive run attribution."""
+    monkeypatch.setenv("HOME", str(tmp_path))
     _marker_at(tmp_path)
     agg = RunAggregator()
     sm = StateMachine()

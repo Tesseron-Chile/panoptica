@@ -77,6 +77,9 @@ async def _tag_and_register_run_member(
 
     try:
         marker = read_marker(marker_path_for_cwd(cwd))
+    except ValueError as e:
+        logger.warning("Rejected unsafe cwd %r in session_start: %s", cwd, e)
+        marker = None
     except MarkerFileReadError as e:
         logger.debug("session_start marker read failed for %s: %s", cwd, e)
         marker = None

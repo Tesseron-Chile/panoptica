@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -37,8 +38,36 @@ class MarkerFile:
     source_path: Path
 
 
-def marker_path_for_cwd(cwd: Path | str) -> Path:
-    return Path(cwd) / "workdocs" / MARKER_FILENAME
+def _validate_cwd(
+    cwd: Path | str,
+    allowed_roots: list[Path] | None = None,
+) -> Path:
+    path = Path(cwd)
+    if not path.is_absolute():
+        raise ValueError(f"working_dir must be absolute, got: {cwd!r}")
+    resolved = path.resolve(strict=False)
+    if allowed_roots is None:
+        home_env = os.environ.get("HOME")
+        home = Path(home_env) if home_env else Path.home()
+        allowed_roots = [home]
+    for root in allowed_roots:
+        root_resolved = Path(root).resolve(strict=False)
+        try:
+            resolved.relative_to(root_resolved)
+            return resolved
+        except ValueError:
+            continue
+    raise ValueError(
+        f"working_dir {resolved!r} is outside allowed roots {[str(r) for r in allowed_roots]!r}"
+    )
+
+
+def marker_path_for_cwd(
+    cwd: Path | str,
+    allowed_roots: list[Path] | None = None,
+) -> Path:
+    validated = _validate_cwd(cwd, allowed_roots)
+    return validated / "workdocs" / MARKER_FILENAME
 
 
 def _parse_dt(value: str | None) -> datetime | None:
