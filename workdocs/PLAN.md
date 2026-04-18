@@ -26,7 +26,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-9: **Log-on-swallow for silent-failure majors** — walk the 5 major silent-failure findings from PR #4 reviewer comments; add a DEBUG log per swallow site with file, exception type, and enough context to trace. Test: monkeypatch the dependency to raise; assert the DEBUG log is emitted.
 
-- [🔧] fix-task-10: **run_id channel-name validation** — `backend/app/core/broadcast_service.py::broadcast_run_state`. Validate `run_id` matches `^ral-[0-9]{8}-[0-9a-f]{4}$` before constructing `_run:<run_id>` channel. Reject (raise + log WARN) on mismatch. Test malicious run_id like `..:admin`.
+- [✅] fix-task-10: **run_id channel-name validation** — `backend/app/core/broadcast_service.py::broadcast_run_state`. Validate `run_id` matches `^ral-[0-9]{8}-[0-9a-f]{4}$` before constructing `_run:<run_id>` channel. Reject (raise + log WARN) on mismatch. Test malicious run_id like `..:admin`.
 
 - [ ] fix-task-11: **PLAN.md size cap** — `backend/app/core/plan_parser.py` or `plan_watcher.py`. Reject files > 1 MiB with a WARN; return empty task list. Test with a 2 MiB synthesized file.
 

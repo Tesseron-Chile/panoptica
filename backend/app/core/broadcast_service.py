@@ -8,9 +8,15 @@ full EventProcessor class.
 
 from __future__ import annotations
 
+import logging
+import re
 from typing import TYPE_CHECKING, Any
 
 from app.api.websocket import manager
+
+logger = logging.getLogger(__name__)
+
+_RUN_ID_RE = re.compile(r"^ral-[0-9]{8}-[0-9a-f]{4}$")
 from app.core.state_machine import StateMachine
 from app.models.sessions import GameState, HistoryEntry
 
@@ -88,6 +94,9 @@ async def broadcast_run_state(run_id: str, run: Run) -> None:
         run_id: The Ralph run identifier.
         run: The Run model to broadcast.
     """
+    if not _RUN_ID_RE.match(run_id):
+        logger.warning("broadcast_run_state: invalid run_id %r — broadcast suppressed", run_id)
+        return
     await manager.broadcast(
         {
             "type": "run_state",
