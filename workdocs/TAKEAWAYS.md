@@ -11,6 +11,8 @@ Ongoing log of learnings, deviations, broken assumptions, and workflow observati
 
 ## Learnings
 
+- **`plan_parser.py` uses `~` for IN_PROGRESS, not `🔧`:** The plan doc's spec (and test samples) use `[~]` as the in-progress marker. The actual `workdocs/PLAN.md` uses `[🔧]`. The regex captures a single char and `🔧` (single Unicode code point) would be matched but falls through to the default `PlanTaskStatus.TODO` because `🔧` is not in `_STATUS_MAP`. Downstream consumers (Task 9 plan_watcher) should be aware — or a follow-up task can add `🔧` to `_STATUS_MAP`. Filed as a note; no change made per task scope.
+
 - **`model_config` collision in Pydantic v2:** `Run.model_config` is a reserved Pydantic class attribute for `ConfigDict`. The field holding Ralph's per-role model strings must be named `model_config_` with `Field(alias="modelConfig")`. Tests must use the Python name `model_config_=...` as the kwarg. JSON round-trips as `modelConfig` correctly. Plan doc called this out and the approach works.
 - **`git add` from a subdirectory:** Running `uv run pytest` from `backend/` sets the shell CWD there. Subsequent bare `git add` calls must be run from repo root (or use `git -C <repo_root>`), otherwise git misinterprets relative paths.
 - **Pyright false positive on `list[PlanTask]`:** With `from __future__ import annotations`, Pyright reports `plan_tasks` as `list[Unknown]`. This is a static-analysis artifact — runtime and tests are correct. Not worth working around; no functional impact.
