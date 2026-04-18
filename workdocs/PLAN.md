@@ -16,7 +16,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-4: **Plan parser debug on malformed lines** — `backend/app/core/plan_parser.py::parse_plan_md`. Emit a DEBUG log per malformed line (rate-limited to first N per call to avoid flood). Test with a PLAN containing 3 malformed lines → 3 debug records.
 
-- [🔧] fix-task-5: **Path-traversal guard on working_dir** — `backend/app/core/marker_file.py::marker_path_for_cwd` (or caller in session_tagger / event_processor). Validate: must be absolute after `Path.resolve(strict=False)`; reject if `..` components remain; reject if outside a configured allowlist root (use `$HOME` as default root for now). Test with `/tmp/foo/../../etc/passwd` → rejection.
+- [✅] fix-task-5: **Path-traversal guard on working_dir** — `backend/app/core/marker_file.py::marker_path_for_cwd` (or caller in session_tagger / event_processor). Validate: must be absolute after `Path.resolve(strict=False)`; reject if `..` components remain; reject if outside a configured allowlist root (use `$HOME` as default root for now). Test with `/tmp/foo/../../etc/passwd` → rejection.
 
 - [ ] fix-task-6: **Bound MarkerWatcher registrations** — `backend/app/core/marker_watcher.py`. Cap at 256 watched paths; LRU-evict the oldest on overflow with a WARN log. Test: register 257 paths, assert first is evicted and WARN fired.
 
