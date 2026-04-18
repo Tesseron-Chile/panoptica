@@ -28,7 +28,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-10: **run_id channel-name validation** — `backend/app/core/broadcast_service.py::broadcast_run_state`. Validate `run_id` matches `^ral-[0-9]{8}-[0-9a-f]{4}$` before constructing `_run:<run_id>` channel. Reject (raise + log WARN) on mismatch. Test malicious run_id like `..:admin`.
 
-- [🔧] fix-task-11: **PLAN.md size cap** — `backend/app/core/plan_parser.py` or `plan_watcher.py`. Reject files > 1 MiB with a WARN; return empty task list. Test with a 2 MiB synthesized file.
+- [✅] fix-task-11: **PLAN.md size cap** — `backend/app/core/plan_parser.py` or `plan_watcher.py`. Reject files > 1 MiB with a WARN; return empty task list. Test with a 2 MiB synthesized file.
 
 - [ ] fix-task-12: **mtime+size quick-check for plan_watcher** — `backend/app/core/plan_watcher.py`. Skip hash computation when mtime and size are unchanged. Test: 3 polls against unchanged file → 1 hash call.
 
