@@ -60,3 +60,40 @@ def test_plan_task_status_round_trip():
     assert t.status == "todo"
     t.status = PlanTaskStatus.IN_PROGRESS
     assert t.status == "in_progress"
+
+
+# Task 2 — Session run-attribution fields
+from datetime import datetime, UTC
+from app.models.sessions import Session
+from app.models.runs import Role
+
+
+def test_session_has_run_fields_nullable_by_default():
+    s = Session(
+        id="01HX",
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
+        status="active",
+        event_count=0,
+        agent_count=0,
+    )
+    assert s.run_id is None
+    assert s.role is None
+    assert s.task_id is None
+
+
+def test_session_accepts_run_fields():
+    s = Session(
+        id="01HX",
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
+        status="active",
+        event_count=0,
+        agent_count=0,
+        run_id="ral-20260418-a7f3",
+        role=Role.CODER,
+        task_id="plan-task-5",
+    )
+    assert s.run_id == "ral-20260418-a7f3"
+    assert s.role == Role.CODER
+    assert s.task_id == "plan-task-5"
