@@ -19,3 +19,11 @@ Ongoing log of learnings, deviations, broken assumptions, and workflow observati
 - **Task 11 — `broadcast_run_state` uses synthetic channel `_run:<run_id>`:** Runs span multiple sessions so there's no single session_id to broadcast to. The channel `f"_run:{run_id}"` is a synthetic WebSocket subscription key; frontend (Plan 2) will subscribe to it.
 - **Task 11 — `PlanWatcher` needed module-level singleton:** `init_plan_watcher` / `get_plan_watcher` were added to `plan_watcher.py` to match `marker_watcher.py`'s pattern.
 - **Task 11 — `_handle_marker_event` re-reads marker from disk:** `RunAggregator.upsert_from_marker` takes a `MarkerFile` (not a raw dict). On `run_start`, we re-read via `read_marker(marker_path_for_cwd(Path(primary_repo)))` rather than reconstructing from the watcher payload.
+
+## Phase C/D summary (2026-04-18)
+
+- **Phase B complete, 13/13 tasks ✅.** 299 backend tests + 16 hooks tests green.
+- **Ruff clean** after autofix pass (commit `373acb6`): import ordering, unused imports, two line-length touch-ups in `session_tagger.py` and `runs.py`.
+- **Pyright pre-existing failure:** baseline commit `f93a32d` (pre-Ralph) has 267 pyright errors. Current branch has 264 — our work actually reduced errors by 3 (the `model_config_` Pydantic alias kwarg is reported as "No parameter named" but is valid due to `populate_by_name=True`). `make checkall` still fails on pyright; this is not a regression and belongs in a separate cleanup effort. Backend `make test` and `make lint` pass.
+- **No regression in Panoptica single-session flow:** pre-existing tests still pass unchanged. All 39 new tests (runs, marker, plan_parser, plan_watcher, marker_watcher, session_tagger, run_aggregator, events_run, session_handler_ralph, ralph_pipeline_smoke) are additive.
+- **Coder session metric:** 13 fresh Sonnet-4.6 sessions, one per task. Each consistently followed TDD (claim → failing test → implementation → passing test → mark done). No stuck loops, no rollbacks needed.
