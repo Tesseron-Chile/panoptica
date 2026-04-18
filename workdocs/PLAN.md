@@ -10,7 +10,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-1: **StateMachine Ralph attribution** — `backend/app/core/state_machine.py` + `backend/app/core/handlers/session_handler.py`. Expose `run_id`, `role`, `task_id` on the runtime `Session` model that StateMachine owns (pref option a from USER_PROMPT). Remove the `getattr(sm, "session", None)` fallback. Add a test that drives a real StateMachine through a `session_start` event with RALPH_* fields in EventData and asserts the resulting session carries run_id/role/task_id.
 
-- [ ] fix-task-2: **Aggregator receives all marker events** — `backend/app/core/event_processor.py::_handle_marker_event`. Call `RunAggregator.upsert_from_marker` on `run_start`, `run_phase_change`, and `run_end`. Regression test: three marker events → three aggregator calls, phase transitions reflected in run state.
+- [🔧] fix-task-2: **Aggregator receives all marker events** — `backend/app/core/event_processor.py::_handle_marker_event`. Call `RunAggregator.upsert_from_marker` on `run_start`, `run_phase_change`, and `run_end`. Regression test: three marker events → three aggregator calls, phase transitions reflected in run state.
 
 - [ ] fix-task-3: **Plan watcher first-failure WARN→DEBUG** — `backend/app/core/plan_watcher.py`. Port the pattern from `backend/app/core/beads_poller.py`. Test with a missing PLAN.md path: first poll logs WARN, subsequent failures DEBUG, recovery logs INFO.
 
