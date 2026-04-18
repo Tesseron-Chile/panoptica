@@ -21,7 +21,7 @@ Primary repo: `panoptica`. Branch: `feature/ralph-panoptica-spec-a`.
 - [x] plan-task-8: Marker-file watcher — `backend/app/core/marker_watcher.py` — Session: completed cleanly
 - [x] plan-task-9: PLAN.md watcher — `backend/app/core/plan_watcher.py` — Session: completed cleanly
 - [x] plan-task-10: Wire tagger + aggregator into session_start / session_end — Session: completed cleanly
-- [🔧] plan-task-11: Wire marker + plan watchers into app lifecycle
+- [x] plan-task-11: Wire marker + plan watchers into app lifecycle — Session: completed cleanly
 - [ ] plan-task-12: Hooks forward RALPH_* env on session_start
 - [ ] plan-task-13: Integration smoke test
 
