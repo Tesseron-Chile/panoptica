@@ -19,10 +19,6 @@ from sqlalchemy import delete, select
 
 from app.config import get_settings
 from app.core.beads_poller import get_beads_poller, has_beads, init_beads_poller
-from app.core.marker_file import marker_path_for_cwd, read_marker
-from app.core.marker_watcher import get_marker_watcher, init_marker_watcher
-from app.core.plan_watcher import get_plan_watcher, init_plan_watcher
-from app.core.run_aggregator import RunAggregator
 from app.core.broadcast_service import (
     broadcast_error,
     broadcast_event,
@@ -44,8 +40,12 @@ from app.core.handlers import (
     handle_user_prompt_submit,
 )
 from app.core.jsonl_parser import get_last_assistant_response
+from app.core.marker_file import marker_path_for_cwd, read_marker
+from app.core.marker_watcher import get_marker_watcher, init_marker_watcher
+from app.core.plan_watcher import get_plan_watcher, init_plan_watcher
 from app.core.product_mapper import get_product_mapper
 from app.core.room_orchestrator import RoomOrchestrator
+from app.core.run_aggregator import RunAggregator
 from app.core.state_machine import StateMachine
 from app.core.task_file_poller import init_task_file_poller
 from app.core.task_persistence import load_tasks, save_tasks
@@ -95,9 +95,7 @@ def derive_git_root(working_dir: str) -> str | None:
     return None
 
 
-def _derive_display_name(
-    working_dir: str | None, project_root: str | None
-) -> str | None:
+def _derive_display_name(working_dir: str | None, project_root: str | None) -> str | None:
     """Derive a human-friendly display name for a session.
 
     Uses the relative path from the git root to the working directory,
@@ -456,7 +454,9 @@ class EventProcessor:
         # SESSION_START – start task-file polling + beads polling
         # ------------------------------------------------------------------
         if event.event_type == EventType.SESSION_START:
-            await handle_session_start(sm, event, self._ensure_task_file_poller, run_aggregator=self._run_aggregator)
+            await handle_session_start(
+                sm, event, self._ensure_task_file_poller, run_aggregator=self._run_aggregator
+            )
             await self._start_beads_if_available(event.session_id)
 
         # ------------------------------------------------------------------

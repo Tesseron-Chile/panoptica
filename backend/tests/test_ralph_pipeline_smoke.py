@@ -3,29 +3,31 @@ import asyncio
 import json
 from pathlib import Path
 
-import pytest
-
+from app.core.marker_file import marker_path_for_cwd, read_marker
 from app.core.marker_watcher import MarkerWatcher
 from app.core.plan_watcher import PlanWatcher
 from app.core.run_aggregator import RunAggregator
 from app.core.session_tagger import classify_session
-from app.core.marker_file import read_marker, marker_path_for_cwd
-from app.models.runs import Role, PlanTaskStatus, RunPhase
+from app.models.runs import PlanTaskStatus, Role, RunPhase
 
 
 def _write_marker(cwd: Path, phase: str = "A", ended_at: str | None = None) -> None:
     wd = cwd / "workdocs"
     wd.mkdir(exist_ok=True)
-    (wd / ".panoptica-run.json").write_text(json.dumps({
-        "run_id": "ral-smoke",
-        "orchestrator_session_id": "orc-1",
-        "primary_repo": str(cwd),
-        "workdocs_dir": str(wd),
-        "started_at": "2026-04-18T14:32:07Z",
-        "ended_at": ended_at,
-        "phase": phase,
-        "model_config": {"coder": "claude-sonnet-4-6", "designer": "claude-opus-4-7"},
-    }))
+    (wd / ".panoptica-run.json").write_text(
+        json.dumps(
+            {
+                "run_id": "ral-smoke",
+                "orchestrator_session_id": "orc-1",
+                "primary_repo": str(cwd),
+                "workdocs_dir": str(wd),
+                "started_at": "2026-04-18T14:32:07Z",
+                "ended_at": ended_at,
+                "phase": phase,
+                "model_config": {"coder": "claude-sonnet-4-6", "designer": "claude-opus-4-7"},
+            }
+        )
+    )
 
 
 def _write_plan(cwd: Path, *lines: str) -> None:
@@ -91,7 +93,13 @@ async def test_ralph_smoke_end_to_end(tmp_path, monkeypatch):
         marker=read_marker(marker_path_for_cwd(tmp_path)),
     )
     assert tag is not None and tag.role == Role.DESIGNER
-    agg.add_member("ral-smoke", session_id="designer-1", role=Role.DESIGNER, task_id=None, is_orchestrator=False)
+    agg.add_member(
+        "ral-smoke",
+        session_id="designer-1",
+        role=Role.DESIGNER,
+        task_id=None,
+        is_orchestrator=False,
+    )
 
     # Step 4: Phase transitions A → B
     _write_marker(tmp_path, phase="B")

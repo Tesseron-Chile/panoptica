@@ -1,7 +1,6 @@
 # backend/tests/test_marker_watcher.py
 import asyncio
 import json
-from datetime import datetime, UTC
 from pathlib import Path
 
 import pytest
@@ -13,16 +12,20 @@ def _write(tmp: Path, phase: str, ended_at: str | None = None, run_id: str = "ra
     wd = tmp / "workdocs"
     wd.mkdir(exist_ok=True)
     p = wd / ".panoptica-run.json"
-    p.write_text(json.dumps({
-        "run_id": run_id,
-        "orchestrator_session_id": "orc-1",
-        "primary_repo": str(tmp),
-        "workdocs_dir": str(wd),
-        "started_at": "2026-04-18T14:32:07Z",
-        "ended_at": ended_at,
-        "phase": phase,
-        "model_config": {"coder": "claude-sonnet-4-6"},
-    }))
+    p.write_text(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "orchestrator_session_id": "orc-1",
+                "primary_repo": str(tmp),
+                "workdocs_dir": str(wd),
+                "started_at": "2026-04-18T14:32:07Z",
+                "ended_at": ended_at,
+                "phase": phase,
+                "model_config": {"coder": "claude-sonnet-4-6"},
+            }
+        )
+    )
     return p
 
 

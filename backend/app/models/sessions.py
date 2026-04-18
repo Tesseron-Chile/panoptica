@@ -5,8 +5,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from app.models.agents import Agent, Boss, OfficeState
-from app.models.runs import Role
 from app.models.common import TodoItem
+from app.models.runs import Role
 
 __all__ = [
     "ConversationEntry",

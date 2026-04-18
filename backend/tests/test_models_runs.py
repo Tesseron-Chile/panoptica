@@ -1,14 +1,14 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from app.models.runs import (
-    Role,
-    RunPhase,
-    RunOutcome,
-    PlanTaskStatus,
     PlanTask,
-    RunStats,
+    PlanTaskStatus,
+    Role,
     Run,
+    RunOutcome,
+    RunPhase,
 )
+from app.models.sessions import Session
 
 
 def test_role_values():
@@ -63,9 +63,6 @@ def test_plan_task_status_round_trip():
 
 
 # Task 2 — Session run-attribution fields
-from datetime import datetime, UTC
-from app.models.sessions import Session
-from app.models.runs import Role
 
 
 def test_session_has_run_fields_nullable_by_default():

@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 
 from app.core.marker_file import MarkerFile
@@ -52,7 +52,9 @@ def test_upsert_detects_end():
 def test_add_member_session_and_leave():
     agg = RunAggregator()
     agg.upsert_from_marker(_marker())
-    agg.add_member("ral-1", session_id="s1", role=Role.CODER, task_id="plan-task-5", is_orchestrator=False)
+    agg.add_member(
+        "ral-1", session_id="s1", role=Role.CODER, task_id="plan-task-5", is_orchestrator=False
+    )
     run = agg.get("ral-1")
     assert "s1" in run.member_session_ids
     agg.remove_member("ral-1", session_id="s1")

@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
-import tempfile
+
 import pytest
 
 from app.core.marker_file import (
-    MarkerFile, MarkerFileReadError, read_marker, marker_path_for_cwd,
+    MarkerFileReadError,
+    marker_path_for_cwd,
+    read_marker,
 )
-
 
 VALID = {
     "run_id": "ral-20260418-a7f3",

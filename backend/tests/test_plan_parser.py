@@ -1,7 +1,6 @@
 from app.core.plan_parser import parse_plan_md
 from app.models.runs import PlanTaskStatus
 
-
 SAMPLE = """\
 # PLAN
 

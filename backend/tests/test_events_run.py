@@ -1,4 +1,5 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
+
 from app.models.events import Event, EventData, EventType
 
 

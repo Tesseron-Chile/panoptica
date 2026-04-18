@@ -54,9 +54,7 @@ async def _migrate_schema(conn) -> None:  # type: ignore[type-arg]
     ]
     for col_name, col_def in new_columns:
         if col_name not in existing:
-            await conn.execute(
-                text(f"ALTER TABLE sessions ADD COLUMN {col_name} {col_def}")
-            )
+            await conn.execute(text(f"ALTER TABLE sessions ADD COLUMN {col_name} {col_def}"))
             logging.getLogger(__name__).info("DB migration: added column sessions.%s", col_name)
 
 

@@ -21,7 +21,9 @@ PlanCallback = Callable[[str, list[PlanTask]], Awaitable[None]]
 
 def _get_interval() -> float:
     try:
-        return float(os.environ.get("PANOPTICA_PLAN_POLL_INTERVAL", str(DEFAULT_POLL_INTERVAL_SECONDS)))
+        return float(
+            os.environ.get("PANOPTICA_PLAN_POLL_INTERVAL", str(DEFAULT_POLL_INTERVAL_SECONDS))
+        )
     except ValueError:
         return DEFAULT_POLL_INTERVAL_SECONDS
 

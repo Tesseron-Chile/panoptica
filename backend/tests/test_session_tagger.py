@@ -1,11 +1,10 @@
 # backend/tests/test_session_tagger.py
+from datetime import UTC, datetime
 from pathlib import Path
-import pytest
 
-from app.core.session_tagger import SessionTag, classify_session
 from app.core.marker_file import MarkerFile
+from app.core.session_tagger import SessionTag, classify_session
 from app.models.runs import Role
-from datetime import datetime, UTC
 
 
 def _marker(tmp_path: Path, run_id: str = "ral-1") -> MarkerFile:
@@ -25,7 +24,9 @@ def _marker(tmp_path: Path, run_id: str = "ral-1") -> MarkerFile:
 def test_env_and_marker_agree(tmp_path: Path):
     env = {"RALPH_RUN_ID": "ral-1", "RALPH_ROLE": "coder", "RALPH_TASK_ID": "plan-task-5"}
     tag = classify_session(session_id="s1", cwd=tmp_path, env=env, marker=_marker(tmp_path))
-    assert tag == SessionTag(run_id="ral-1", role=Role.CODER, task_id="plan-task-5", is_orchestrator=False)
+    assert tag == SessionTag(
+        run_id="ral-1", role=Role.CODER, task_id="plan-task-5", is_orchestrator=False
+    )
 
 
 def test_env_only_still_tags(tmp_path: Path):

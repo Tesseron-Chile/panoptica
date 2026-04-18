@@ -74,7 +74,7 @@ class Run(BaseModel):
     started_at: datetime
     ended_at: datetime | None
     outcome: RunOutcome
-    # model_config collides with Pydantic's ConfigDict attribute; use model_config_ with explicit alias
+    # model_config collides with Pydantic's ConfigDict; use model_config_ with alias
     model_config_: dict[str, str] = Field(default_factory=dict, alias="modelConfig")
 
     member_session_ids: set[str] = Field(default_factory=set)

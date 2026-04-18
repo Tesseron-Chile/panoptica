@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
 
 from app.core.marker_file import MarkerFile
 from app.models.runs import Role
@@ -46,8 +46,10 @@ def classify_session(
     if env_run_id and marker:
         if env_run_id != marker.run_id:
             logger.warning(
-                "Ralph env/marker run_id mismatch for session %s: env=%s marker=%s (preferring env)",
-                session_id, env_run_id, marker.run_id,
+                "Ralph env/marker run_id mismatch for %s: env=%s marker=%s (preferring env)",
+                session_id,
+                env_run_id,
+                marker.run_id,
             )
         return SessionTag(
             run_id=env_run_id,

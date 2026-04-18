@@ -7,6 +7,7 @@ then DEBUG, asyncio poll loop.
 Configuration:
     PANOPTICA_MARKER_POLL_INTERVAL: Polling interval in seconds (default: 1.0)
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -36,9 +37,7 @@ EventCallback = Callable[[str, dict[str, Any]], Awaitable[None]]
 def _get_interval() -> float:
     try:
         return float(
-            os.environ.get(
-                "PANOPTICA_MARKER_POLL_INTERVAL", str(DEFAULT_POLL_INTERVAL_SECONDS)
-            )
+            os.environ.get("PANOPTICA_MARKER_POLL_INTERVAL", str(DEFAULT_POLL_INTERVAL_SECONDS))
         )
     except ValueError:
         return DEFAULT_POLL_INTERVAL_SECONDS

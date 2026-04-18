@@ -10,9 +10,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["parse_plan_md"]
 
 
-_LINE_RE = re.compile(
-    r"^\s*-\s*\[(?P<mark>.)\]\s*(?P<id>plan-task-\d+)\s*:\s*(?P<title>.+?)\s*$"
-)
+_LINE_RE = re.compile(r"^\s*-\s*\[(?P<mark>.)\]\s*(?P<id>plan-task-\d+)\s*:\s*(?P<title>.+?)\s*$")
 
 _STATUS_MAP = {
     " ": PlanTaskStatus.TODO,

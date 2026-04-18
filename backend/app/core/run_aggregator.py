@@ -54,9 +54,7 @@ class RunAggregator:
                 phase=new_phase,
                 started_at=marker.started_at,
                 ended_at=marker.ended_at,
-                outcome=(
-                    RunOutcome.COMPLETED if marker.ended_at else RunOutcome.IN_PROGRESS
-                ),
+                outcome=(RunOutcome.COMPLETED if marker.ended_at else RunOutcome.IN_PROGRESS),
                 model_config_={**marker.model_config_dict},
             )
             self._runs[run.run_id] = run

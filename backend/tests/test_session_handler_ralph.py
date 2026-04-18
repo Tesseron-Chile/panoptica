@@ -1,12 +1,12 @@
 import json
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.core.handlers.session_handler import handle_session_start, handle_session_end
+from app.core.handlers.session_handler import handle_session_end, handle_session_start
 from app.core.run_aggregator import RunAggregator
 from app.models.events import Event, EventData, EventType
 from app.models.runs import Role
@@ -15,16 +15,20 @@ from app.models.runs import Role
 def _marker_at(cwd: Path) -> None:
     wd = cwd / "workdocs"
     wd.mkdir(exist_ok=True)
-    (wd / ".panoptica-run.json").write_text(json.dumps({
-        "run_id": "ral-1",
-        "orchestrator_session_id": None,
-        "primary_repo": str(cwd),
-        "workdocs_dir": str(wd),
-        "started_at": "2026-04-18T14:32:07Z",
-        "ended_at": None,
-        "phase": "A",
-        "model_config": {"coder": "claude-sonnet-4-6"},
-    }))
+    (wd / ".panoptica-run.json").write_text(
+        json.dumps(
+            {
+                "run_id": "ral-1",
+                "orchestrator_session_id": None,
+                "primary_repo": str(cwd),
+                "workdocs_dir": str(wd),
+                "started_at": "2026-04-18T14:32:07Z",
+                "ended_at": None,
+                "phase": "A",
+                "model_config": {"coder": "claude-sonnet-4-6"},
+            }
+        )
+    )
 
 
 @pytest.mark.asyncio
@@ -85,7 +89,7 @@ async def test_handle_session_start_no_aggregator_is_noop(mock_broadcast, tmp_pa
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
 async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
-    from app.core.marker_file import read_marker, marker_path_for_cwd
+    from app.core.marker_file import marker_path_for_cwd, read_marker
 
     agg = RunAggregator()
     _marker_at(tmp_path)
@@ -93,7 +97,9 @@ async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
     agg.upsert_from_marker(marker)
     agg.add_member("ral-1", session_id="s3", role=Role.CODER, task_id=None, is_orchestrator=False)
 
-    sm = SimpleNamespace(session=SimpleNamespace(id="s3", run_id="ral-1", role=Role.CODER, task_id=None))
+    sm = SimpleNamespace(
+        session=SimpleNamespace(id="s3", run_id="ral-1", role=Role.CODER, task_id=None)
+    )
 
     event = Event(
         event_type=EventType.SESSION_END,
@@ -110,7 +116,7 @@ async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
 async def test_handle_session_end_orchestrator_stop_ends_run(mock_broadcast, tmp_path):
-    from app.core.marker_file import read_marker, marker_path_for_cwd
+    from app.core.marker_file import marker_path_for_cwd, read_marker
 
     agg = RunAggregator()
     _marker_at(tmp_path)
@@ -118,7 +124,9 @@ async def test_handle_session_end_orchestrator_stop_ends_run(mock_broadcast, tmp
     agg.upsert_from_marker(marker)
     agg.add_member("ral-1", session_id="orc-1", role=None, task_id=None, is_orchestrator=True)
 
-    sm = SimpleNamespace(session=SimpleNamespace(id="orc-1", run_id="ral-1", role=None, task_id=None))
+    sm = SimpleNamespace(
+        session=SimpleNamespace(id="orc-1", run_id="ral-1", role=None, task_id=None)
+    )
 
     event = Event(
         event_type=EventType.SESSION_END,
