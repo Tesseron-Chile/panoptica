@@ -12,7 +12,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-2: **Aggregator receives all marker events** — `backend/app/core/event_processor.py::_handle_marker_event`. Call `RunAggregator.upsert_from_marker` on `run_start`, `run_phase_change`, and `run_end`. Regression test: three marker events → three aggregator calls, phase transitions reflected in run state.
 
-- [🔧] fix-task-3: **Plan watcher first-failure WARN→DEBUG** — `backend/app/core/plan_watcher.py`. Port the pattern from `backend/app/core/beads_poller.py`. Test with a missing PLAN.md path: first poll logs WARN, subsequent failures DEBUG, recovery logs INFO.
+- [✅] fix-task-3: **Plan watcher first-failure WARN→DEBUG** — `backend/app/core/plan_watcher.py`. Port the pattern from `backend/app/core/beads_poller.py`. Test with a missing PLAN.md path: first poll logs WARN, subsequent failures DEBUG, recovery logs INFO.
 
 - [ ] fix-task-4: **Plan parser debug on malformed lines** — `backend/app/core/plan_parser.py::parse_plan_md`. Emit a DEBUG log per malformed line (rate-limited to first N per call to avoid flood). Test with a PLAN containing 3 malformed lines → 3 debug records.
 

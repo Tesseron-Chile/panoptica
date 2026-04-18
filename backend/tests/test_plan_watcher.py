@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from pathlib import Path
 
 import pytest
@@ -48,3 +49,34 @@ async def test_plan_watcher_no_file_is_noop(tmp_path: Path, monkeypatch):
     await asyncio.sleep(0.15)
     await w.stop()
     assert updates == []
+
+
+@pytest.mark.asyncio
+async def test_plan_watcher_warn_debug_recovery_cadence(tmp_path: Path, caplog):
+    """First missing-file failure → WARNING; subsequent → DEBUG; heal → INFO recovery."""
+    missing = tmp_path / "PLAN.md"
+
+    async def noop_cb(run_id: str, tasks) -> None:
+        pass
+
+    w = PlanWatcher(on_update=noop_cb)
+    w.register("ral-test", missing)
+    state = w._states["ral-test"]
+
+    with caplog.at_level(logging.DEBUG, logger="app.core.plan_watcher"):
+        await w._poll_one(state)  # poll 1: first failure → WARNING
+        await w._poll_one(state)  # poll 2: second failure → DEBUG
+        await w._poll_one(state)  # poll 3: third failure → DEBUG
+
+        missing.write_text("- [ ] plan-task-1: test\n")
+        await w._poll_one(state)  # poll 4: file healed → INFO recovery
+
+    watcher_records = [(r.levelname, r.message) for r in caplog.records
+                       if r.name == "app.core.plan_watcher"]
+
+    assert watcher_records[0][0] == "WARNING", f"expected WARNING first, got {watcher_records}"
+    assert watcher_records[1][0] == "DEBUG", f"expected DEBUG second, got {watcher_records}"
+    assert watcher_records[2][0] == "DEBUG", f"expected DEBUG third, got {watcher_records}"
+    assert any(
+        r[0] == "INFO" and "recover" in r[1].lower() for r in watcher_records[3:]
+    ), f"expected INFO recovery after heal, got {watcher_records}"

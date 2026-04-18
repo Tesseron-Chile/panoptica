@@ -33,6 +33,7 @@ class _PlanState:
     run_id: str
     path: Path
     last_hash: str = ""
+    warned: bool = False  # first-failure WARN already emitted; resets on recovery
 
 
 class PlanWatcher:
@@ -75,12 +76,32 @@ class PlanWatcher:
 
     async def _poll_one(self, state: _PlanState) -> None:
         if not state.path.exists():
+            if not state.warned:
+                logger.warning(
+                    "plan file not found for %s: %s (subsequent failures at DEBUG)",
+                    state.run_id,
+                    state.path,
+                )
+                state.warned = True
+            else:
+                logger.debug("plan file still missing for %s: %s", state.run_id, state.path)
             return
         try:
             content = state.path.read_text()
         except OSError as e:
-            logger.debug("plan read failed for %s: %s", state.path, e)
+            if not state.warned:
+                logger.warning(
+                    "plan read failed for %s: %s (subsequent failures at DEBUG)",
+                    state.path,
+                    e,
+                )
+                state.warned = True
+            else:
+                logger.debug("plan read failed for %s: %s", state.path, e)
             return
+        if state.warned:
+            logger.info("plan file recovered for %s: %s", state.run_id, state.path)
+            state.warned = False
         h = hashlib.sha256(content.encode()).hexdigest()
         if h == state.last_hash:
             return
