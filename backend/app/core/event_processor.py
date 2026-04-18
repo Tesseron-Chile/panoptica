@@ -285,6 +285,11 @@ class EventProcessor:
             if marker is not None:
                 self._run_aggregator.upsert_from_marker(marker)
 
+        if event_type == "run_end" and primary_repo:
+            mw = get_marker_watcher()
+            if mw is not None:
+                mw.unregister(Path(primary_repo))
+
         pw = get_plan_watcher()
         if pw is None:
             return

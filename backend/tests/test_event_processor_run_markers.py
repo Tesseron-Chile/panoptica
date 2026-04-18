@@ -1,5 +1,6 @@
 """Regression tests: _handle_marker_event must call upsert_from_marker for
 run_start, run_phase_change, and run_end — not just run_start.
+Also covers: unregistering the marker path from MarkerWatcher on run_end.
 """
 from __future__ import annotations
 
@@ -98,3 +99,46 @@ async def test_all_three_marker_events_reach_aggregator(
     assert run.phase == RunPhase.B
     assert run.ended_at is not None
     assert run.outcome == RunOutcome.COMPLETED
+
+
+@pytest.mark.asyncio
+@patch("app.core.event_processor.get_plan_watcher", return_value=None)
+@patch.object(EventProcessor, "process_event", new_callable=AsyncMock)
+async def test_run_end_unregisters_marker_watcher_path(
+    mock_pe: AsyncMock,
+    _mock_pw,
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """run_end must remove the primary_repo path from the MarkerWatcher."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+
+    from app.core.marker_watcher import MarkerWatcher
+
+    events: list = []
+
+    async def cb(et: str, payload: dict) -> None:
+        events.append((et, payload))
+
+    mw = MarkerWatcher(on_event=cb)
+    resolved = Path(tmp_path).resolve()
+    mw.register(resolved)
+    assert resolved in mw._paths, "pre-condition: path must be registered before run_end"
+
+    _write_marker(tmp_path, phase="A", ended_at="2026-04-18T16:00:00Z")
+
+    with patch("app.core.event_processor.get_marker_watcher", return_value=mw):
+        ep = EventProcessor()
+        await ep._handle_marker_event(
+            "run_end",
+            {
+                "run_id": "ral-42",
+                "orchestrator_session_id": "orc-1",
+                "primary_repo": str(tmp_path),
+                "workdocs_dir": str(tmp_path / "workdocs"),
+                "model_config": {},
+                "phase": "A",
+            },
+        )
+
+    assert resolved not in mw._paths, "Path must be unregistered from MarkerWatcher after run_end"
