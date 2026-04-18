@@ -275,19 +275,18 @@ class EventProcessor:
         )
         await self.process_event(ev)
 
+        primary_repo = payload.get("primary_repo")
+        if primary_repo and event_type in {"run_start", "run_phase_change", "run_end"}:
+            marker = read_marker(marker_path_for_cwd(Path(primary_repo)))
+            if marker is not None:
+                self._run_aggregator.upsert_from_marker(marker)
+
         pw = get_plan_watcher()
         if pw is None:
             return
 
         workdocs_dir = payload.get("workdocs_dir")
         if event_type == "run_start" and workdocs_dir:
-            # Ensure the aggregator has a Run entry for this run.
-            if self._run_aggregator.get(run_id) is None:
-                primary_repo = payload.get("primary_repo")
-                if primary_repo:
-                    marker = read_marker(marker_path_for_cwd(Path(primary_repo)))
-                    if marker is not None:
-                        self._run_aggregator.upsert_from_marker(marker)
             pw.register(run_id, Path(workdocs_dir) / "PLAN.md")
         elif event_type == "run_end":
             pw.unregister(run_id)
