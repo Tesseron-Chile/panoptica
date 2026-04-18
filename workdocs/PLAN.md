@@ -1,37 +1,40 @@
-# PLAN
+# PLAN — Chain 2 (review fixes)
 
-Spec A — Run visualizer, backend only. Full step-by-step plan lives at
-`docs/superpowers/plans/2026-04-18-ralph-panoptica-backend.md`. Each task below
-corresponds 1:1 to a task in that plan — open the plan for file paths, test
-code, and exact commands.
+Refinement run. Branch `feature/ralph-panoptica-spec-a`. PR #4.
 
-Primary repo: `panoptica`. Branch: `feature/ralph-panoptica-spec-a`.
+Each task: **(1)** read the issue in `USER_PROMPT.md`, **(2)** write a failing
+regression test, **(3)** implement, **(4)** green test, **(5)** commit, **(6)**
+mark ✅. Primary repo: `panoptica` (this dir).
 
-## Phase A (Design) — already done in this branch.
+## Tasks
 
-## Phase B (Implementation tasks)
+- [ ] fix-task-1: **StateMachine Ralph attribution** — `backend/app/core/state_machine.py` + `backend/app/core/handlers/session_handler.py`. Expose `run_id`, `role`, `task_id` on the runtime `Session` model that StateMachine owns (pref option a from USER_PROMPT). Remove the `getattr(sm, "session", None)` fallback. Add a test that drives a real StateMachine through a `session_start` event with RALPH_* fields in EventData and asserts the resulting session carries run_id/role/task_id.
 
-- [x] plan-task-1: Run domain types — `backend/app/models/runs.py` — Session: completed cleanly
-- [x] plan-task-2: Extend Session with run_id/role/task_id — Session: completed cleanly
-- [x] plan-task-3: Synthetic event types + EventData extensions — Session: completed cleanly
-- [x] plan-task-4: Marker file reader (pure) — `backend/app/core/marker_file.py` — Session: completed cleanly
-- [x] plan-task-5: PLAN.md parser (pure, lax) — `backend/app/core/plan_parser.py` — Session: completed cleanly
-- [x] plan-task-6: Session tagger — `backend/app/core/session_tagger.py` — Session: completed cleanly
-- [x] plan-task-7: Run aggregator — `backend/app/core/run_aggregator.py` — Session: completed cleanly
-- [x] plan-task-8: Marker-file watcher — `backend/app/core/marker_watcher.py` — Session: completed cleanly
-- [x] plan-task-9: PLAN.md watcher — `backend/app/core/plan_watcher.py` — Session: completed cleanly
-- [x] plan-task-10: Wire tagger + aggregator into session_start / session_end — Session: completed cleanly
-- [x] plan-task-11: Wire marker + plan watchers into app lifecycle — Session: completed cleanly
-- [x] plan-task-12: Hooks forward RALPH_* env on session_start — Session: completed cleanly
-- [x] plan-task-13: Integration smoke test — Session: completed cleanly
+- [ ] fix-task-2: **Aggregator receives all marker events** — `backend/app/core/event_processor.py::_handle_marker_event`. Call `RunAggregator.upsert_from_marker` on `run_start`, `run_phase_change`, and `run_end`. Regression test: three marker events → three aggregator calls, phase transitions reflected in run state.
 
-## Phase C (Verify)
+- [ ] fix-task-3: **Plan watcher first-failure WARN→DEBUG** — `backend/app/core/plan_watcher.py`. Port the pattern from `backend/app/core/beads_poller.py`. Test with a missing PLAN.md path: first poll logs WARN, subsequent failures DEBUG, recovery logs INFO.
 
-- [x] plan-task-14: `cd backend && uv run pytest tests/ -q` — 299 passed
-- [x] plan-task-15: `make checkall` — ruff clean; pyright has 264 errors but baseline (f93a32d, pre-Ralph) has 267 → our work REDUCED pyright errors by 3. Pre-existing condition documented.
-- [x] plan-task-16: No regression. Existing 260+ tests still pass; new tests add 39 (260+39=299).
+- [ ] fix-task-4: **Plan parser debug on malformed lines** — `backend/app/core/plan_parser.py::parse_plan_md`. Emit a DEBUG log per malformed line (rate-limited to first N per call to avoid flood). Test with a PLAN containing 3 malformed lines → 3 debug records.
 
-## Phase D (Review)
+- [ ] fix-task-5: **Path-traversal guard on working_dir** — `backend/app/core/marker_file.py::marker_path_for_cwd` (or caller in session_tagger / event_processor). Validate: must be absolute after `Path.resolve(strict=False)`; reject if `..` components remain; reject if outside a configured allowlist root (use `$HOME` as default root for now). Test with `/tmp/foo/../../etc/passwd` → rejection.
 
-- [x] plan-task-17: Self-review — ruff autofix pass committed in 373acb6 (import ordering, unused imports, line length).
-- [x] plan-task-18: Summary in TAKEAWAYS.md
+- [ ] fix-task-6: **Bound MarkerWatcher registrations** — `backend/app/core/marker_watcher.py`. Cap at 256 watched paths; LRU-evict the oldest on overflow with a WARN log. Test: register 257 paths, assert first is evicted and WARN fired.
+
+- [ ] fix-task-7: **Unregister _WatchedPath on run_end** — `backend/app/core/event_processor.py` + `marker_watcher.py`. On `run_end` marker event, remove the path from the watcher. Test: run_start → run_end → path no longer tracked.
+
+- [ ] fix-task-8: **Async-safe marker reads** — `backend/app/core/event_processor.py::_handle_marker_event`. Wrap the synchronous `read_marker` with `asyncio.to_thread`. Test: handler is called concurrently with 10 markers; event loop is not blocked longer than Nms (loosely: assert completion under a generous deadline).
+
+- [ ] fix-task-9: **Log-on-swallow for silent-failure majors** — walk the 5 major silent-failure findings from PR #4 reviewer comments; add a DEBUG log per swallow site with file, exception type, and enough context to trace. Test: monkeypatch the dependency to raise; assert the DEBUG log is emitted.
+
+- [ ] fix-task-10: **run_id channel-name validation** — `backend/app/core/broadcast_service.py::broadcast_run_state`. Validate `run_id` matches `^ral-[0-9]{8}-[0-9a-f]{4}$` before constructing `_run:<run_id>` channel. Reject (raise + log WARN) on mismatch. Test malicious run_id like `..:admin`.
+
+- [ ] fix-task-11: **PLAN.md size cap** — `backend/app/core/plan_parser.py` or `plan_watcher.py`. Reject files > 1 MiB with a WARN; return empty task list. Test with a 2 MiB synthesized file.
+
+- [ ] fix-task-12: **mtime+size quick-check for plan_watcher** — `backend/app/core/plan_watcher.py`. Skip hash computation when mtime and size are unchanged. Test: 3 polls against unchanged file → 1 hash call.
+
+## Wrap-up
+
+- [ ] fix-task-13: `cd backend && uv run pytest tests/ -q` — all green
+- [ ] fix-task-14: `cd backend && make lint` and `cd hooks && make lint` — green
+- [ ] fix-task-15: File GitHub issues for deferred Minors (label `ralph-wip`); list in TAKEAWAYS.md
+- [ ] fix-task-16: Update PR #4 description with a "Chain 2 review fixes" section listing each fix-task and its commit SHA
