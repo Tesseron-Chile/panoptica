@@ -18,7 +18,7 @@ mark ✅. Primary repo: `panoptica` (this dir).
 
 - [✅] fix-task-5: **Path-traversal guard on working_dir** — `backend/app/core/marker_file.py::marker_path_for_cwd` (or caller in session_tagger / event_processor). Validate: must be absolute after `Path.resolve(strict=False)`; reject if `..` components remain; reject if outside a configured allowlist root (use `$HOME` as default root for now). Test with `/tmp/foo/../../etc/passwd` → rejection.
 
-- [🔧] fix-task-6: **Bound MarkerWatcher registrations** — `backend/app/core/marker_watcher.py`. Cap at 256 watched paths; LRU-evict the oldest on overflow with a WARN log. Test: register 257 paths, assert first is evicted and WARN fired.
+- [✅] fix-task-6: **Bound MarkerWatcher registrations** — `backend/app/core/marker_watcher.py`. Cap at 256 watched paths; LRU-evict the oldest on overflow with a WARN log. Test: register 257 paths, assert first is evicted and WARN fired.
 
 - [ ] fix-task-7: **Unregister _WatchedPath on run_end** — `backend/app/core/event_processor.py` + `marker_watcher.py`. On `run_end` marker event, remove the path from the watcher. Test: run_start → run_end → path no longer tracked.
 
