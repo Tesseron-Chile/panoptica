@@ -85,11 +85,9 @@ async def _tag_and_register_run_member(
     if tag is None:
         return
 
-    session = getattr(sm, "session", None)
-    if session is not None:
-        session.run_id = tag.run_id
-        session.role = tag.role
-        session.task_id = tag.task_id
+    sm.run_id = tag.run_id
+    sm.role = tag.role
+    sm.task_id = tag.task_id
 
     if aggregator.get(tag.run_id) is None and marker is not None:
         aggregator.upsert_from_marker(marker)
@@ -128,10 +126,8 @@ async def handle_session_end(
         await task_poller.stop_polling(event.session_id)
 
     if run_aggregator is not None:
-        session = getattr(sm, "session", None)
-        run_id = getattr(session, "run_id", None)
-        if run_id:
-            run_aggregator.remove_member(run_id, session_id=event.session_id)
+        if sm.run_id:
+            run_aggregator.remove_member(sm.run_id, session_id=event.session_id)
         run_aggregator.end_if_orchestrator_stopped(event.session_id)
 
     await broadcast_state(event.session_id, sm)

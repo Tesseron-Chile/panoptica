@@ -1,13 +1,13 @@
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from app.core.handlers.session_handler import handle_session_end, handle_session_start
 from app.core.run_aggregator import RunAggregator
+from app.core.state_machine import StateMachine
 from app.models.events import Event, EventData, EventType
 from app.models.runs import Role
 
@@ -33,10 +33,12 @@ def _marker_at(cwd: Path) -> None:
 
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
-async def test_handle_session_start_tags_session_from_env_and_marker(mock_broadcast, tmp_path):
+async def test_handle_session_start_tags_session_from_env_and_marker(
+    mock_broadcast: AsyncMock, tmp_path: Path
+) -> None:
     _marker_at(tmp_path)
     agg = RunAggregator()
-    sm = SimpleNamespace(session=SimpleNamespace(id="s1", run_id=None, role=None, task_id=None))
+    sm = StateMachine()
 
     event = Event(
         event_type=EventType.SESSION_START,
@@ -57,17 +59,19 @@ async def test_handle_session_start_tags_session_from_env_and_marker(mock_broadc
         run_aggregator=agg,
     )
 
-    assert sm.session.run_id == "ral-1"
-    assert sm.session.role == Role.CODER
-    assert sm.session.task_id == "plan-task-5"
+    assert sm.run_id == "ral-1"
+    assert sm.role == Role.CODER
+    assert sm.task_id == "plan-task-5"
     assert "s1" in agg.get("ral-1").member_session_ids
 
 
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
-async def test_handle_session_start_no_aggregator_is_noop(mock_broadcast, tmp_path):
+async def test_handle_session_start_no_aggregator_is_noop(
+    mock_broadcast: AsyncMock, tmp_path: Path
+) -> None:
     """Passing no aggregator (old callers) must not break."""
-    sm = SimpleNamespace(session=SimpleNamespace(id="s2", run_id=None, role=None, task_id=None))
+    sm = StateMachine()
 
     event = Event(
         event_type=EventType.SESSION_START,
@@ -83,12 +87,14 @@ async def test_handle_session_start_no_aggregator_is_noop(mock_broadcast, tmp_pa
         run_aggregator=None,
     )
 
-    assert sm.session.run_id is None
+    assert sm.run_id is None
 
 
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
-async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
+async def test_handle_session_end_removes_member(
+    mock_broadcast: AsyncMock, tmp_path: Path
+) -> None:
     from app.core.marker_file import marker_path_for_cwd, read_marker
 
     agg = RunAggregator()
@@ -97,9 +103,9 @@ async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
     agg.upsert_from_marker(marker)
     agg.add_member("ral-1", session_id="s3", role=Role.CODER, task_id=None, is_orchestrator=False)
 
-    sm = SimpleNamespace(
-        session=SimpleNamespace(id="s3", run_id="ral-1", role=Role.CODER, task_id=None)
-    )
+    sm = StateMachine()
+    sm.run_id = "ral-1"
+    sm.role = Role.CODER
 
     event = Event(
         event_type=EventType.SESSION_END,
@@ -115,7 +121,9 @@ async def test_handle_session_end_removes_member(mock_broadcast, tmp_path):
 
 @pytest.mark.asyncio
 @patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
-async def test_handle_session_end_orchestrator_stop_ends_run(mock_broadcast, tmp_path):
+async def test_handle_session_end_orchestrator_stop_ends_run(
+    mock_broadcast: AsyncMock, tmp_path: Path
+) -> None:
     from app.core.marker_file import marker_path_for_cwd, read_marker
 
     agg = RunAggregator()
@@ -124,9 +132,8 @@ async def test_handle_session_end_orchestrator_stop_ends_run(mock_broadcast, tmp
     agg.upsert_from_marker(marker)
     agg.add_member("ral-1", session_id="orc-1", role=None, task_id=None, is_orchestrator=True)
 
-    sm = SimpleNamespace(
-        session=SimpleNamespace(id="orc-1", run_id="ral-1", role=None, task_id=None)
-    )
+    sm = StateMachine()
+    sm.run_id = "ral-1"
 
     event = Event(
         event_type=EventType.SESSION_END,
@@ -139,3 +146,36 @@ async def test_handle_session_end_orchestrator_stop_ends_run(mock_broadcast, tmp
 
     run = agg.get("ral-1")
     assert run.ended_at is not None
+
+
+@pytest.mark.asyncio
+@patch("app.core.handlers.session_handler.broadcast_state", new_callable=AsyncMock)
+async def test_real_state_machine_carries_ralph_attribution(mock_broadcast, tmp_path):
+    """Real StateMachine (not SimpleNamespace) must receive run attribution."""
+    _marker_at(tmp_path)
+    agg = RunAggregator()
+    sm = StateMachine()
+
+    event = Event(
+        event_type=EventType.SESSION_START,
+        session_id="s-real",
+        timestamp=datetime.now(UTC),
+        data=EventData(
+            project_dir=str(tmp_path),
+            run_id="ral-1",
+            ralph_role="coder",
+            ralph_task_id="plan-task-5",
+        ),
+    )
+
+    await handle_session_start(
+        sm=sm,
+        event=event,
+        ensure_task_file_poller_fn=lambda: None,
+        run_aggregator=agg,
+    )
+
+    assert sm.run_id == "ral-1"
+    assert sm.role == Role.CODER
+    assert sm.task_id == "plan-task-5"
+    assert "s-real" in agg.get("ral-1").member_session_ids
