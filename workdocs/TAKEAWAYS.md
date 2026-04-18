@@ -10,3 +10,7 @@ Ongoing log of learnings, deviations, broken assumptions, and workflow observati
 - **Task 12 touches `hooks/`.** Not `backend/`. Coder for that task must operate in `hooks/`.
 
 ## Learnings
+
+- **`model_config` collision in Pydantic v2:** `Run.model_config` is a reserved Pydantic class attribute for `ConfigDict`. The field holding Ralph's per-role model strings must be named `model_config_` with `Field(alias="modelConfig")`. Tests must use the Python name `model_config_=...` as the kwarg. JSON round-trips as `modelConfig` correctly. Plan doc called this out and the approach works.
+- **`git add` from a subdirectory:** Running `uv run pytest` from `backend/` sets the shell CWD there. Subsequent bare `git add` calls must be run from repo root (or use `git -C <repo_root>`), otherwise git misinterprets relative paths.
+- **Pyright false positive on `list[PlanTask]`:** With `from __future__ import annotations`, Pyright reports `plan_tasks` as `list[Unknown]`. This is a static-analysis artifact — runtime and tests are correct. Not worth working around; no functional impact.
