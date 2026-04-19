@@ -290,7 +290,7 @@ git commit -m "Add useRunAgentHydration hook: diff members to gameStore agents"
 
 ---
 
-## Task 3: ⬜ OfficeSidebar component
+## Task 3: ✅ OfficeSidebar component
 
 **Files:**
 - Create: `frontend/src/components/office/OfficeSidebar.tsx`
