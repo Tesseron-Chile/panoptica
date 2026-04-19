@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useGameStore } from "@/stores/gameStore";
 import { roleToDesk, roleToVisual } from "@/lib/roleDesks";
 import type { Agent as BackendAgent } from "@/types/generated";
@@ -16,6 +16,16 @@ export function useRunAgentHydration(
   run: Run | null,
   sessionsById: Map<string, Session>,
 ): void {
+  const ownedIds = useRef<Set<string>>(new Set());
+
+  // Stable dep: captures membership + role changes without depending on Map identity.
+  const memberKey = run
+    ? run.memberSessionIds
+        .filter((sid) => sid !== run.orchestratorSessionId)
+        .map((sid) => `${sid}:${sessionsById.get(sid)?.role ?? ""}`)
+        .join(",")
+    : "";
+
   useEffect(() => {
     if (!run) return;
 
@@ -48,15 +58,23 @@ export function useRunAgentHydration(
         parentId: null,
       };
       addAgent(synthetic, DESK_POSITIONS[desk] ?? { x: 640, y: 520 });
+      ownedIds.current.add(sid);
     }
 
-    for (const id of useGameStore.getState().agents.keys()) {
-      if (!desired.has(id)) removeAgent(id);
+    // Only remove agents this hook created, not agents from other sources.
+    for (const id of [...ownedIds.current]) {
+      if (!desired.has(id)) {
+        removeAgent(id);
+        ownedIds.current.delete(id);
+      }
     }
 
     return () => {
-      const agentIds = Array.from(useGameStore.getState().agents.keys());
-      for (const id of agentIds) removeAgent(id);
+      for (const id of [...ownedIds.current]) {
+        removeAgent(id);
+      }
+      ownedIds.current.clear();
     };
-  }, [run, sessionsById]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, memberKey]);
 }
