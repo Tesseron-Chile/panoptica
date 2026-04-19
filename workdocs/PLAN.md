@@ -481,7 +481,7 @@ git commit -m "CharacterFocusPopup: add role/model/task fields"
 
 ---
 
-## Task 7: ⬜ Delete NookDrillDown and related nook UI
+## Task 7: ✅ Delete NookDrillDown and related nook UI
 
 **Files:**
 - Delete: `frontend/src/components/views/NookDrillDown.tsx`

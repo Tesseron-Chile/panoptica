@@ -22,8 +22,6 @@ interface ViewTransitionProps {
   campusView: ReactNode;
   /** Run office Level 2 — DOM only, safe to duplicate */
   runOfficeView?: ReactNode;
-  /** Nook drill-down Level 3 — contains PixiJS, not duplicated on transition out */
-  nookView?: ReactNode;
 }
 
 /**
@@ -43,7 +41,6 @@ export function ViewTransition({
   floorView,
   campusView,
   runOfficeView,
-  nookView,
 }: ViewTransitionProps): ReactNode {
   const transitionOrigin = useNavigationStore((s) => s.transitionOrigin);
   const transitionDirection = useNavigationStore((s) => s.transitionDirection);
@@ -87,7 +84,6 @@ export function ViewTransition({
   const isZoomIn = transitionDirection === "zoom-in";
 
   // DOM-only views can be safely duplicated during outgoing animation
-  // "nook" is excluded — it contains PixiJS (OfficeGame) which must not be duplicated
   const domOnlyViews: ViewMode[] = ["building", "campus", "run-office"];
   const showOutgoingSnapshot =
     phase === "animating" &&
@@ -102,8 +98,6 @@ export function ViewTransition({
         return campusView;
       case "run-office":
         return runOfficeView ?? null;
-      case "nook":
-        return nookView ?? null;
       default:
         return null;
     }
@@ -165,16 +159,6 @@ export function ViewTransition({
           style={incomingStyle}
         >
           {runOfficeView}
-        </div>
-      )}
-
-      {/* NookView: conditionally rendered (DOM only for now) */}
-      {view === "nook" && (
-        <div
-          className="flex-grow flex gap-2 overflow-hidden min-h-0"
-          style={incomingStyle}
-        >
-          {nookView}
         </div>
       )}
 
