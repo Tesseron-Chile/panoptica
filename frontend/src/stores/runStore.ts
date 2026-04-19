@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 import type { Run } from "@/types/run";
 
 interface RunState {
@@ -10,31 +11,33 @@ interface RunState {
   clear: () => void;
 }
 
-export const useRunStore = create<RunState>((set) => ({
-  runs: new Map(),
-  activeRunId: null,
+export const useRunStore = create<RunState>()(
+  subscribeWithSelector((set) => ({
+    runs: new Map(),
+    activeRunId: null,
 
-  setRun: (run) =>
-    set((state) => {
-      const next = new Map(state.runs);
-      next.set(run.runId, run);
-      return { runs: next };
-    }),
+    setRun: (run) =>
+      set((state) => {
+        const next = new Map(state.runs);
+        next.set(run.runId, run);
+        return { runs: next };
+      }),
 
-  removeRun: (runId) =>
-    set((state) => {
-      const next = new Map(state.runs);
-      next.delete(runId);
-      return {
-        runs: next,
-        activeRunId: state.activeRunId === runId ? null : state.activeRunId,
-      };
-    }),
+    removeRun: (runId) =>
+      set((state) => {
+        const next = new Map(state.runs);
+        next.delete(runId);
+        return {
+          runs: next,
+          activeRunId: state.activeRunId === runId ? null : state.activeRunId,
+        };
+      }),
 
-  setActiveRun: (runId) => set({ activeRunId: runId }),
+    setActiveRun: (runId) => set({ activeRunId: runId }),
 
-  clear: () => set({ runs: new Map(), activeRunId: null }),
-}));
+    clear: () => set({ runs: new Map(), activeRunId: null }),
+  })),
+);
 
 export const selectRuns = (state: RunState) => state.runs;
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useRunStore } from "@/stores/runStore";
-import type { Run } from "@/types/run";
+import type { Run, RunOutcome } from "@/types/run";
 
 const API_BASE = "http://localhost:3400/api/v1";
 const POLL_INTERVAL_MS = 5000;
@@ -12,6 +12,16 @@ interface WsEntry {
   active: boolean;
   reconnectTimeout: ReturnType<typeof setTimeout> | null;
   backoffMs: number;
+}
+
+interface RunChannelMessage {
+  type: string;
+  run?: Run;
+  event?: {
+    type: string;
+    agentId?: string;
+    detail?: Record<string, unknown>;
+  };
 }
 
 export function useRunList(): void {
@@ -65,14 +75,69 @@ export function useRunList(): void {
         ws.onmessage = (event: MessageEvent) => {
           if (!entry.active) return;
           try {
-            const msg = JSON.parse(event.data as string) as {
-              type: string;
-              run?: Run;
-            };
+            const msg = JSON.parse(event.data as string) as RunChannelMessage;
+
             if (msg.type === "run_state" && msg.run) {
               useRunStore.getState().setRun(msg.run);
               if (msg.run.outcome !== "in_progress") {
                 disconnectRun(runId);
+              }
+              return;
+            }
+
+            if (msg.type !== "event" || !msg.event) return;
+
+            const store = useRunStore.getState();
+            const run = store.runs.get(runId);
+            const eventType = msg.event.type;
+
+            switch (eventType) {
+              case "run_start": {
+                if (!run) {
+                  void syncRuns();
+                } else {
+                  store.setRun({ ...run });
+                }
+                break;
+              }
+
+              case "run_phase_change": {
+                void syncRuns();
+                break;
+              }
+
+              case "run_end": {
+                if (run) {
+                  const rawOutcome = msg.event.detail?.outcome;
+                  const isKnown =
+                    rawOutcome === "completed" ||
+                    rawOutcome === "stuck" ||
+                    rawOutcome === "abandoned";
+                  if (!isKnown) {
+                    console.warn(
+                      `[useRunList] run_end for run ${runId} has missing/unrecognized outcome: ${String(rawOutcome)}. Preserving existing outcome.`,
+                    );
+                  }
+                  const outcome: RunOutcome = isKnown
+                    ? (rawOutcome as RunOutcome)
+                    : run.outcome;
+                  store.setRun({ ...run, outcome });
+                }
+                disconnectRun(runId);
+                break;
+              }
+
+              case "role_session_joined": {
+                if (run) {
+                  const sessionId = msg.event.agentId;
+                  if (sessionId && !run.memberSessionIds.includes(sessionId)) {
+                    store.setRun({
+                      ...run,
+                      memberSessionIds: [...run.memberSessionIds, sessionId],
+                    });
+                  }
+                }
+                break;
               }
             }
           } catch {

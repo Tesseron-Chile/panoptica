@@ -290,4 +290,208 @@ describe("useRunList", () => {
       unmount();
     }).not.toThrow();
   });
+
+  // --------------------------------------------------------------------------
+  // Single connection per run (not 2N)
+  // --------------------------------------------------------------------------
+
+  it("opens exactly N WebSocket instances for N active runs (not 2N)", async () => {
+    const N = 3;
+    const runs = Array.from({ length: N }, (_, i) =>
+      makeRun({ runId: `ral-${i}` }),
+    );
+    mockFetch(runs);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(WS_INSTANCES).toHaveLength(N);
+    unmount();
+  });
+
+  // --------------------------------------------------------------------------
+  // Demux: single WS handles both run_state and event message types
+  // --------------------------------------------------------------------------
+
+  it("demux: run_state message updates store via the shared WS", async () => {
+    const run = makeRun({ runId: "ral-a" });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    expect(ws).toBeDefined();
+
+    const updatedRun = { ...run, phase: "C" as const };
+    act(() => {
+      ws.triggerMessage({ type: "run_state", run: updatedRun });
+    });
+
+    expect(useRunStore.getState().runs.get("ral-a")?.phase).toBe("C");
+    unmount();
+  });
+
+  it("demux: event message dispatches correctly via the shared WS", async () => {
+    const run = makeRun({ runId: "ral-a" });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    expect(ws).toBeDefined();
+
+    act(() => {
+      ws.triggerMessage({
+        type: "event",
+        event: { type: "role_session_joined", agentId: "sess-xyz" },
+      });
+    });
+
+    expect(
+      useRunStore.getState().runs.get("ral-a")?.memberSessionIds,
+    ).toContain("sess-xyz");
+    unmount();
+  });
+
+  // --------------------------------------------------------------------------
+  // Event handling (run_end, role_session_joined)
+  // --------------------------------------------------------------------------
+
+  it("run_end with valid outcome updates the run and disconnects WS", async () => {
+    const run = makeRun({ runId: "ral-a" });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    act(() => {
+      ws.triggerOpen();
+      ws.triggerMessage({
+        type: "event",
+        event: { type: "run_end", detail: { outcome: "completed" } },
+      });
+    });
+
+    expect(useRunStore.getState().runs.get("ral-a")?.outcome).toBe("completed");
+    expect(ws.close).toHaveBeenCalled();
+    unmount();
+  });
+
+  it("run_end with missing outcome preserves existing outcome and logs a warning", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const run = makeRun({ runId: "ral-a", outcome: "in_progress" });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    act(() => {
+      ws.triggerOpen();
+      ws.triggerMessage({
+        type: "event",
+        event: { type: "run_end", detail: {} },
+      });
+    });
+
+    expect(useRunStore.getState().runs.get("ral-a")?.outcome).toBe(
+      "in_progress",
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("missing/unrecognized outcome"),
+    );
+    warnSpy.mockRestore();
+    unmount();
+  });
+
+  it("run_end with unrecognized outcome preserves existing outcome and logs a warning", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const run = makeRun({ runId: "ral-b", outcome: "in_progress" });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    act(() => {
+      ws.triggerOpen();
+      ws.triggerMessage({
+        type: "event",
+        event: { type: "run_end", detail: { outcome: "unknown_value" } },
+      });
+    });
+
+    expect(useRunStore.getState().runs.get("ral-b")?.outcome).toBe(
+      "in_progress",
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("missing/unrecognized outcome"),
+    );
+    warnSpy.mockRestore();
+    unmount();
+  });
+
+  it("role_session_joined appends sessionId to memberSessionIds", async () => {
+    const run = makeRun({ runId: "ral-a", memberSessionIds: [] });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    act(() => {
+      ws.triggerMessage({
+        type: "event",
+        event: { type: "role_session_joined", agentId: "sess-123" },
+      });
+    });
+
+    expect(useRunStore.getState().runs.get("ral-a")?.memberSessionIds).toEqual([
+      "sess-123",
+    ]);
+    unmount();
+  });
+
+  it("role_session_joined does not duplicate an existing sessionId", async () => {
+    const run = makeRun({
+      runId: "ral-a",
+      memberSessionIds: ["sess-existing"],
+    });
+    mockFetch([run]);
+
+    const { unmount } = renderHook(() => useRunList());
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    const ws = WS_INSTANCES[0];
+    act(() => {
+      ws.triggerMessage({
+        type: "event",
+        event: { type: "role_session_joined", agentId: "sess-existing" },
+      });
+    });
+
+    expect(useRunStore.getState().runs.get("ral-a")?.memberSessionIds).toEqual([
+      "sess-existing",
+    ]);
+    unmount();
+  });
 });
