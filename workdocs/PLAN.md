@@ -123,7 +123,7 @@ git commit -m "Add roleDesks lib: stable desk + visual mapping per role"
 
 ---
 
-## Task 2: ⬜ useRunAgentHydration hook
+## Task 2: ✅ useRunAgentHydration hook
 
 **Files:**
 - Create: `frontend/src/hooks/useRunAgentHydration.ts`
