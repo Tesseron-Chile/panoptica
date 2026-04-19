@@ -2,8 +2,8 @@
 
 import { useNavigationStore } from "@/stores/navigationStore";
 import { useRunStore } from "@/stores/runStore";
-
-const ROLES = ["Designer", "Coder", "Verifier", "Reviewer"] as const;
+import { useSessionsStore } from "@/stores/sessionsStore";
+import { toNookRole } from "@/lib/runRoles";
 
 function shortRunId(runId: string): string {
   return runId.slice(0, 12);
@@ -21,16 +21,16 @@ export function Breadcrumb(): React.ReactNode {
     activeNookSessionId,
   } = useNavigationStore();
   const runs = useRunStore((s) => s.runs);
+  const sessionsById = useSessionsStore((s) => s.sessionsById);
 
   const floor = buildingConfig?.floors.find((f) => f.id === floorId);
   const activeRun =
     activeRunId != null ? (runs.get(activeRunId) ?? null) : null;
 
-  const roleIndex =
-    activeRun && activeNookSessionId
-      ? activeRun.memberSessionIds.indexOf(activeNookSessionId)
-      : -1;
-  const roleName = roleIndex >= 0 ? ROLES[roleIndex] : null;
+  const activeSession = activeNookSessionId
+    ? (sessionsById.get(activeNookSessionId) ?? null)
+    : null;
+  const roleName = toNookRole(activeSession?.role ?? null);
 
   if (view === "campus") {
     return (

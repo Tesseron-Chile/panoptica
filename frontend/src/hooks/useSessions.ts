@@ -7,6 +7,7 @@ import {
   usePreferencesStore,
   selectAutoFollowNewSessions,
 } from "@/stores/preferencesStore";
+import { useSessionsStore } from "@/stores/sessionsStore";
 
 // ============================================================================
 // TYPES
@@ -23,6 +24,8 @@ export interface Session {
   eventCount: number;
   floorId: string | null;
   roomId: string | null;
+  role: string | null;
+  runId: string | null;
 }
 
 // ============================================================================
@@ -66,6 +69,7 @@ export function useSessions(
       if (res.ok) {
         const data = (await res.json()) as Session[];
         setSessions(data);
+        useSessionsStore.getState().setSessions(data);
         return data;
       }
     } catch {

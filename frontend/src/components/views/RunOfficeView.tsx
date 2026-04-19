@@ -2,9 +2,11 @@
 
 import { useNavigationStore } from "@/stores/navigationStore";
 import { useRunStore } from "@/stores/runStore";
+import { useSessionsStore } from "@/stores/sessionsStore";
 import { OrchestratorStation } from "@/components/office/OrchestratorStation";
 import { RoleNook, type NookRole } from "@/components/office/RoleNook";
 import { TaskWhiteboard } from "@/components/office/TaskWhiteboard";
+import { getSessionsByRole, type RoleKey } from "@/lib/runRoles";
 import type { RunPhase } from "@/types/run";
 
 const PHASE_COLORS: Record<RunPhase | "done", string> = {
@@ -15,7 +17,6 @@ const PHASE_COLORS: Record<RunPhase | "done", string> = {
   done: "#64748b",
 };
 
-// Index-based mapping: memberSessionIds[0]=Designer, [1]=Coder, [2]=Verifier, [3]=Reviewer
 const ROLE_SLOTS: { role: NookRole; gridRow: number; gridCol: number }[] = [
   { role: "Designer", gridRow: 1, gridCol: 1 },
   { role: "Coder", gridRow: 1, gridCol: 3 },
@@ -35,6 +36,10 @@ export function RunOfficeView(): React.ReactNode {
   const run = useRunStore((s) =>
     activeRunId != null ? (s.runs.get(activeRunId) ?? null) : null,
   );
+  const sessionsById = useSessionsStore((s) => s.sessionsById);
+  const rolesByKey = run
+    ? getSessionsByRole(run, Array.from(sessionsById.values()))
+    : null;
 
   if (!run) {
     return (
@@ -132,7 +137,7 @@ export function RunOfficeView(): React.ReactNode {
             maxHeight: "520px",
           }}
         >
-          {ROLE_SLOTS.map(({ role, gridRow, gridCol }, i) => (
+          {ROLE_SLOTS.map(({ role, gridRow, gridCol }) => (
             <div
               key={role}
               style={{
@@ -145,7 +150,9 @@ export function RunOfficeView(): React.ReactNode {
             >
               <RoleNook
                 role={role}
-                sessionId={run.memberSessionIds[i] ?? null}
+                sessionId={
+                  rolesByKey?.[role.toLowerCase() as RoleKey]?.id ?? null
+                }
                 runId={run.runId}
                 onNookClick={goToNook}
               />

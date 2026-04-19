@@ -3,10 +3,9 @@
 import dynamic from "next/dynamic";
 import { useNavigationStore } from "@/stores/navigationStore";
 import { useRunStore } from "@/stores/runStore";
+import { useSessionsStore } from "@/stores/sessionsStore";
 import { NookSidebar } from "@/components/office/NookSidebar";
-import type { NookRole } from "@/components/office/RoleNook";
-
-const ROLES: NookRole[] = ["Designer", "Coder", "Verifier", "Reviewer"];
+import { toNookRole } from "@/lib/runRoles";
 
 const OfficeGame = dynamic(
   () =>
@@ -32,6 +31,7 @@ export function NookDrillDown(): React.ReactNode {
   const run = useRunStore((s) =>
     activeRunId != null ? (s.runs.get(activeRunId) ?? null) : null,
   );
+  const sessionsById = useSessionsStore((s) => s.sessionsById);
 
   const handleBack = () => {
     if (activeRunId) {
@@ -41,13 +41,10 @@ export function NookDrillDown(): React.ReactNode {
     }
   };
 
-  // Derive role from position in memberSessionIds (same convention as RunOfficeView)
-  const roleIndex =
-    run && activeNookSessionId
-      ? run.memberSessionIds.indexOf(activeNookSessionId)
-      : -1;
-  const role: NookRole | null =
-    roleIndex >= 0 ? (ROLES[roleIndex % ROLES.length] ?? null) : null;
+  const activeSession = activeNookSessionId
+    ? (sessionsById.get(activeNookSessionId) ?? null)
+    : null;
+  const role = toNookRole(activeSession?.role ?? null);
 
   // Derive model from run.modelConfig using role key
   const model =
