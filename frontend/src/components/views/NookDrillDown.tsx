@@ -1,11 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 import { useNavigationStore } from "@/stores/navigationStore";
 import { useRunStore } from "@/stores/runStore";
 import { useSessionsStore } from "@/stores/sessionsStore";
+import { useGameStore } from "@/stores/gameStore";
 import { NookSidebar } from "@/components/office/NookSidebar";
 import { toNookRole } from "@/lib/runRoles";
+import type { RoleKey } from "@/lib/runRoles";
+import type { Agent as BackendAgent } from "@/types/generated";
+
+const ROLE_VISUAL: Record<RoleKey, { color: string; number: number }> = {
+  designer: { color: "#a855f7", number: 1 },
+  coder: { color: "#3b82f6", number: 2 },
+  verifier: { color: "#10b981", number: 3 },
+  reviewer: { color: "#f59e0b", number: 4 },
+};
 
 const OfficeGame = dynamic(
   () =>
@@ -61,6 +72,36 @@ export function NookDrillDown(): React.ReactNode {
           (t) => t.assignedSessionId === activeNookSessionId,
         ) ?? null)
       : null;
+
+  // Hydrate gameStore with a synthetic agent for this session so the
+  // PixiJS canvas has something to render. Real event-driven hydration
+  // will replace this once session → agent wiring lands.
+  useEffect(() => {
+    if (!activeNookSessionId) return;
+
+    const roleKey = role ? (role.toLowerCase() as RoleKey) : null;
+    const visual = roleKey ? ROLE_VISUAL[roleKey] : null;
+    const synthetic: BackendAgent = {
+      id: activeNookSessionId,
+      name: role ?? "agent",
+      color: visual?.color ?? "#64748b",
+      number: visual?.number ?? 1,
+      state: "idle",
+      desk: 1,
+      currentTask: task?.title ?? null,
+      characterType: null,
+      parentSessionId: null,
+      parentId: null,
+    };
+
+    const addAgent = useGameStore.getState().addAgent;
+    const removeAgent = useGameStore.getState().removeAgent;
+    addAgent(synthetic, { x: 640, y: 600 });
+
+    return () => {
+      removeAgent(activeNookSessionId);
+    };
+  }, [activeNookSessionId, role, task?.title]);
 
   return (
     <div className="flex flex-grow overflow-hidden min-h-0 w-full">

@@ -152,21 +152,13 @@ export function OfficeGame(): ReactNode {
   // Start animation system
   useAnimationSystem();
 
-  // Cleanup on unmount (HMR or navigation)
+  // Cleanup on unmount (HMR or navigation).
+  // @pixi/react owns Application lifecycle — do NOT call destroy() here,
+  // it races with the library's own teardown and throws "_cancelResize is
+  // not a function" inside ResizePlugin.
   useEffect(() => {
     return () => {
-      if (appRef.current) {
-        try {
-          appRef.current.destroy(true, {
-            children: true,
-            texture: true,
-            textureSource: true,
-          });
-        } catch {
-          // Ignore cleanup errors
-        }
-        appRef.current = null;
-      }
+      appRef.current = null;
       performFullCleanup();
     };
   }, []);
