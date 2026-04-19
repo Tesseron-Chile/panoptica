@@ -33,7 +33,7 @@
 
 ---
 
-## Task 1: ⬜ Role→desk & visuals module
+## Task 1: ✅ Role→desk & visuals module
 
 **Files:**
 - Create: `frontend/src/lib/roleDesks.ts`
