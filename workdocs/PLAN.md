@@ -579,35 +579,24 @@ git commit -m "Consolidate role visuals under roleDesks"
 
 ---
 
-## Task 10: ⬜ Final integration verification
+## Task 10: ✅ Final integration verification
 
-- [ ] **Step 1: Full typecheck + lint**
+- [x] **Step 1: Full typecheck + lint**
+- [x] **Step 2: Full test suite**
+- [x] **Step 3: Backend checkall (untouched, safety check)**
+- [ ] **Step 4: Visual end-to-end** *(manual, skipped by agent)*
+- [x] **Step 5: Commit any polish**
 
-Run: `cd frontend && bun run typecheck && bun run lint`
-Expected: no errors
+---
 
-- [ ] **Step 2: Full test suite**
+## Verification summary (2026-04-19)
 
-Run: `cd frontend && bun test`
-Expected: all tests pass
+**Typecheck (`bunx tsc --noEmit`):** ✅ No errors
 
-- [ ] **Step 3: Backend checkall (untouched, safety check)**
+**Lint (`bun run lint`):** ✅ No errors (fixed 5 `@typescript-eslint/no-explicit-any` in `useRunAgentHydration.test.tsx` — Task 2 regression)
 
-Run: `cd backend && make checkall`
-Expected: green
+**Tests (`bun run test` / vitest):** ✅ 50/50 pass, 8 files
+- Fixed `CampusView` button missing `aria-label` (Task 8 regression — button wrapping `RunMiniOffice` had no accessible name)
+- Fixed `useRunAgentHydration.test.tsx` — replaced `any` casts with proper `Run`/`Session` typed helpers
 
-- [ ] **Step 4: Visual end-to-end**
-
-With `make dev-tmux` running + `python3 /tmp/slow_sim.py` feeding a run:
-- Campus: verify mini office previews render per run with correct role dots
-- Click a run → TeamOffice: 4 role agents seated at desks + orchestrator as boss, whiteboard shows plan tasks
-- Click a character → focus popup shows role/model/session/task
-- Click ← campus → returns to campus view
-- No PixiJS console errors (the `_cancelResize` bug stays fixed)
-
-- [ ] **Step 5: Commit any polish**
-
-```bash
-git add -A
-git commit -m "Polish: resolve final integration issues"
-```
+**Backend (`make checkall`):** ⚠️ Pre-existing pyright errors in `event_processor.py` (untouched by Tasks 1–9); pytest passes. Left alone.

@@ -36,6 +36,7 @@ export function CampusView({
               <button
                 key={run.runId}
                 onClick={() => goToRunOffice(run.runId)}
+                aria-label={(() => { const p = run.runId.split("-"); return p.length >= 3 ? p.slice(-2).join("-") : run.runId.slice(-8); })()}
                 style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
               >
                 <RunMiniOffice run={run} />
