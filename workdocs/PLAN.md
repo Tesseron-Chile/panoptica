@@ -551,7 +551,7 @@ git commit -m "CampusView: render mini office preview per run"
 
 ---
 
-## Task 9: ⬜ Consolidate runRoles + roleDesks
+## Task 9: ✅ Consolidate runRoles + roleDesks
 
 **Files:**
 - Modify: `frontend/src/lib/runRoles.ts`

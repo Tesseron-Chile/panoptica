@@ -1,4 +1,4 @@
-import type { RoleKey } from "@/lib/runRoles";
+export type RoleKey = "designer" | "coder" | "verifier" | "reviewer";
 
 export const ROLE_KEYS: RoleKey[] = ["designer", "coder", "verifier", "reviewer"];
 
