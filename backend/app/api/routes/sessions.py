@@ -55,6 +55,8 @@ class SessionSummary(TypedDict):
     eventCount: int
     floorId: str | None
     roomId: str | None
+    role: str | None
+    runId: str | None
 
 
 class ReplayEvent(TypedDict):
@@ -91,6 +93,14 @@ async def list_sessions(
         result = await db.execute(stmt)
         records = result.scalars().all()
 
+        # Build a session_id -> (run_id, role) map from the in-memory aggregator
+        # so role nooks in the frontend can map sessions to their Ralph roles.
+        aggregator = event_processor.get_run_aggregator()
+        session_run_role: dict[str, tuple[str, str | None]] = {}
+        for run in aggregator.list_all():
+            for sid in run.member_session_ids:
+                session_run_role[sid] = (run.run_id, run.member_roles.get(sid))
+
         sessions: list[SessionSummary] = []
         for rec in records:
             count_stmt = select(func.count(EventRecord.id)).where(EventRecord.session_id == rec.id)
@@ -108,6 +118,7 @@ async def list_sessions(
                 else rec.updated_at.replace(tzinfo=UTC)
             )
 
+            run_role = session_run_role.get(rec.id)
             sessions.append(
                 {
                     "id": rec.id,
@@ -120,6 +131,8 @@ async def list_sessions(
                     "eventCount": count,
                     "floorId": rec.floor_id,
                     "roomId": rec.room_id,
+                    "role": run_role[1] if run_role else None,
+                    "runId": run_role[0] if run_role else None,
                 }
             )
         return sessions

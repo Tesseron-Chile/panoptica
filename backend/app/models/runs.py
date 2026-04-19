@@ -78,6 +78,7 @@ class Run(BaseModel):
     model_config_: dict[str, str] = Field(default_factory=dict, alias="modelConfig")
 
     member_session_ids: set[str] = Field(default_factory=set)
+    member_roles: dict[str, str] = Field(default_factory=dict)
     plan_tasks: list[PlanTask] = Field(default_factory=list)
     stats: RunStats = Field(default_factory=RunStats)
 

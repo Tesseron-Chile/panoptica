@@ -98,3 +98,13 @@ backend/visualizer.db
 backend/static/
 PRD.md
 .claude/.cc2cc-session-id
+
+# --- Tooling caches & build artifacts ---
+.grepai/
+.superpowers/
+tui/target/
+brainstorming-workdocs/
+
+# --- Local databases ---
+backend/claude_office.db
+*.db-journal

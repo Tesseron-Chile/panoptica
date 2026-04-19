@@ -92,6 +92,10 @@ class RunAggregator:
             logger.warning("add_member called for unknown run %s (session=%s)", run_id, session_id)
             return
         run.member_session_ids.add(session_id)
+        if role is not None:
+            run.member_roles[session_id] = role.value if hasattr(role, "value") else str(role)
+        elif is_orchestrator:
+            run.member_roles[session_id] = "orchestrator"
         if is_orchestrator and run.orchestrator_session_id is None:
             run.orchestrator_session_id = session_id
 
