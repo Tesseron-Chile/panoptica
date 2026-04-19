@@ -16,14 +16,18 @@ const VISUAL_BY_ROLE: Record<RoleKey, { color: string; number: number }> = {
   reviewer: { color: "#f59e0b", number: 4 },
 };
 
+export function isRoleKey(s: string): s is RoleKey {
+  return (ROLE_KEYS as string[]).includes(s);
+}
+
 export function roleToDesk(role: string | null): number | null {
   if (!role) return null;
   const key = role === "coder-continuation" ? "coder" : role;
-  return (DESK_BY_ROLE as Record<string, number>)[key] ?? null;
+  return isRoleKey(key) ? DESK_BY_ROLE[key] : null;
 }
 
 export function roleToVisual(role: string | null) {
   if (!role) return null;
   const key = role === "coder-continuation" ? "coder" : role;
-  return (VISUAL_BY_ROLE as Record<string, { color: string; number: number }>)[key] ?? null;
+  return isRoleKey(key) ? VISUAL_BY_ROLE[key] : null;
 }

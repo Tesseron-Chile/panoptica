@@ -1,6 +1,11 @@
 "use client";
 
 import { useRunStore, selectRuns } from "@/stores/runStore";
+
+function runShortLabel(runId: string): string {
+  const parts = runId.split("-");
+  return parts.length >= 3 ? parts.slice(-2).join("-") : runId.slice(-8);
+}
 import { RunMiniOffice } from "@/components/campus/RunMiniOffice";
 import {
   HotDeskArea,
@@ -36,7 +41,7 @@ export function CampusView({
               <button
                 key={run.runId}
                 onClick={() => goToRunOffice(run.runId)}
-                aria-label={(() => { const p = run.runId.split("-"); return p.length >= 3 ? p.slice(-2).join("-") : run.runId.slice(-8); })()}
+                aria-label={runShortLabel(run.runId)}
                 style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
               >
                 <RunMiniOffice run={run} />

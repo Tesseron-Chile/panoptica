@@ -21,7 +21,7 @@ function HotDeskBooth({
 
   return (
     <div
-      className="flex flex-col gap-1.5 rounded p-3 text-left transition-colors"
+      className="flex flex-col gap-1.5 rounded p-3"
       style={{
         background: "#1e293b",
         border: "1px solid #334155",
