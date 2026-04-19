@@ -20,10 +20,22 @@ import {
 } from "react";
 import { Terminal } from "lucide-react";
 import { useGameStore } from "@/stores/gameStore";
+import { useSessionsStore } from "@/stores/sessionsStore";
+import { useRunStore, selectActiveRun } from "@/stores/runStore";
 
 export function CharacterFocusPopup(): ReactNode {
   const focusedCharacter = useGameStore((s) => s.focusedCharacter);
   const setFocusedCharacter = useGameStore((s) => s.setFocusedCharacter);
+  const session = useSessionsStore((s) =>
+    focusedCharacter ? s.sessionsById.get(focusedCharacter.sessionId) : undefined,
+  );
+  const run = useRunStore(selectActiveRun);
+
+  const role = focusedCharacter?.isBoss ? "orchestrator" : (session?.role ?? null);
+  const model = role && run ? (run.modelConfig[role] ?? run.modelConfig[role + "_model"] ?? null) : null;
+  const taskTitle = run && focusedCharacter
+    ? (run.planTasks.find((t) => t.assignedSessionId === focusedCharacter.sessionId)?.title ?? null)
+    : null;
 
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -106,6 +118,22 @@ export function CharacterFocusPopup(): ReactNode {
             >
               ✕
             </button>
+          </div>
+
+          {/* Role / model / task info rows */}
+          <div className="border border-slate-700 rounded mb-3 divide-y divide-slate-700">
+            {[
+              { label: "role", value: role },
+              { label: "model", value: model },
+              { label: "task", value: taskTitle },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex items-start gap-2 px-2 py-1">
+                <span className="text-slate-500 text-[10px] w-10 flex-shrink-0 pt-0.5">{label}</span>
+                <span className="text-slate-300 text-[10px] break-all leading-relaxed">
+                  {value ?? "—"}
+                </span>
+              </div>
+            ))}
           </div>
 
           {/* Message input */}

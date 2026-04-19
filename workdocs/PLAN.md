@@ -454,7 +454,7 @@ git commit -m "Whiteboard: render run plan tasks with status glyphs"
 
 ---
 
-## Task 6: ⬜ Extend CharacterFocusPopup with role/model/task
+## Task 6: ✅ Extend CharacterFocusPopup with role/model/task
 
 **Files:**
 - Modify: `frontend/src/components/game/CharacterFocusPopup.tsx`
