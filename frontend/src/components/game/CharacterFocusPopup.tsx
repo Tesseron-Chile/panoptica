@@ -48,7 +48,7 @@ export function CharacterFocusPopup(): ReactNode {
       // Small delay so the element is visible before focusing
       setTimeout(() => inputRef.current?.focus(), 30);
     }
-  }, [focusedCharacter?.agentId, focusedCharacter?.isBoss]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [focusedCharacter]);
 
   // Dismiss on Escape
   useEffect(() => {
