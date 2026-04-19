@@ -366,7 +366,7 @@ git commit -m "Add OfficeSidebar: run metadata panel for team office"
 
 ---
 
-## Task 4: ⬜ Wire TeamOffice into RunOfficeView
+## Task 4: ✅ Wire TeamOffice into RunOfficeView
 
 **Files:**
 - Modify: `frontend/src/components/views/RunOfficeView.tsx`
