@@ -523,7 +523,7 @@ git commit -m "Remove NookDrillDown: team office replaces per-role drill-down"
 
 ---
 
-## Task 8: ⬜ Campus mini office previews
+## Task 8: ✅ Campus mini office previews
 
 **Files:**
 - Create: `frontend/src/components/campus/RunMiniOffice.tsx`
