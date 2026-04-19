@@ -422,7 +422,7 @@ git commit -m "RunOfficeView: render team office with agent hydration"
 
 ---
 
-## Task 5: ⬜ Pipe plan tasks into the Whiteboard sprite
+## Task 5: ✅ Pipe plan tasks into the Whiteboard sprite
 
 **Files:**
 - Modify: `frontend/src/components/game/Whiteboard.tsx`

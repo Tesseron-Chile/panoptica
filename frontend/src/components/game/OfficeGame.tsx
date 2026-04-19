@@ -51,6 +51,7 @@ import {
   selectPrintReport,
   selectSessionId,
 } from "@/stores/gameStore";
+import { useRunStore, selectActiveRun } from "@/stores/runStore";
 import { CharacterFocusPopup } from "./CharacterFocusPopup";
 import { useAnimationSystem } from "@/systems/animationSystem";
 import { useCompactionAnimation } from "@/systems/compactionAnimation";
@@ -177,6 +178,7 @@ export function OfficeGame(): ReactNode {
   const isCompacting = useGameStore(selectIsCompacting);
   const printReport = useGameStore(selectPrintReport);
   const sessionId = useGameStore(selectSessionId);
+  const activeRun = useRunStore(selectActiveRun);
 
   // Compaction animation state
   const compactionAnimation = useCompactionAnimation();
@@ -435,7 +437,7 @@ export function OfficeGame(): ReactNode {
                     x={WHITEBOARD_POSITION.x}
                     y={WHITEBOARD_POSITION.y}
                   >
-                    <Whiteboard todos={todos} />
+                    <Whiteboard todos={todos} planTasks={activeRun?.planTasks} />
                   </pixiContainer>
                   {textures.waterCooler && (
                     <pixiSprite
