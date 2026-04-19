@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 
 import requests
 
-API_URL = "http://localhost:8000/api/v1/events"
+API_URL = "http://localhost:3400/api/v1/events"
 
 # Context window constants
 MAX_CONTEXT_TOKENS = 200_000

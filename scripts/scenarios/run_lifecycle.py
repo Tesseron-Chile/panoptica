@@ -37,8 +37,8 @@ DESIGNER_SESSION = "sim-ralph-dsn-01"
 CODER_SESSION = "sim-ralph-cod-01"
 VERIFIER_SESSION = "sim-ralph-ver-01"
 
-# Backend API base — must match the running backend port (default: 8000)
-_API_EVENTS = "http://localhost:8000/api/v1/events"
+# Backend API base — must match the running backend port (default: 3400)
+_API_EVENTS = "http://localhost:3400/api/v1/events"
 
 # Sleep duration between task updates (seconds). Allows MarkerWatcher (1s poll),
 # PlanWatcher (1s poll), and frontend REST poll (5s) to all propagate.
