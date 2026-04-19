@@ -1,0 +1,8 @@
+Task 6 ✅ done. Created 4 new files:
+
+- **`CampusView.tsx`** — reads runs from `useRunStore`, accepts `sessions` prop for hot-desk, renders grid + sidebar
+- **`RunOfficeCard.tsx`** — short run ID, phase badge (SPEC colors), D/C/V/R nook indicators lit by `memberSessionIds` count, task progress bar, outcome glyph; click → `goToRunOffice(runId)`
+- **`HotDeskArea.tsx`** — defines `HotDeskSession` interface, filters via `selectHotDeskSessions`, shows booth per ad-hoc session with `goToNook(null, id)`
+- **`CampusSidebar.tsx`** — run count, active/hot-desk/agent counts, phase breakdown
+
+Frontend TSC + lint pass clean. Backend pyright errors are all pre-existing. Not wired to `page.tsx` yet (Task 8). Exiting.

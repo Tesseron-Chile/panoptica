@@ -1,0 +1,7 @@
+Task 15 done. Breadcrumb now renders all 3 tiers:
+- **Campus**: static label
+- **Run Office**: `Campus / Run ral-xxx (Phase B)` — Campus clicks back to campus
+- **Nook**: `Campus / Run ral-xxx (Phase B) / Coder` — both segments clickable; hot-desk shows `Campus / Hot-desk`
+- **Legacy** building/floor behavior preserved unchanged
+
+TSC + lint clean. Two commits pushed to branch.

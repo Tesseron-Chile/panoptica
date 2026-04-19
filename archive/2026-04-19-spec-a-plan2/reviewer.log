@@ -1,0 +1,7 @@
+Review complete.
+
+**Summary:** Posted 6 inline comments on PR #5 (2 Major, 3 Minor, 1 Nit) and wrote `workdocs/REVIEW.md`.
+
+**Verdict: Request Changes** on two findings:
+1. **Duplicate WS connections** — `useRunList` and `useRunEvents` each open independent WebSocket connections per run (2x resource usage). Should share one connection and demux message types.
+2. **Fragile index-based role mapping** — `memberSessionIds[0]=Designer` etc. has no backend ordering guarantee. If sessions join out-of-order, role labels are silently wrong across the UI.

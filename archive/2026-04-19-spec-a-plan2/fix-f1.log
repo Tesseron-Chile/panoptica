@@ -1,0 +1,12 @@
+Fix F1 complete. Here's what was done:
+
+**Files created:**
+- `frontend/src/lib/runRoles.ts` — `getSessionsByRole()` maps run member sessions to roles by `session.role`, not array index; `toNookRole()` converts backend role strings (incl. `coder-continuation`) to display `NookRole`
+- `frontend/src/lib/runRoles.test.ts` — 16 unit tests (out-of-order IDs, duplicate roles, missing sessions, empty list, unknown/null roles)
+- `frontend/src/stores/sessionsStore.ts` — Zustand store holding sessions by id, populated by `useSessions` on each fetch so components can read sessions without prop-drilling
+
+**Files updated:**
+- `useSessions.ts` — added `role: string | null` and `runId: string | null` to `Session` interface; syncs to `sessionsStore` on fetch
+- `RunOfficeView.tsx`, `NookDrillDown.tsx`, `Breadcrumb.tsx` — all three now look up role via `session.role` instead of `memberSessionIds[N]` position
+
+**Result:** 51 tests pass, TSC clean, pushed to branch, PR #5 comment replied.

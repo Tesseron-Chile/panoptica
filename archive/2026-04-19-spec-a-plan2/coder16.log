@@ -1,0 +1,11 @@
+Task 16 is complete. Here's what was done:
+
+**Created `frontend/src/hooks/useRunEvents.ts`**: A new hook that subscribes to `_run:<runId>` WS channels for each run in the store and handles `event` type messages. Key design decisions:
+
+- Uses `useRunStore.subscribe` to watch for runs discovered by `useRunList`, then creates per-run WS connections (separate from `useRunList`'s connections which handle `run_state`)
+- `run_start` → re-fetches all runs or re-sets existing run to trigger office-appear mount animation
+- `run_phase_change` → immediate `refetchRuns()` call so tint transition fires without waiting 5s for REST poll
+- `run_end` → optimistic `outcome: "completed"` update + disconnect
+- `role_session_joined` → adds `event.agentId` to `memberSessionIds` (forward-compat; backend doesn't emit this event yet)
+
+**Wired into `page.tsx`** alongside `useRunList()`. Frontend checkall exits 0. Committed as `feat(runs): event-driven animation triggers (Plan 2 Task 16)`.

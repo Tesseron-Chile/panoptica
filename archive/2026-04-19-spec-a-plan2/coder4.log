@@ -1,0 +1,6 @@
+Task 4 complete. `useRunList` hook implemented with:
+- Fetch on mount + 5s poll via `setInterval`, populating `useRunStore`
+- `Map<runId, WsEntry>` ref managing per-run WebSocket connections with reconnect/backoff
+- Disconnect on `outcome !== "in_progress"` (both from WS message and poll cleanup)
+- Full cleanup on unmount
+- 8 tests pass, TypeScript clean, pre-existing lint issues unchanged

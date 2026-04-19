@@ -1,0 +1,13 @@
+Task 8 is complete. Here's what was delivered:
+
+**Commits:**
+- `ba654c5` — Core Task 8: CampusView wired as default + ViewTransition routing
+- `0647ebf` — Lint fixes across 6 pre-existing WIP files + Task 8 ✅ in PLAN.md
+
+**Changes:**
+1. `navigationStore.ts`: default view flipped from `"building"` to `"campus"`
+2. `ViewTransition.tsx`: rewritten to handle all 5 view modes — `campus`, `run-office`, `nook` (new), `building`, `floor` (kept). `run-office` and `nook` render TODO placeholders ready for Tasks 9/13
+3. `page.tsx`: `useRunList()` added; `CampusView` wired as `campusView` prop
+4. Lint fixes: `queueMicrotask` wrappers for synchronous setState-in-effect across `RunOfficeCard`, `CommandBar`, `PointerRing`, `SpotlightDim`, `useZoomNavigation`; deleted dead `RoomView.tsx`
+
+**Verification:** Frontend `make checkall` passes (lint ✅, TSC ✅, build ✅, tests ✅). Backend pyright pre-existing failures unchanged.

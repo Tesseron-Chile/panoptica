@@ -1,0 +1,11 @@
+Task 13 ✅ complete. Here's what was implemented:
+
+**New files:**
+- `frontend/src/components/views/NookDrillDown.tsx` — wrapper that dynamically imports OfficeGame + renders NookSidebar; reads `activeRunId`/`activeNookSessionId` from navigationStore
+- `frontend/src/components/office/NookSidebar.tsx` — shows role (emoji + name), session ID, assigned task, model, elapsed time, and back button
+
+**Modified files:**
+- `ViewTransition.tsx` — removed `"nook"` from `domOnlyViews` (PixiJS cannot be duplicated during outgoing transition)
+- `page.tsx` — passes `nookView={<NookDrillDown />}`; adds `useEffect` that switches `sessionId` to `activeNookSessionId` when entering nook view, driving `useWebSocketEvents` to reconnect to the correct session
+
+Session switching on nook entry: the effect calls `agentMachineService.reset()` + `resetForSessionSwitch()` + `setSessionId(activeNookSessionId)`, mirroring `handleSessionSelect` without duplication via direct import. Frontend TSC + lint + tests all pass clean.

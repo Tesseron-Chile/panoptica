@@ -1,0 +1,13 @@
+Task 7 complete. Here's what was implemented:
+
+**`frontend/src/styles/campus-animations.css`** (new):
+- `@keyframes office-appear`: `scale(0) → scale(1)` + `opacity 0→1`, 300ms ease-out with `fill-mode: both` (no flash on mount)
+- `@keyframes phase-ping`: subtle scale pulse (1→1.04→1) triggered on phase change
+- `.office-phase-transition`: `transition: border-color 600ms ease, opacity 300ms ease`
+
+**`RunOfficeCard.tsx`**:
+- `useRef(prevPhase)` detects phase transitions → sets `pinging` state → adds `office-phase-ping` class → cleared on `onAnimationEnd`
+- Border-color transition fires automatically when `phaseColor` changes in inline style
+- Opacity dim (`0.5`) driven by `isEnded` via the same transition class
+
+All 35 tests pass, TSC and lint clean.

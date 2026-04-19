@@ -1,0 +1,17 @@
+Done. Here's what was implemented:
+
+**commit `635fa5f` — pushed to `feature/ralph-panoptica-spec-a-plan2`**
+
+1. **Single WS per run** (`useRunList.ts`): The shared connection now demuxes both `run_state` → `setRun()` and event messages (`run_start`, `run_phase_change`, `run_end`, `role_session_joined`). `useRunEvents.ts` deleted; `page.tsx` updated.
+
+2. **subscribeWithSelector** (`runStore.ts`): Store now uses `create<RunState>()(subscribeWithSelector(...))` matching the `gameStore` pattern, enabling slice-level subscriptions for downstream consumers.
+
+3. **O(runs) subscription eliminated**: The `useRunStore.subscribe()` callback in `useRunEvents` that iterated all runs on every `setRun` call is gone entirely — connection lifecycle is now REST-poll driven only.
+
+4. **Tests** (53 pass, 0 fail):
+   - `N active runs → exactly N WS instances (not 2N)`
+   - Demux: `run_state` and `event` messages both handled on the shared WS
+   - Event handling tests (`run_end`, `role_session_joined`) ported to `useRunList.test.ts`
+   - `useRunEvents.test.ts` deleted
+
+5. **PR #5 replies** posted to Major #1 and Minor #3 comment threads.

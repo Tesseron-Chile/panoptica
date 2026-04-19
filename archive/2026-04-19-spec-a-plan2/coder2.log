@@ -1,0 +1,8 @@
+Task 2 complete. All success criteria met:
+
+- **10 unit tests** pass (Vitest): `setRun`, `removeRun`, `selectHotDeskSessions` all verified
+- **TypeScript** compiles cleanly (`tsc --noEmit` zero errors)
+- **Only new files committed**: `runStore.ts`, `runStore.test.ts`, `run.ts`, `PLAN.md` — no pre-existing WIP staged
+- **Lint errors**: all 8 are pre-existing in untouched files (confirmed by stash check)
+
+Task 2 marked ✅ in PLAN.md. Exiting.

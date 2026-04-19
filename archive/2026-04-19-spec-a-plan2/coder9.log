@@ -1,0 +1,8 @@
+Task 9 complete. Committed `feat(runs): RunOfficeView static layout (Plan 2 Task 9)`.
+
+**What was built:**
+- `OrchestratorStation.tsx` — center panel with phase badge, live pulse indicator
+- `RoleNook.tsx` — 4 role slots (Designer/Coder/Verifier/Reviewer); active shows emoji character + truncated session ID; inactive dims to 45% opacity
+- `RunOfficeView.tsx` — 3×3 CSS grid layout, back button calls `goToCampus()`, active nook click calls `goToNook(runId, sessionId)`, wired into `page.tsx` via the `runOfficeView` prop slot T8 already added
+
+Role-to-session mapping is index-based (`memberSessionIds[0..3]`) since the `Run` type carries a flat ID list with no per-role metadata.

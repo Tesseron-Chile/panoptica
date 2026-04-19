@@ -1,0 +1,11 @@
+Done. Here's what was completed:
+
+**Fix applied** (`frontend/src/hooks/useRunEvents.ts:137-151`): `run_end` with missing/unrecognized outcome is now a no-op — `run.outcome` is preserved and `console.warn` is emitted. Previously it silently defaulted to `"completed"`.
+
+**Tests added** (`frontend/src/hooks/useRunEvents.test.ts`, 6 tests): covers missing outcome → outcome preserved + warning logged, unrecognized string → same, valid outcome → updated, WS disconnect after `run_end`, WS closed on unmount, WS connected on new run.
+
+**`make -C frontend checkall` exits 0.**
+
+**All 6 PR inline comments replied** with VERIFY.md dispositions: #1-3 and #5 as valid-defer, #4 as fixed, #6 as invalid.
+
+**Committed and pushed:** `d91494d fix(runs): preserve run.outcome on malformed run_end (PR #5 review fix)`

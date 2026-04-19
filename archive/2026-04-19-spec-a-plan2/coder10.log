@@ -1,0 +1,1 @@
+Task 10 complete. `TaskWhiteboard` created with three sticky-note columns (todo/in_progress/done), empty-column placeholders, wired into `RunOfficeView`. Frontend checkall passes (35 tests, TSC + lint clean). Committed as `feat(runs): TaskWhiteboard static columns (Plan 2 Task 10)`.
