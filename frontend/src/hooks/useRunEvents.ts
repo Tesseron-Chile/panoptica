@@ -137,12 +137,18 @@ export function useRunEvents(): void {
               case "run_end": {
                 if (run) {
                   const rawOutcome = msg.event.detail?.outcome;
-                  const outcome: RunOutcome =
+                  const isKnown =
                     rawOutcome === "completed" ||
                     rawOutcome === "stuck" ||
-                    rawOutcome === "abandoned"
-                      ? (rawOutcome as RunOutcome)
-                      : "completed";
+                    rawOutcome === "abandoned";
+                  if (!isKnown) {
+                    console.warn(
+                      `[useRunEvents] run_end for run ${runId} has missing/unrecognized outcome: ${String(rawOutcome)}. Preserving existing outcome.`,
+                    );
+                  }
+                  const outcome: RunOutcome = isKnown
+                    ? (rawOutcome as RunOutcome)
+                    : run.outcome;
                   store.setRun({ ...run, outcome });
                 }
                 // Disconnect — no more events expected on this run channel.
