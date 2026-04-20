@@ -51,6 +51,7 @@ import {
   selectPrintReport,
   selectSessionId,
 } from "@/stores/gameStore";
+import { useRunStore, selectActiveRun } from "@/stores/runStore";
 import { CharacterFocusPopup } from "./CharacterFocusPopup";
 import { useAnimationSystem } from "@/systems/animationSystem";
 import { useCompactionAnimation } from "@/systems/compactionAnimation";
@@ -152,21 +153,13 @@ export function OfficeGame(): ReactNode {
   // Start animation system
   useAnimationSystem();
 
-  // Cleanup on unmount (HMR or navigation)
+  // Cleanup on unmount (HMR or navigation).
+  // @pixi/react owns Application lifecycle — do NOT call destroy() here,
+  // it races with the library's own teardown and throws "_cancelResize is
+  // not a function" inside ResizePlugin.
   useEffect(() => {
     return () => {
-      if (appRef.current) {
-        try {
-          appRef.current.destroy(true, {
-            children: true,
-            texture: true,
-            textureSource: true,
-          });
-        } catch {
-          // Ignore cleanup errors
-        }
-        appRef.current = null;
-      }
+      appRef.current = null;
       performFullCleanup();
     };
   }, []);
@@ -185,6 +178,7 @@ export function OfficeGame(): ReactNode {
   const isCompacting = useGameStore(selectIsCompacting);
   const printReport = useGameStore(selectPrintReport);
   const sessionId = useGameStore(selectSessionId);
+  const activeRun = useRunStore(selectActiveRun);
 
   // Compaction animation state
   const compactionAnimation = useCompactionAnimation();
@@ -443,7 +437,7 @@ export function OfficeGame(): ReactNode {
                     x={WHITEBOARD_POSITION.x}
                     y={WHITEBOARD_POSITION.y}
                   >
-                    <Whiteboard todos={todos} />
+                    <Whiteboard todos={todos} planTasks={activeRun?.planTasks} />
                   </pixiContainer>
                   {textures.waterCooler && (
                     <pixiSprite

@@ -1,13 +1,19 @@
 "use client";
 
 import { useRunStore, selectRuns } from "@/stores/runStore";
-import { RunOfficeCard } from "@/components/campus/RunOfficeCard";
+
+function runShortLabel(runId: string): string {
+  const parts = runId.split("-");
+  return parts.length >= 3 ? parts.slice(-2).join("-") : runId.slice(-8);
+}
+import { RunMiniOffice } from "@/components/campus/RunMiniOffice";
 import {
   HotDeskArea,
   type HotDeskSession,
 } from "@/components/campus/HotDeskArea";
 import { CampusSidebar } from "@/components/campus/CampusSidebar";
 import { selectHotDeskSessions } from "@/stores/runStore";
+import { useNavigationStore } from "@/stores/navigationStore";
 
 export interface CampusViewProps {
   sessions?: HotDeskSession[];
@@ -19,6 +25,7 @@ export function CampusView({
   const runsMap = useRunStore(selectRuns);
   const runs = Array.from(runsMap.values());
   const hotDeskSessions = selectHotDeskSessions(sessions);
+  const goToRunOffice = useNavigationStore((s) => s.goToRunOffice);
 
   return (
     <div
@@ -31,7 +38,14 @@ export function CampusView({
         {runs.length > 0 ? (
           <div className="flex flex-wrap gap-3">
             {runs.map((run) => (
-              <RunOfficeCard key={run.runId} run={run} />
+              <button
+                key={run.runId}
+                onClick={() => goToRunOffice(run.runId)}
+                aria-label={runShortLabel(run.runId)}
+                style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+              >
+                <RunMiniOffice run={run} />
+              </button>
             ))}
           </div>
         ) : (

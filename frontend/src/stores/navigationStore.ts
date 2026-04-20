@@ -21,10 +21,8 @@ interface NavigationState {
   transitionDirection: TransitionDirection;
   /** Whether a transition animation is in progress */
   isTransitioning: boolean;
-  /** Active run ID (set when viewing run-office or nook) */
+  /** Active run ID (set when viewing run-office) */
   activeRunId: string | null;
-  /** Active nook session ID (set when viewing nook) */
-  activeNookSessionId: string | null;
   /** Set transition origin for the next navigation */
   setTransitionOrigin: (origin: { x: number; y: number } | null) => void;
   /** Mark transition as complete */
@@ -53,8 +51,6 @@ interface NavigationState {
   goToCampus: () => void;
   /** Navigate to a run office (Level 2) */
   goToRunOffice: (runId: string) => void;
-  /** Navigate to a nook drill-down (Level 3); runId is null for hot-desk */
-  goToNook: (runId: string | null, sessionId: string) => void;
   /** Set building config from API */
   setBuildingConfig: (config: BuildingConfig) => void;
   /** Set loading state */
@@ -72,7 +68,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
   transitionDirection: null,
   isTransitioning: false,
   activeRunId: null,
-  activeNookSessionId: null,
   setTransitionOrigin: (origin) => set({ transitionOrigin: origin }),
   completeTransition: () =>
     set({
@@ -103,7 +98,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     set({
       view: "campus",
       activeRunId: null,
-      activeNookSessionId: null,
       transitionDirection: "zoom-out",
       isTransitioning: true,
     }),
@@ -112,16 +106,6 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     set({
       view: "run-office",
       activeRunId: runId,
-      activeNookSessionId: null,
-      transitionDirection: "zoom-in",
-      isTransitioning: true,
-    }),
-
-  goToNook: (runId, sessionId) =>
-    set({
-      view: "nook",
-      activeRunId: runId,
-      activeNookSessionId: sessionId,
       transitionDirection: "zoom-in",
       isTransitioning: true,
     }),

@@ -1,6 +1,5 @@
 "use client";
 
-import { useNavigationStore } from "@/stores/navigationStore";
 import { selectHotDeskSessions } from "@/stores/runStore";
 
 export interface HotDeskSession {
@@ -16,15 +15,13 @@ function HotDeskBooth({
 }: {
   session: HotDeskSession;
 }): React.ReactNode {
-  const goToNook = useNavigationStore((s) => s.goToNook);
   const label =
     session.displayName ?? session.projectName ?? session.id.slice(0, 8);
   const isActive = session.status === "active";
 
   return (
-    <button
-      onClick={() => goToNook(null, session.id)}
-      className="flex flex-col gap-1.5 rounded p-3 text-left cursor-pointer transition-colors"
+    <div
+      className="flex flex-col gap-1.5 rounded p-3"
       style={{
         background: "#1e293b",
         border: "1px solid #334155",
@@ -47,7 +44,7 @@ function HotDeskBooth({
       <span className="text-xs font-mono" style={{ color: "#64748b" }}>
         ad-hoc
       </span>
-    </button>
+    </div>
   );
 }
 

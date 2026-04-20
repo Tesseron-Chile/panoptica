@@ -23,6 +23,7 @@
 import { Graphics } from "pixi.js";
 import { useCallback, useEffect, useMemo, type ReactNode } from "react";
 import type { TodoItem, WhiteboardMode, Agent } from "@/types";
+import type { PlanTask } from "@/types/run";
 import { useGameStore } from "@/stores/gameStore";
 import { TodoListMode } from "./whiteboard/TodoListMode";
 import { RemoteWorkersMode } from "./whiteboard/RemoteWorkersMode";
@@ -131,14 +132,82 @@ function WhiteboardFrame({
 }
 
 // ============================================================================
+// PLAN TASKS VIEW
+// ============================================================================
+
+function getPlanGlyph(status: PlanTask["status"]): string {
+  if (status === "done") return "✓";
+  if (status === "in_progress") return "●";
+  return "○";
+}
+
+function getPlanColor(status: PlanTask["status"]): string {
+  if (status === "done") return "#22c55e";
+  if (status === "in_progress") return "#3b82f6";
+  return "#4b5563";
+}
+
+function PlanTasksView({ planTasks }: { planTasks: PlanTask[] }): ReactNode {
+  const visible = planTasks.slice(0, 6);
+
+  if (visible.length === 0) {
+    return (
+      <pixiContainer x={165} y={50} scale={0.5}>
+        <pixiText
+          text="No plan tasks"
+          anchor={0.5}
+          style={{
+            fontFamily: '"Courier New", monospace',
+            fontSize: 24,
+            fill: "#9ca3af",
+          }}
+          resolution={2}
+        />
+      </pixiContainer>
+    );
+  }
+
+  return (
+    <pixiContainer>
+      {visible.map((task, index) => (
+        <pixiContainer key={task.id} y={2 + index * 24}>
+          <pixiText
+            text={getPlanGlyph(task.status)}
+            x={16}
+            style={{
+              fontFamily: '"Courier New", monospace',
+              fontSize: 12,
+              fill: getPlanColor(task.status),
+            }}
+            resolution={2}
+          />
+          <pixiText
+            text={task.title.slice(0, 42)}
+            x={32}
+            style={{
+              fontFamily: '"Courier New", monospace',
+              fontSize: 11,
+              fill: task.status === "done" ? "#6b7280" : "#1f2937",
+              fontWeight: task.status === "in_progress" ? "bold" : "normal",
+            }}
+            resolution={2}
+          />
+        </pixiContainer>
+      ))}
+    </pixiContainer>
+  );
+}
+
+// ============================================================================
 // MAIN WHITEBOARD COMPONENT
 // ============================================================================
 
 export interface WhiteboardProps {
   todos: TodoItem[];
+  planTasks?: PlanTask[];
 }
 
-export function Whiteboard({ todos }: WhiteboardProps): ReactNode {
+export function Whiteboard({ todos, planTasks }: WhiteboardProps): ReactNode {
   const whiteboardData = useGameStore((s) => s.whiteboardData);
   const whiteboardMode = useGameStore((s) => s.whiteboardMode);
   const cycleMode = useGameStore((s) => s.cycleWhiteboardMode);
@@ -207,7 +276,11 @@ export function Whiteboard({ todos }: WhiteboardProps): ReactNode {
   const renderMode = (): ReactNode => {
     switch (whiteboardMode) {
       case 0:
-        return <TodoListMode todos={todos} />;
+        return planTasks && planTasks.length > 0 ? (
+          <PlanTasksView planTasks={planTasks} />
+        ) : (
+          <TodoListMode todos={todos} />
+        );
       case 1:
         return <RemoteWorkersMode data={whiteboardData} />;
       case 2:
@@ -231,7 +304,11 @@ export function Whiteboard({ todos }: WhiteboardProps): ReactNode {
       case 11:
         return <KanbanMode data={whiteboardData} />;
       default:
-        return <TodoListMode todos={todos} />;
+        return planTasks && planTasks.length > 0 ? (
+          <PlanTasksView planTasks={planTasks} />
+        ) : (
+          <TodoListMode todos={todos} />
+        );
     }
   };
 
