@@ -533,88 +533,35 @@ git commit -m "feat(floors): configure Prometeo building with 6 departments"
 ---
 
 ## Task 4: Propagate CLAUDE_OFFICE_FLOOR_ID through hooks
-**Status:** 🔧
+**Status:** ✅ Session: completed cleanly
 
 **Files:**
 - Modify: `hooks/src/claude_office_hooks/event_mapper.py`
 - Create: `hooks/tests/test_floor_id_hook.py`
 
-⬜ **Step 1: Write the failing test**
+✅ **Step 1: Write the failing test**
 
-Create `hooks/tests/test_floor_id_hook.py`:
+Created `hooks/tests/test_floor_id_hook.py` (with sys.path insert matching existing test pattern).
 
-```python
-"""Tests that CLAUDE_OFFICE_FLOOR_ID env var is picked up by the event mapper."""
+✅ **Step 2: Run to confirm failure**
 
-import os
-from unittest.mock import patch
+Confirmed: `test_floor_id_included_when_env_set` raised `KeyError: 'floor_id'`.
 
-from claude_office_hooks.event_mapper import map_event
+✅ **Step 3: Update event_mapper.py to read CLAUDE_OFFICE_FLOOR_ID**
 
-# map_event signature: (event_type, raw_data, session_id, strip_prefixes=None) -> dict | None
-MINIMAL_RAW = {
-    "session_id": "test-session-123",
-    "transcript_path": "/home/user/.claude/projects/my-project/session.jsonl",
-}
+Added 3 lines after the teammate_name block (line 374) in `event_mapper.py`.
 
+✅ **Step 4: Run the new test**
 
-def test_floor_id_included_when_env_set():
-    with patch.dict(os.environ, {"CLAUDE_OFFICE_FLOOR_ID": "dev_software"}):
-        event = map_event("session_start", MINIMAL_RAW, "test-session-123")
-    assert event is not None
-    assert event["data"]["floor_id"] == "dev_software"
+Both tests pass.
 
+✅ **Step 5: Run full hooks test suite**
 
-def test_floor_id_absent_when_env_not_set():
-    env = {k: v for k, v in os.environ.items() if k != "CLAUDE_OFFICE_FLOOR_ID"}
-    with patch.dict(os.environ, env, clear=True):
-        event = map_event("session_start", MINIMAL_RAW, "test-session-123")
-    assert event is not None
-    assert "floor_id" not in event["data"]
-```
+18/18 tests pass — no regressions.
 
-⬜ **Step 2: Run to confirm failure**
+✅ **Step 6: Commit**
 
-```bash
-cd hooks && uv run pytest tests/test_floor_id_hook.py -v
-```
-
-Expected: `AssertionError` — `floor_id` key not present in `event["data"]`.
-
-⬜ **Step 3: Update event_mapper.py to read CLAUDE_OFFICE_FLOOR_ID**
-
-In `hooks/src/claude_office_hooks/event_mapper.py`, find `map_event`. After the block that reads `team_name` and `teammate_name` (around line 368-374), add:
-
-```python
-floor_id = os.environ.get("CLAUDE_OFFICE_FLOOR_ID")
-if floor_id:
-    data["floor_id"] = floor_id
-```
-
-The `os` import already exists at the top of the file — no new import needed.
-
-⬜ **Step 4: Run the new test**
-
-```bash
-cd hooks && uv run pytest tests/test_floor_id_hook.py -v
-```
-
-Expected: both tests pass.
-
-⬜ **Step 5: Run full hooks test suite**
-
-```bash
-cd hooks && uv run pytest tests/ -v
-```
-
-Expected: all pass.
-
-⬜ **Step 6: Commit**
-
-```bash
-git add hooks/src/claude_office_hooks/event_mapper.py hooks/tests/test_floor_id_hook.py
-git commit -m "feat(hooks): propagate CLAUDE_OFFICE_FLOOR_ID env var to backend events"
-```
+Committed.
 
 ---
 
