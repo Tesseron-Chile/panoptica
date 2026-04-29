@@ -41,7 +41,9 @@ class WorkdocWatcher:
             self._seen[floor.id] = set()
 
     def start(self) -> None:
-        self._task = asyncio.get_event_loop().create_task(self._poll_loop())
+        if self._task is not None:
+            return
+        self._task = asyncio.get_running_loop().create_task(self._poll_loop())
         logger.info("WorkdocWatcher started for %d floors", len(self._floors))
 
     def stop(self) -> None:
