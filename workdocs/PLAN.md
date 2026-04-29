@@ -566,13 +566,13 @@ Committed.
 ---
 
 ## Task 5: Implement agent_runner.py
-**Status:** 🔧
+**Status:** ✅ Session: completed cleanly
 
 **Files:**
 - Create: `backend/app/core/agent_runner.py`
 - Create: `backend/tests/test_agent_runner.py`
 
-⬜ **Step 1: Write the failing tests**
+✅ **Step 1: Write the failing tests**
 
 Create `backend/tests/test_agent_runner.py`:
 
@@ -654,7 +654,7 @@ async def test_run_floor_task_env_contains_task():
     assert env.get("CLAUDE_OFFICE_FLOOR_ID") == "mkt_ventas"
 ```
 
-⬜ **Step 2: Run to confirm failure**
+✅ **Step 2: Run to confirm failure**
 
 ```bash
 cd backend && uv run pytest tests/test_agent_runner.py -v
@@ -662,7 +662,7 @@ cd backend && uv run pytest tests/test_agent_runner.py -v
 
 Expected: `ModuleNotFoundError` — `agent_runner` does not exist yet.
 
-⬜ **Step 3: Implement agent_runner.py**
+✅ **Step 3: Implement agent_runner.py**
 
 Create `backend/app/core/agent_runner.py`:
 
@@ -768,7 +768,7 @@ class AgentRunner:
         )
 ```
 
-⬜ **Step 4: Run tests**
+✅ **Step 4: Run tests**
 
 ```bash
 cd backend && uv run pytest tests/test_agent_runner.py -v
@@ -776,7 +776,7 @@ cd backend && uv run pytest tests/test_agent_runner.py -v
 
 Expected: all 4 tests pass.
 
-⬜ **Step 5: Commit**
+✅ **Step 5: Commit**
 
 ```bash
 git add backend/app/core/agent_runner.py backend/tests/test_agent_runner.py

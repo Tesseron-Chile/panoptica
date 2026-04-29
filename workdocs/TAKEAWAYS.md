@@ -27,6 +27,11 @@
 - Config verified to load all 6 Prometeo departments with correct floor numbers, IDs, icons, and schedule task counts.
 - `uv` Bash commands require running from `backend/` subdirectory; git commands require project root — always use full absolute paths in cd.
 
+## Task 5 Notes (Run A-1)
+
+- `asyncio.create_subprocess_exec` called with positional args `("claude", "-p", prompt)` and keyword args `env=env, cwd=cwd` — mock assertions use `call_args.kwargs` to verify env injection.
+- Fire-and-forget: subprocess not awaited; 339 backend tests pass with no regressions.
+
 ## Workflow Notes
 
 - Design was done in a prior brainstorming session and approved by user — designer agent adapted existing docs rather than discovering from scratch
