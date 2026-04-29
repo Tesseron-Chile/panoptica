@@ -14,6 +14,7 @@ class ConnectionManager:
     def __init__(self) -> None:
         self.active_connections: dict[str, list[WebSocket]] = {}
         self.room_connections: dict[str, list[WebSocket]] = {}
+        self.floor_connections: dict[str, list[WebSocket]] = {}
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: WebSocket, session_id: str) -> None:
@@ -138,6 +139,49 @@ class ConnectionManager:
                             self.room_connections[room_id].remove(conn)
                     if not self.room_connections[room_id]:
                         del self.room_connections[room_id]
+
+    async def connect_floor(self, websocket: WebSocket, floor_id: str) -> None:
+        """Accept a WebSocket and register it for floor-level broadcasts."""
+        await websocket.accept()
+        async with self._lock:
+            if floor_id not in self.floor_connections:
+                self.floor_connections[floor_id] = []
+            self.floor_connections[floor_id].append(websocket)
+
+    async def disconnect_floor(self, websocket: WebSocket, floor_id: str) -> None:
+        """Remove a WebSocket from floor-level subscriptions."""
+        async with self._lock:
+            if floor_id in self.floor_connections:
+                if websocket in self.floor_connections[floor_id]:
+                    self.floor_connections[floor_id].remove(websocket)
+                if not self.floor_connections[floor_id]:
+                    del self.floor_connections[floor_id]
+
+    async def broadcast_floor(self, message: dict[str, Any], floor_id: str) -> None:
+        """Send a message to all WebSocket connections subscribed to a floor."""
+        async with self._lock:
+            connections = self.floor_connections.get(floor_id, []).copy()
+
+        if not connections:
+            return
+
+        failed: list[WebSocket] = []
+        for connection in connections:
+            try:
+                if connection.client_state == WebSocketState.CONNECTED:
+                    await connection.send_json(message)
+            except Exception as e:
+                logger.warning(f"Failed to send to floor WebSocket: {e}")
+                failed.append(connection)
+
+        if failed:
+            async with self._lock:
+                if floor_id in self.floor_connections:
+                    for conn in failed:
+                        if conn in self.floor_connections[floor_id]:
+                            self.floor_connections[floor_id].remove(conn)
+                    if not self.floor_connections[floor_id]:
+                        del self.floor_connections[floor_id]
 
 
 manager = ConnectionManager()

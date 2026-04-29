@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from rich.logging import RichHandler
 from sqlalchemy import text
 
-from app.api.routes import events, floors, preferences, sessions
+from app.api.routes import chat, events, floor_updates, floors, preferences, sessions
 from app.api.websocket import manager
 from app.config import get_settings
 from app.core.event_processor import event_processor
@@ -103,6 +103,9 @@ app.include_router(events.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(preferences.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(sessions.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(floors.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(chat.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(floor_updates.floor_router, prefix=f"{settings.API_V1_STR}")
+app.include_router(floor_updates.updates_router, prefix=f"{settings.API_V1_STR}")
 
 
 @app.get("/health")
@@ -183,6 +186,19 @@ async def websocket_room_endpoint(websocket: WebSocket, room_id: str) -> None:
         pass
     finally:
         await manager.disconnect_room(websocket, room_id)
+
+
+@app.websocket("/ws/floor/{floor_id}")
+async def websocket_floor_endpoint(websocket: WebSocket, floor_id: str) -> None:
+    """Floor-level WebSocket: receives chat messages and floor update broadcasts."""
+    await manager.connect_floor(websocket, floor_id)
+    try:
+        while True:
+            await websocket.receive_text()
+    except Exception:
+        pass
+    finally:
+        await manager.disconnect_floor(websocket, floor_id)
 
 
 if STATIC_DIR.exists():
