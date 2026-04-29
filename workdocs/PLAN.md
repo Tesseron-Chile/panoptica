@@ -786,7 +786,7 @@ git commit -m "feat(core): add AgentRunner — launches Claude Code CLI sessions
 ---
 
 ## Task 6: Implement scheduler.py
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Create: `backend/app/core/scheduler.py`
