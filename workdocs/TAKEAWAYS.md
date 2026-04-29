@@ -18,3 +18,4 @@
 ## Workflow Notes
 
 - Design was done in a prior brainstorming session and approved by user — designer agent adapted existing docs rather than discovering from scratch
+- Designer agent incorrectly copied stale NEXT_PROMPT2-12.md files from a prior Ralph run found in .superpowers/ directory. Orchestrator cleaned them up. Note for future: give designer agent explicit instruction to NOT search .superpowers/ for existing prompt files.
