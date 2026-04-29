@@ -41,6 +41,13 @@ Added a new connection tier (`floor_connections`) to the existing `ConnectionMan
 ### Two routers in floor_updates.py
 The floor updates file exports two routers: one with prefix `/floors` (for per-floor CRUD) and one with prefix `/updates` (for cross-floor latest and patch-by-id). Both registered separately in `main.py`.
 
+### T1 implementation notes
+
+- `pytest_asyncio.fixture` needed explicitly for async fixtures even in `asyncio_mode="auto"`; regular `@pytest.fixture` doesn't work for async generators
+- The SQLAlchemy warning (`coroutine 'AsyncMockMixin._execute_mock_call' was never awaited`) is pre-existing from other test mocks, not from T1 code
+- `ChatMessageResponse.model_validate(record)` with `from_attributes=True` works cleanly for ORM→Pydantic conversion
+- No `Index` import needed — `mapped_column(..., index=True)` handles floor_id indexing inline
+
 ### No authentication
 Matches existing API pattern — all endpoints are open. Auth is a future concern for the full Prometeo system, not Run A-2.
 

@@ -3,10 +3,10 @@
 from collections.abc import AsyncIterator
 
 import httpx
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import ChatMessageRecord
 from app.main import app
@@ -125,7 +125,7 @@ async def test_create_chat_message_invalid_role(client: httpx.AsyncClient) -> No
     assert resp.status_code == 422
 
 
-async def test_chat_message_db_direct(db_session: pytest.FixtureRequest) -> None:
+async def test_chat_message_db_direct(db_session: AsyncSession) -> None:
     record = ChatMessageRecord(
         floor_id="floor_db",
         sender="test_sender",

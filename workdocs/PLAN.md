@@ -4,13 +4,15 @@
 
 | Task | Description | Deps | Status |
 |------|-------------|------|--------|
-| T1 | Chat system — DB model, Pydantic models, REST endpoints, tests | — | 🔧 |
+| T1 | Chat system — DB model, Pydantic models, REST endpoints, tests | — | ✅ |
 | T2 | Floor updates — DB model, Pydantic models, REST endpoints, tests | — | ⬜ |
 | T3 | Floor-level WebSocket infrastructure + broadcast integration + tests | T1, T2 | ⬜ |
 
 ---
 
-## T1: Chat system — DB model, Pydantic models, REST endpoints, tests 🔧
+## T1: Chat system — DB model, Pydantic models, REST endpoints, tests ✅
+
+Session: completed cleanly — 10 tests added, 375 total passing, ruff clean.
 
 **Description:** Build the complete chat message backend: SQLAlchemy model, Pydantic request/response models, REST endpoints (POST + GET with cursor pagination), register the router, and write tests.
 
