@@ -84,6 +84,21 @@ class TaskRecord(Base):
     )
 
 
+class ChatMessageRecord(Base):
+    """Database model for per-floor chat messages."""
+
+    __tablename__ = "chat_messages"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    floor_id: Mapped[str] = mapped_column(String, index=True)
+    sender: Mapped[str] = mapped_column(String)
+    role: Mapped[str] = mapped_column(String)
+    content: Mapped[str] = mapped_column(String)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
+
+
 class UserPreference(Base):
     """Database model for user preferences.
 
