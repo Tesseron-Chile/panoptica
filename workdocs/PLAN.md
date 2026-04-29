@@ -5,7 +5,7 @@
 | Task | Description | Deps | Status |
 |------|-------------|------|--------|
 | T1 | Chat system — DB model, Pydantic models, REST endpoints, tests | — | ✅ |
-| T2 | Floor updates — DB model, Pydantic models, REST endpoints, tests | — | ⬜ |
+| T2 | Floor updates — DB model, Pydantic models, REST endpoints, tests | — | 🔧 |
 | T3 | Floor-level WebSocket infrastructure + broadcast integration + tests | T1, T2 | ⬜ |
 
 ---
@@ -46,7 +46,7 @@ Session: completed cleanly — 10 tests added, 375 total passing, ruff clean.
 
 ---
 
-## T2: Floor updates — DB model, Pydantic models, REST endpoints, tests ⬜
+## T2: Floor updates — DB model, Pydantic models, REST endpoints, tests 🔧
 
 **Description:** Build the floor updates backend: SQLAlchemy model, Pydantic models, REST endpoints (POST, GET per-floor with filters, GET cross-floor latest, PATCH for resolution), register the router, and write tests.
 
