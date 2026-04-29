@@ -16,6 +16,8 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+_PROMPTS_DIR = Path(__file__).parent.parent.parent / "prompts"
+
 _PROMPT_TEMPLATE = """\
 Eres el agente autónomo del departamento "{floor_id}" de Prometeo.
 
@@ -33,7 +35,20 @@ INSTRUCCIONES:
 3. Si encuentras algo crítico (error grave, presupuesto en riesgo, bloqueante),
    indícalo claramente con el prefijo [CRÍTICO] en el resumen.
 4. Sé conciso. El boss del departamento revisará el workdoc al finalizar.
+5. Al terminar, reporta el resultado al updates board usando la herramienta Bash:
+   curl -s -X POST http://localhost:8000/api/v1/floors/{floor_id}/updates \\
+     -H "Content-Type: application/json" \\
+     -d '{{"title":"<resumen 1 línea>","priority":"<info|alert|critical>","body":"<detalle breve>"}}'
+   Usa priority "critical" si encontraste [CRÍTICO], "alert" si hay advertencias, "info" para éxito.
 """
+
+
+def _load_floor_prompt(floor_id: str) -> str | None:
+    """Return content of prompts/<floor_id>_boss.md if it exists, else None."""
+    path = _PROMPTS_DIR / f"{floor_id}_boss.md"
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    return None
 
 
 def build_floor_prompt(
@@ -43,10 +58,14 @@ def build_floor_prompt(
     task: str,
     workdocs_dir: str,
 ) -> str:
-    """Build the prompt string for a floor task agent session."""
+    """Build the prompt string for a floor task agent session.
+
+    If a floor-specific prompt file exists at prompts/<floor_id>_boss.md,
+    it is prepended to provide richer context before the generic template.
+    """
     date = datetime.now(UTC).strftime("%Y-%m-%d")
     slug = task[:30].lower().replace(" ", "-").replace("/", "-")
-    return _PROMPT_TEMPLATE.format(
+    base = _PROMPT_TEMPLATE.format(
         floor_id=floor_id,
         mission=mission,
         task=task,
@@ -54,6 +73,10 @@ def build_floor_prompt(
         date=date,
         slug=slug,
     )
+    extra = _load_floor_prompt(floor_id)
+    if extra:
+        return f"{extra}\n\n---\n\n{base}"
+    return base
 
 
 class AgentRunner:
@@ -88,7 +111,6 @@ class AgentRunner:
         cwd = str(workdir) if workdir else None
 
         logger.info("AgentRunner: launching task=%r for floor=%r", task, floor_id)
-        # Note: claude -p runs in non-interactive print mode.
         try:
             await asyncio.create_subprocess_exec(
                 "claude",
