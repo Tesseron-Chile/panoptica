@@ -375,7 +375,7 @@ git commit -m "feat(floors): extend FloorConfig with mission, workdocs_dir, sche
 ---
 
 ## Task 3: Update floors.toml with Prometeo departments
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Modify: `backend/floors.toml`
