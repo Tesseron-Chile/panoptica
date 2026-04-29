@@ -20,6 +20,13 @@
 - `uv` was not on the Bash tool's PATH; installed via `curl -LsSf https://astral.sh/uv/install.sh | sh` to `~/.local/bin/uv`. Use full path `/Users/albertocastrobravo/.local/bin/uv` in subsequent coder sessions, or source the shell profile first.
 - `apscheduler==3.11.2` was resolved (satisfies `>=3.10.4`). Import verified.
 
+## Task 3 Notes (Run A-1)
+
+- Existing `test_floor_config.py` tests use inline SAMPLE_TOML strings — no test updates needed after floors.toml replacement.
+- Full backend suite (335 tests) passes with no regressions.
+- Config verified to load all 6 Prometeo departments with correct floor numbers, IDs, icons, and schedule task counts.
+- `uv` Bash commands require running from `backend/` subdirectory; git commands require project root — always use full absolute paths in cd.
+
 ## Workflow Notes
 
 - Design was done in a prior brainstorming session and approved by user — designer agent adapted existing docs rather than discovering from scratch

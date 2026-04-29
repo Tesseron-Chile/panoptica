@@ -375,12 +375,12 @@ git commit -m "feat(floors): extend FloorConfig with mission, workdocs_dir, sche
 ---
 
 ## Task 3: Update floors.toml with Prometeo departments
-**Status:** 🔧
+**Status:** ✅ Session: completed cleanly
 
 **Files:**
 - Modify: `backend/floors.toml`
 
-⬜ **Step 1: Replace floors.toml content**
+✅ **Step 1: Replace floors.toml content**
 
 Replace the entire content of `backend/floors.toml` with:
 
@@ -485,7 +485,7 @@ schedule.weekly = [
 ]
 ```
 
-⬜ **Step 2: Verify the config loads correctly**
+✅ **Step 2: Verify the config loads correctly**
 
 ```bash
 cd backend && uv run python -c "
@@ -515,7 +515,7 @@ Building: Prometeo
     daily: 2 tasks, weekly: 2 tasks
 ```
 
-⬜ **Step 3: Run existing floor config tests**
+✅ **Step 3: Run existing floor config tests**
 
 ```bash
 cd backend && uv run pytest tests/test_floor_config.py tests/test_floor_config_new_fields.py -v
@@ -523,7 +523,7 @@ cd backend && uv run pytest tests/test_floor_config.py tests/test_floor_config_n
 
 Expected: all pass.
 
-⬜ **Step 4: Commit**
+✅ **Step 4: Commit**
 
 ```bash
 git add backend/floors.toml
