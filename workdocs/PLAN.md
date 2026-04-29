@@ -566,7 +566,7 @@ Committed.
 ---
 
 ## Task 5: Implement agent_runner.py
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Create: `backend/app/core/agent_runner.py`
