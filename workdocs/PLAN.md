@@ -786,13 +786,13 @@ git commit -m "feat(core): add AgentRunner — launches Claude Code CLI sessions
 ---
 
 ## Task 6: Implement scheduler.py
-**Status:** 🔧
+**Status:** ✅ Session: completed cleanly
 
 **Files:**
 - Create: `backend/app/core/scheduler.py`
 - Create: `backend/tests/test_scheduler.py`
 
-⬜ **Step 1: Write the failing tests**
+✅ **Step 1: Write the failing tests**
 
 Create `backend/tests/test_scheduler.py`:
 
@@ -880,7 +880,7 @@ async def test_scheduler_calls_agent_runner_on_trigger():
     )
 ```
 
-⬜ **Step 2: Run to confirm failure**
+✅ **Step 2: Run to confirm failure**
 
 ```bash
 cd backend && uv run pytest tests/test_scheduler.py -v
@@ -888,7 +888,7 @@ cd backend && uv run pytest tests/test_scheduler.py -v
 
 Expected: `ModuleNotFoundError` — scheduler does not exist yet.
 
-⬜ **Step 3: Implement scheduler.py**
+✅ **Step 3: Implement scheduler.py**
 
 Create `backend/app/core/scheduler.py`:
 
@@ -988,7 +988,7 @@ class FloorScheduler:
         )
 ```
 
-⬜ **Step 4: Run tests**
+✅ **Step 4: Run tests**
 
 ```bash
 cd backend && uv run pytest tests/test_scheduler.py -v
@@ -996,7 +996,7 @@ cd backend && uv run pytest tests/test_scheduler.py -v
 
 Expected: all 5 tests pass.
 
-⬜ **Step 5: Run full suite**
+✅ **Step 5: Run full suite**
 
 ```bash
 cd backend && uv run pytest tests/ -q
@@ -1004,7 +1004,7 @@ cd backend && uv run pytest tests/ -q
 
 Expected: all pass.
 
-⬜ **Step 6: Commit**
+✅ **Step 6: Commit**
 
 ```bash
 git add backend/app/core/scheduler.py backend/tests/test_scheduler.py
