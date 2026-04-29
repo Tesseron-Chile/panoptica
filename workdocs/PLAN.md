@@ -1014,12 +1014,12 @@ git commit -m "feat(core): add FloorScheduler — daily/weekly cron jobs per dep
 ---
 
 ## Task 7: Wire FloorScheduler into FastAPI lifespan
-**Status:** 🔧
+**Status:** ✅ Session: completed cleanly
 
 **Files:**
 - Modify: `backend/app/main.py`
 
-⬜ **Step 1: Add scheduler startup/shutdown to lifespan**
+✅ **Step 1: Add scheduler startup/shutdown to lifespan**
 
 In `backend/app/main.py`, add the import at the top (after existing imports):
 
@@ -1056,7 +1056,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     await get_engine().dispose()
 ```
 
-⬜ **Step 2: Verify the server starts without errors**
+✅ **Step 2: Verify the server starts without errors**
 
 ```bash
 cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
@@ -1067,7 +1067,7 @@ kill %1
 
 Expected: `{"status":"ok"}` with no errors in logs.
 
-⬜ **Step 3: Verify scheduler log line appears**
+✅ **Step 3: Verify scheduler log line appears**
 
 ```bash
 cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 2>&1 | head -20 &
@@ -1077,7 +1077,7 @@ kill %1
 
 Expected: log line like `FloorScheduler started with N jobs` visible.
 
-⬜ **Step 4: Run full test suite**
+✅ **Step 4: Run full test suite**
 
 ```bash
 cd backend && uv run pytest tests/ -q
@@ -1085,7 +1085,7 @@ cd backend && uv run pytest tests/ -q
 
 Expected: all pass (lifespan is not directly tested here — server startup verifies it).
 
-⬜ **Step 5: Run checkall**
+✅ **Step 5: Run checkall**
 
 ```bash
 cd backend && make checkall
@@ -1093,7 +1093,7 @@ cd backend && make checkall
 
 Expected: format, lint, typecheck, tests all pass.
 
-⬜ **Step 6: Commit**
+✅ **Step 6: Commit**
 
 ```bash
 git add backend/app/main.py
@@ -1104,25 +1104,25 @@ git commit -m "feat(main): start FloorScheduler in FastAPI lifespan"
 
 ## Wrap-up
 
-⬜ **Run the full backend suite one final time**
+✅ **Run the full backend suite one final time**
 
 ```bash
 cd backend && uv run pytest tests/ -q && echo "ALL PASS"
 ```
 
-⬜ **Run hooks tests**
+✅ **Run hooks tests**
 
 ```bash
 cd hooks && uv run pytest tests/ -q && echo "ALL PASS"
 ```
 
-⬜ **Run full checkall from root**
+✅ **Run full checkall from root**
 
 ```bash
 make checkall
 ```
 
-⬜ **Verify floors API returns Prometeo config**
+✅ **Verify floors API returns Prometeo config**
 
 ```bash
 cd backend && uv run uvicorn app.main:app --port 8000 &

@@ -32,6 +32,13 @@
 - `asyncio.create_subprocess_exec` called with positional args `("claude", "-p", prompt)` and keyword args `env=env, cwd=cwd` — mock assertions use `call_args.kwargs` to verify env injection.
 - Fire-and-forget: subprocess not awaited; 339 backend tests pass with no regressions.
 
+## Task 7 Notes (Run A-1)
+
+- `get_building_config()` uses `@lru_cache` so the singleton is created once at startup — no repeated TOML file reads.
+- FloorScheduler logs "FloorScheduler started with 22 jobs" (5 floors × daily+weekly, c_level skipped).
+- Pre-existing pyright errors in `scheduler.py` (missing apscheduler type stubs) and `event_processor.py` are not introduced by Task 7 — they existed from Tasks 5/6 and the pre-existing codebase. ruff format/lint and all 344 tests pass cleanly.
+- ruff format reformatted several test files during checkall — committed as lint cleanup.
+
 ## Workflow Notes
 
 - Design was done in a prior brainstorming session and approved by user — designer agent adapted existing docs rather than discovering from scratch
