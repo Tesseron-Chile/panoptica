@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from rich.logging import RichHandler
 from sqlalchemy import text
 
-from app.api.routes import chat, events, floors, preferences, sessions
+from app.api.routes import chat, events, floor_updates, floors, preferences, sessions
 from app.api.websocket import manager
 from app.config import get_settings
 from app.core.event_processor import event_processor
@@ -104,6 +104,8 @@ app.include_router(preferences.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(sessions.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(floors.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(chat.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(floor_updates.floor_router, prefix=f"{settings.API_V1_STR}")
+app.include_router(floor_updates.updates_router, prefix=f"{settings.API_V1_STR}")
 
 
 @app.get("/health")

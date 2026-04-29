@@ -99,6 +99,23 @@ class ChatMessageRecord(Base):
     )
 
 
+class FloorUpdateRecord(Base):
+    """Database model for per-floor priority updates."""
+
+    __tablename__ = "floor_updates"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    floor_id: Mapped[str] = mapped_column(String, index=True)
+    priority: Mapped[str] = mapped_column(String)
+    title: Mapped[str] = mapped_column(String)
+    body: Mapped[str] = mapped_column(String)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
+    auto_expire_hours: Mapped[int] = mapped_column(default=24)
+    resolved: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
 class UserPreference(Base):
     """Database model for user preferences.
 
