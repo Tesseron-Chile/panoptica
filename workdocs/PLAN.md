@@ -6,7 +6,7 @@
 |------|-------------|------|--------|
 | T1 | Chat system — DB model, Pydantic models, REST endpoints, tests | — | ✅ |
 | T2 | Floor updates — DB model, Pydantic models, REST endpoints, tests | — | ✅ |
-| T3 | Floor-level WebSocket infrastructure + broadcast integration + tests | T1, T2 | ⬜ |
+| T3 | Floor-level WebSocket infrastructure + broadcast integration + tests | T1, T2 | 🔧 |
 
 ---
 
@@ -84,7 +84,7 @@ Session: completed cleanly — 15 tests added, 390 total passing, ruff clean.
 
 ---
 
-## T3: Floor-level WebSocket infrastructure + broadcast integration + tests ⬜
+## T3: Floor-level WebSocket infrastructure + broadcast integration + tests 🔧
 
 **Description:** Extend the existing `ConnectionManager` with floor-level connection tracking, add a `/ws/floor/{floor_id}` WebSocket endpoint, and integrate broadcast calls into the chat and floor update POST endpoints.
 
