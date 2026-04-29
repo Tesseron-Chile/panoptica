@@ -1,14 +1,14 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 
 class ChatMessageCreate(BaseModel):
-    sender: str
+    sender: str = Field(max_length=200)
     role: Literal["user", "agent", "system"]
-    content: str
+    content: str = Field(max_length=10000)
 
 
 class ChatMessageResponse(BaseModel):

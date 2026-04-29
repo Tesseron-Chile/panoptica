@@ -1,4 +1,3 @@
-import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -9,8 +8,6 @@ from app.api.websocket import manager
 from app.db.database import get_db
 from app.db.models import ChatMessageRecord
 from app.models.chat import ChatMessageCreate, ChatMessageResponse
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/floors", tags=["chat"])
 

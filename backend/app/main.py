@@ -195,7 +195,7 @@ async def websocket_floor_endpoint(websocket: WebSocket, floor_id: str) -> None:
     try:
         while True:
             await websocket.receive_text()
-    except (WebSocketDisconnect, Exception):
+    except Exception:
         pass
     finally:
         await manager.disconnect_floor(websocket, floor_id)

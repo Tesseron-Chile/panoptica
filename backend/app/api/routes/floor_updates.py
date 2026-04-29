@@ -1,4 +1,3 @@
-import logging
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
@@ -15,8 +14,6 @@ from app.models.floor_updates import (
     FloorUpdatePatch,
     FloorUpdateResponse,
 )
-
-logger = logging.getLogger(__name__)
 
 floor_router = APIRouter(prefix="/floors", tags=["floor_updates"])
 updates_router = APIRouter(prefix="/updates", tags=["floor_updates"])
@@ -82,7 +79,12 @@ async def get_latest_updates(
     db: Annotated[AsyncSession, Depends(get_db)],
     limit: int = 10,
 ) -> list[FloorUpdateResponse]:
-    stmt = select(FloorUpdateRecord).order_by(FloorUpdateRecord.id.desc())
+    stmt = (
+        select(FloorUpdateRecord)
+        .where(FloorUpdateRecord.resolved == False)  # noqa: E712
+        .order_by(FloorUpdateRecord.id.desc())
+        .limit(500)
+    )
     result = await db.execute(stmt)
     records = list(result.scalars().all())
     active = [r for r in records if not _is_expired(r)]
