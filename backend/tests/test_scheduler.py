@@ -1,6 +1,6 @@
 """Tests for FloorScheduler job registration."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -52,8 +52,10 @@ def test_scheduler_start_and_stop():
     floors = [_make_floor("dev_software", daily=["t1"], weekly=[])]
     scheduler = FloorScheduler(floors=floors)
 
-    with patch.object(scheduler._scheduler, "start") as mock_start, \
-         patch.object(scheduler._scheduler, "shutdown") as mock_shutdown:
+    with (
+        patch.object(scheduler._scheduler, "start") as mock_start,
+        patch.object(scheduler._scheduler, "shutdown") as mock_shutdown,
+    ):
         scheduler.start()
         mock_start.assert_called_once()
         scheduler.stop()

@@ -1,6 +1,6 @@
-"""Tests for extended FloorConfig fields (mission, workdocs_dir, schedule, is_c_level, explicit id)."""
+"""Tests for extended FloorConfig fields (mission, workdocs_dir, schedule, is_c_level)."""
 
-from app.core.floor_config import FloorSchedule, FloorConfig, load_building_config
+from app.core.floor_config import FloorSchedule, load_building_config
 
 PROMETEO_TOML = """
 building_name = "Prometeo"

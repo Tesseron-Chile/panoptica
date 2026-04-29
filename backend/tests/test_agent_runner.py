@@ -1,6 +1,5 @@
 """Tests for the AgentRunner service."""
 
-import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -38,7 +37,9 @@ async def test_run_floor_task_launches_subprocess():
     mock_proc = MagicMock()
     mock_proc.pid = 42
 
-    with patch("app.core.agent_runner.asyncio.create_subprocess_exec", new_callable=AsyncMock) as mock_exec:
+    with patch(
+        "app.core.agent_runner.asyncio.create_subprocess_exec", new_callable=AsyncMock
+    ) as mock_exec:
         mock_exec.return_value = mock_proc
         await runner.run_floor_task(
             floor_id="dev_software",
@@ -61,7 +62,9 @@ async def test_run_floor_task_env_contains_task():
     runner = AgentRunner()
     mock_proc = MagicMock()
 
-    with patch("app.core.agent_runner.asyncio.create_subprocess_exec", new_callable=AsyncMock) as mock_exec:
+    with patch(
+        "app.core.agent_runner.asyncio.create_subprocess_exec", new_callable=AsyncMock
+    ) as mock_exec:
         mock_exec.return_value = mock_proc
         await runner.run_floor_task(
             floor_id="mkt_ventas",
