@@ -72,3 +72,7 @@ Matches existing API pattern — all endpoints are open. Auth is a future concer
 
 ### Cursor pagination for chat
 Uses `before` (message ID) for cursor-based pagination instead of offset. More efficient for growing chat histories and avoids the skipped/duplicated row problem of offset pagination.
+
+## Phase C Notes
+
+- gitleaks not installed — secret scan skipped (C2). No secrets expected in this run (all backend data models, no credentials).
