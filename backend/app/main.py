@@ -15,6 +15,8 @@ from app.api.routes import events, floors, preferences, sessions
 from app.api.websocket import manager
 from app.config import get_settings
 from app.core.event_processor import event_processor
+from app.core.floor_config import get_building_config
+from app.core.scheduler import FloorScheduler
 from app.core.summary_service import get_summary_service
 from app.db.database import Base, get_engine
 from app.services.git_service import git_service
@@ -70,8 +72,13 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     git_service.start()
     await event_processor.start_watchers()
 
+    building = get_building_config()
+    floor_scheduler = FloorScheduler(floors=building.floors)
+    floor_scheduler.start()
+
     yield
 
+    floor_scheduler.stop()
     await event_processor.stop_watchers()
     await git_service.stop()
     await get_engine().dispose()
