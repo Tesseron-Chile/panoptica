@@ -29,12 +29,12 @@
 ---
 
 ## Task 1: Add APScheduler dependency
-**Status:** 🔧
+**Status:** ✅
 
 **Files:**
 - Modify: `backend/pyproject.toml`
 
-⬜ **Step 1: Add apscheduler to dependencies**
+✅ **Step 1: Add apscheduler to dependencies**
 
 In `backend/pyproject.toml`, add `"apscheduler>=3.10.4"` to the `dependencies` list:
 
@@ -59,7 +59,7 @@ dependencies = [
 ]
 ```
 
-⬜ **Step 2: Sync the lockfile**
+✅ **Step 2: Sync the lockfile**
 
 ```bash
 cd backend && uv sync
@@ -67,7 +67,7 @@ cd backend && uv sync
 
 Expected: resolves and installs `apscheduler`.
 
-⬜ **Step 3: Verify import**
+✅ **Step 3: Verify import**
 
 ```bash
 cd backend && uv run python -c "from apscheduler.schedulers.asyncio import AsyncIOScheduler; print('ok')"
@@ -75,7 +75,7 @@ cd backend && uv run python -c "from apscheduler.schedulers.asyncio import Async
 
 Expected output: `ok`
 
-⬜ **Step 4: Commit**
+✅ **Step 4: Commit**
 
 ```bash
 git add backend/pyproject.toml backend/uv.lock

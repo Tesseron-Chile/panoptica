@@ -15,6 +15,11 @@
 - Local main is 1 commit ahead of origin/main (spec doc commit from brainstorming). Need to push main before creating PR in Phase C.
 - Plan is at docs/superpowers/plans/ not workdocs/ — coder agents should use workdocs/PLAN.md
 
+## Task 1 Notes (Run A-1)
+
+- `uv` was not on the Bash tool's PATH; installed via `curl -LsSf https://astral.sh/uv/install.sh | sh` to `~/.local/bin/uv`. Use full path `/Users/albertocastrobravo/.local/bin/uv` in subsequent coder sessions, or source the shell profile first.
+- `apscheduler==3.11.2` was resolved (satisfies `>=3.10.4`). Import verified.
+
 ## Workflow Notes
 
 - Design was done in a prior brainstorming session and approved by user — designer agent adapted existing docs rather than discovering from scratch
