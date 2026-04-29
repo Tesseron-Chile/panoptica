@@ -3,7 +3,7 @@
 ## Task Breakdown
 
 ### T1 — Types + Hooks foundation
-**⬜ Status: pending**
+**✅ Status: complete**
 
 Create shared types and data-fetching hooks used by all features.
 

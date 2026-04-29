@@ -14,6 +14,7 @@ export interface FloorConfig {
   floor_number: number;
   accent: string;
   icon: string;
+  is_c_level?: boolean;
   rooms: RoomConfig[];
 }
 
