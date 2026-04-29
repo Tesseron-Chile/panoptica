@@ -89,11 +89,19 @@ class AgentRunner:
 
         logger.info("AgentRunner: launching task=%r for floor=%r", task, floor_id)
         # Note: claude -p runs in non-interactive print mode.
-        # Verify flags against installed Claude Code version during Run A-1.
-        await asyncio.create_subprocess_exec(
-            "claude",
-            "-p",
-            prompt,
-            env=env,
-            cwd=cwd,
-        )
+        try:
+            await asyncio.create_subprocess_exec(
+                "claude",
+                "-p",
+                prompt,
+                env=env,
+                cwd=cwd,
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.DEVNULL,
+            )
+        except FileNotFoundError:
+            logger.exception(
+                "AgentRunner: 'claude' not found on PATH — task=%r floor=%r",
+                task,
+                floor_id,
+            )

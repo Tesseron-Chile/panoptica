@@ -48,6 +48,24 @@ def test_scheduler_skips_floors_with_no_schedule():
     assert scheduler.job_count() == 1
 
 
+def test_scheduler_skips_is_c_level_floor():
+    c_level = FloorConfig(
+        id="c_level",
+        name="C Level",
+        floor_number=99,
+        accent="#8b5cf6",
+        icon="👑",
+        schedule=FloorSchedule(daily=["ceo_briefing"], weekly=["board_review"]),
+        mission="Strategic oversight",
+        workdocs_dir="workdocs/c_level/",
+        is_c_level=True,
+    )
+    dev = _make_floor("dev_software", daily=["task1"], weekly=[])
+    scheduler = FloorScheduler(floors=[c_level, dev])
+    # c_level has tasks in its schedule but is_c_level=True → must be skipped
+    assert scheduler.job_count() == 1
+
+
 def test_scheduler_start_and_stop():
     floors = [_make_floor("dev_software", daily=["t1"], weekly=[])]
     scheduler = FloorScheduler(floors=floors)
