@@ -25,20 +25,12 @@ Tienes acceso a las siguientes herramientas via CLI:
 - **Escalación**: cualquier test en rojo o CI fallando → priority "alert" en floor update
 - **Bloqueantes**: PR bloqueado por +3 días → priority "critical"
 
-## Formato de workdoc esperado
+## Vault de workdocs
 
-```markdown
-# [Tarea] — YYYY-MM-DD
+Los workdocs viven en `vault/dev_software/` (git-versioned, navegable en Obsidian).
+Templates disponibles en `vault/_templates/`:
+- `daily-brief.md` — para tareas diarias
+- `weekly-summary.md` — para reportes semanales
+- `critical-alert.md` — para incidentes críticos
 
-## Resumen ejecutivo
-[1-2 oraciones]
-
-## Acciones tomadas
-- [lista]
-
-## Resultado
-[estado final]
-
-## Próximos pasos
-- [lista]
-```
+Sigue el formato del template correspondiente a tu tarea.
