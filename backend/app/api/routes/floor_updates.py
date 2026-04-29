@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.websocket import manager
 from app.db.database import get_db
 from app.db.models import FloorUpdateRecord
 from app.models.floor_updates import (
@@ -46,7 +47,16 @@ async def create_floor_update(
     db.add(record)
     await db.commit()
     await db.refresh(record)
-    return FloorUpdateResponse.model_validate(record)
+    response = FloorUpdateResponse.model_validate(record)
+    await manager.broadcast_floor(
+        {
+            "type": "floor_update",
+            "floor_id": floor_id,
+            "update": response.model_dump(mode="json", by_alias=True),
+        },
+        floor_id,
+    )
+    return response
 
 
 @floor_router.get("/{floor_id}/updates")

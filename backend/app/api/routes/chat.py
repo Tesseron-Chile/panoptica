@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.websocket import manager
 from app.db.database import get_db
 from app.db.models import ChatMessageRecord
 from app.models.chat import ChatMessageCreate, ChatMessageResponse
@@ -29,7 +30,16 @@ async def create_chat_message(
     db.add(record)
     await db.commit()
     await db.refresh(record)
-    return ChatMessageResponse.model_validate(record)
+    response = ChatMessageResponse.model_validate(record)
+    await manager.broadcast_floor(
+        {
+            "type": "chat_message",
+            "floor_id": floor_id,
+            "message": response.model_dump(mode="json", by_alias=True),
+        },
+        floor_id,
+    )
+    return response
 
 
 @router.get("/{floor_id}/chat")

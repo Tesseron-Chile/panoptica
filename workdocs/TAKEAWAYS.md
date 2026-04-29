@@ -58,6 +58,15 @@ The floor updates file exports two routers: one with prefix `/floors` (for per-f
 - `ChatMessageResponse.model_validate(record)` with `from_attributes=True` works cleanly for ORM→Pydantic conversion
 - No `Index` import needed — `mapped_column(..., index=True)` handles floor_id indexing inline
 
+### T3 implementation notes
+
+- `floor_connections` pattern mirrors `room_connections` exactly — same lock, same failed-connection cleanup, same early-return on empty list.
+- `/ws/floor/{floor_id}` endpoint follows `/ws/room/{room_id}` exactly — accept, receive loop, disconnect in finally.
+- Broadcast dicts use snake_case outer keys (`floor_id`) per SPEC, inner message/update objects use camelCase via `model_dump(by_alias=True)`.
+- WebSocket tests use module-level `TestClient(app)` (same pattern as test_api.py) — avoids lifespan startup; `setup_test_database` session fixture ensures DB is ready.
+- 5 WS tests cover: connect, chat broadcast, update broadcast, disconnect cleanup, cross-floor isolation.
+- 395 total tests passing after T3 (5 new tests added).
+
 ### No authentication
 Matches existing API pattern — all endpoints are open. Auth is a future concern for the full Prometeo system, not Run A-2.
 

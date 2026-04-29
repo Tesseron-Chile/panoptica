@@ -188,6 +188,19 @@ async def websocket_room_endpoint(websocket: WebSocket, room_id: str) -> None:
         await manager.disconnect_room(websocket, room_id)
 
 
+@app.websocket("/ws/floor/{floor_id}")
+async def websocket_floor_endpoint(websocket: WebSocket, floor_id: str) -> None:
+    """Floor-level WebSocket: receives chat messages and floor update broadcasts."""
+    await manager.connect_floor(websocket, floor_id)
+    try:
+        while True:
+            await websocket.receive_text()
+    except (WebSocketDisconnect, Exception):
+        pass
+    finally:
+        await manager.disconnect_floor(websocket, floor_id)
+
+
 if STATIC_DIR.exists():
     app.mount("/_next", StaticFiles(directory=STATIC_DIR / "_next"), name="next_static")
 
