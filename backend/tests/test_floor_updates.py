@@ -41,7 +41,7 @@ async def test_create_floor_update(client: httpx.AsyncClient) -> None:
 async def test_create_floor_update_custom_expiry(client: httpx.AsyncClient) -> None:
     resp = await client.post(
         "/api/v1/floors/floor_b/updates",
-        json={"priority": "alert", "title": "Alert", "body": "Alert body", "autoExpireHours": 48},
+        json={"priority": "alert", "title": "Alert", "body": "Alert body", "auto_expire_hours": 48},
     )
     assert resp.status_code == 200
     assert resp.json()["autoExpireHours"] == 48

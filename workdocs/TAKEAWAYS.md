@@ -41,6 +41,16 @@ Added a new connection tier (`floor_connections`) to the existing `ConnectionMan
 ### Two routers in floor_updates.py
 The floor updates file exports two routers: one with prefix `/floors` (for per-floor CRUD) and one with prefix `/updates` (for cross-floor latest and patch-by-id). Both registered separately in `main.py`.
 
+### T2 implementation notes
+
+- `FloorUpdateCreate` uses snake_case fields (no alias_generator) — request bodies must use `auto_expire_hours`, not `autoExpireHours`. Only `FloorUpdateResponse` has camelCase aliasing.
+- Auto-expiry uses Python-side filtering after loading records (not SQL-level). SQLite's per-row `auto_expire_hours` can't easily be used in a portable SQL WHERE clause. Dataset is small so this is fine.
+- `_is_expired` guards against tz-naive timestamps from SQLite by normalizing to UTC before comparison.
+- Two routers (`floor_router` + `updates_router`) in one file, both registered separately in `main.py` — FastAPI handles multiple routers with the same prefix without conflict.
+- `/updates/latest` sorts in Python: `(PRIORITY_ORDER.get(r.priority, 99), -r.id)` to sort by priority rank then newest first.
+- `db.get(FloorUpdateRecord, update_id)` returns `None` cleanly for missing IDs in PATCH — raises 404.
+- 390 total tests passing after T2 (15 new tests added).
+
 ### T1 implementation notes
 
 - `pytest_asyncio.fixture` needed explicitly for async fixtures even in `asyncio_mode="auto"`; regular `@pytest.fixture` doesn't work for async generators
