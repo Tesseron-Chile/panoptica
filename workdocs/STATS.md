@@ -8,8 +8,8 @@
 | Phase A start | 2026-04-29T14:28:47Z |
 | Phase A end | 2026-04-29T14:35:00Z |
 | Phase B start | 2026-04-29T14:35:00Z |
-| Phase B end | |
-| Phase C start | |
+| Phase B end | 2026-04-29T15:10:00Z |
+| Phase C start | 2026-04-29T15:10:00Z |
 | Phase C end | |
 | Phase D start | |
 

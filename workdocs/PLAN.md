@@ -10,7 +10,7 @@ T1 before T4 (CLevelView reuses ChatTab). T2 and T3 independent but both need T0
 
 ---
 
-### T0 — Shared Types + FloorConfig Extension ⬜
+### T0 — Shared Types + FloorConfig Extension ✅
 
 **Create** `frontend/src/types/prometeo.ts`:
 ```typescript
@@ -52,7 +52,7 @@ mission?: string;
 
 ---
 
-### T1 — Chat Tab + RightSidebar Integration ⬜
+### T1 — Chat Tab + RightSidebar Integration ✅
 
 **Create `frontend/src/hooks/useFloorChat.ts`:**
 - Params: `floorId: string | null`
@@ -84,7 +84,7 @@ mission?: string;
 
 ---
 
-### T2 — Updates Bar in BuildingView ⬜
+### T2 — Updates Bar in BuildingView ✅
 
 **Create `frontend/src/hooks/useLatestUpdates.ts`:**
 - State: `updates: FloorUpdate[]`, `loading: boolean`
@@ -105,7 +105,7 @@ mission?: string;
 
 ---
 
-### T3 — Whiteboard Mode 12 (Updates Board) ⬜
+### T3 — Whiteboard Mode 12 (Updates Board) ✅
 
 **Modify `frontend/src/types/index.ts`:**
 - Add `| 12` to `WhiteboardMode` union
@@ -137,7 +137,7 @@ mission?: string;
 
 ---
 
-### T4 — CLevelView Básico ⬜
+### T4 — CLevelView Básico ✅
 
 **Create `frontend/src/components/views/CLevelView.tsx`:**
 - Two-column: `grid grid-cols-1 md:grid-cols-2 gap-4 h-full p-6`
@@ -171,7 +171,7 @@ mission?: string;
 
 ---
 
-### T5 — Final Verification ⬜
+### T5 — Final Verification ✅
 
 ```bash
 cd frontend && npx tsc --noEmit
