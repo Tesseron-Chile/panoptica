@@ -85,13 +85,13 @@ git commit -m "chore(deps): add apscheduler>=3.10.4 for floor task scheduling"
 ---
 
 ## Task 2: Extend FloorConfig with department fields
-**Status:** 🔧
+**Status:** ✅ Session: completed cleanly
 
 **Files:**
 - Modify: `backend/app/core/floor_config.py`
 - Create: `backend/tests/test_floor_config_new_fields.py`
 
-⬜ **Step 1: Write the failing tests**
+✅ **Step 1: Write the failing tests**
 
 Create `backend/tests/test_floor_config_new_fields.py`:
 
@@ -204,7 +204,7 @@ def test_floor_schedule_defaults():
     assert sched.weekly == []
 ```
 
-⬜ **Step 2: Run to confirm failure**
+✅ **Step 2: Run to confirm failure**
 
 ```bash
 cd backend && uv run pytest tests/test_floor_config_new_fields.py -v
@@ -212,7 +212,7 @@ cd backend && uv run pytest tests/test_floor_config_new_fields.py -v
 
 Expected: `ImportError` — `FloorSchedule` does not exist yet.
 
-⬜ **Step 3: Implement the extended FloorConfig**
+✅ **Step 3: Implement the extended FloorConfig**
 
 Replace the contents of `backend/app/core/floor_config.py`:
 
@@ -349,7 +349,7 @@ def get_building_config() -> BuildingConfig:
     return load_building_config(toml_path=DEFAULT_TOML_PATH)
 ```
 
-⬜ **Step 4: Run tests to confirm they pass**
+✅ **Step 4: Run tests to confirm they pass**
 
 ```bash
 cd backend && uv run pytest tests/test_floor_config_new_fields.py -v
@@ -357,7 +357,7 @@ cd backend && uv run pytest tests/test_floor_config_new_fields.py -v
 
 Expected: all 10 tests pass.
 
-⬜ **Step 5: Run full test suite to check for regressions**
+✅ **Step 5: Run full test suite to check for regressions**
 
 ```bash
 cd backend && uv run pytest tests/ -q
@@ -365,7 +365,7 @@ cd backend && uv run pytest tests/ -q
 
 Expected: all existing tests pass plus the 10 new ones.
 
-⬜ **Step 6: Commit**
+✅ **Step 6: Commit**
 
 ```bash
 git add backend/app/core/floor_config.py backend/tests/test_floor_config_new_fields.py

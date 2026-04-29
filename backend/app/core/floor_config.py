@@ -1,7 +1,7 @@
 """Floor and building configuration loader.
 
 Reads ``floors.toml`` to define the building hierarchy:
-Building > Floor > Room.  Each floor maps to a Tesseron product,
+Building > Floor > Room.  Each floor maps to a department,
 each room maps to a repository.
 """
 
@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 __all__ = [
     "RoomConfig",
+    "FloorSchedule",
     "FloorConfig",
     "BuildingConfig",
     "load_building_config",
@@ -35,25 +36,36 @@ class RoomConfig(BaseModel):
     repo_name: str
 
 
+class FloorSchedule(BaseModel):
+    """Daily and weekly task schedule for a floor."""
+
+    daily: list[str] = Field(default_factory=list)
+    weekly: list[str] = Field(default_factory=list)
+
+
 class FloorConfig(BaseModel):
-    """A single floor (product) in the building."""
+    """A single floor (department) in the building."""
 
     id: str = ""
     name: str
     floor_number: int
     accent: str
     icon: str
-    rooms: list[RoomConfig] = Field(default_factory=lambda: [])
+    rooms: list[RoomConfig] = Field(default_factory=list)
+    mission: str = ""
+    workdocs_dir: str = ""
+    schedule: FloorSchedule = Field(default_factory=FloorSchedule)
+    is_c_level: bool = False
 
 
 class BuildingConfig(BaseModel):
     """Top-level building configuration."""
 
     building_name: str = "Building"
-    floors: list[FloorConfig] = Field(default_factory=lambda: [])
+    floors: list[FloorConfig] = Field(default_factory=list)
 
     def get_floor(self, floor_id: str) -> FloorConfig | None:
-        """Look up a floor by its generated id."""
+        """Look up a floor by its id."""
         return next((f for f in self.floors if f.id == floor_id), None)
 
     def find_room(self, repo_name: str) -> tuple[FloorConfig, RoomConfig] | None:
@@ -70,15 +82,7 @@ def load_building_config(
     toml_path: Path | None = None,
     toml_string: str | None = None,
 ) -> BuildingConfig:
-    """Load building config from a TOML file or string.
-
-    Args:
-        toml_path: Path to a ``floors.toml`` file.
-        toml_string: Raw TOML content (takes priority over *toml_path*).
-
-    Returns:
-        A :class:`BuildingConfig`. Returns an empty config on errors.
-    """
+    """Load building config from a TOML file or string."""
     raw: dict[str, Any] = {}
 
     if toml_string is not None:
@@ -92,18 +96,24 @@ def load_building_config(
     floors: list[FloorConfig] = []
     for entry in raw.get("floors", []):
         entry_dict: dict[str, Any] = entry
-        floor_id: str = entry_dict["name"].lower().replace(" ", "")
+        name = str(entry_dict["name"])
+        floor_id = str(entry_dict.get("id", name.lower().replace(" ", "")))
         rooms: list[RoomConfig] = [
             RoomConfig(id=str(r), repo_name=str(r)) for r in entry_dict.get("repos", [])
         ]
+        raw_schedule = entry_dict.get("schedule", {})
         floors.append(
             FloorConfig(
                 id=floor_id,
-                name=str(entry_dict["name"]),
+                name=name,
                 floor_number=int(entry_dict["floor_number"]),
                 accent=str(entry_dict["accent"]),
                 icon=str(entry_dict["icon"]),
                 rooms=rooms,
+                mission=str(entry_dict.get("mission", "")),
+                workdocs_dir=str(entry_dict.get("workdocs_dir", "")),
+                schedule=FloorSchedule(**raw_schedule),
+                is_c_level=bool(entry_dict.get("is_c_level", False)),
             )
         )
 
