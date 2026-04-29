@@ -1014,7 +1014,7 @@ git commit -m "feat(core): add FloorScheduler — daily/weekly cron jobs per dep
 ---
 
 ## Task 7: Wire FloorScheduler into FastAPI lifespan
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Modify: `backend/app/main.py`
