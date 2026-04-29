@@ -8,7 +8,7 @@ accent = "#8b5cf6"
 icon = "👔"
 is_c_level = true
 mission = "Vision, estrategia y mejora continua del sistema"
-workdocs_dir = "workdocs/c_level/"
+workdocs_dir = "vault/c_level/"
 
 [[floors]]
 id = "dev_software"
@@ -17,7 +17,7 @@ floor_number = 5
 accent = "#3b82f6"
 icon = "💻"
 mission = "Construir y mantener el software de Prometeo"
-workdocs_dir = "workdocs/dev_software/"
+workdocs_dir = "vault/dev_software/"
 schedule.daily = [
     "revisar PRs abiertos y asignar reviewers",
     "correr suite de tests y reportar failures",
@@ -35,7 +35,7 @@ floor_number = 4
 accent = "#f59e0b"
 icon = "⚙️"
 mission = "Disenar y mantener el hardware y firmware de Prometeo"
-workdocs_dir = "workdocs/dev_hardware/"
+workdocs_dir = "vault/dev_hardware/"
 schedule.daily = [
     "revisar issues de firmware abiertos",
     "actualizar workdoc de estado de dispositivos",
@@ -52,7 +52,7 @@ floor_number = 3
 accent = "#10b981"
 icon = "🎧"
 mission = "Resolver tickets y mantener alta satisfaccion de clientes de Prometeo"
-workdocs_dir = "workdocs/customer_service/"
+workdocs_dir = "vault/customer_service/"
 schedule.daily = [
     "revisar tickets abiertos y priorizar",
     "redactar respuestas a tickets pendientes",
@@ -70,7 +70,7 @@ floor_number = 2
 accent = "#a3e635"
 icon = "💰"
 mission = "Centralizar cobros, pagos y reportes financieros de Prometeo"
-workdocs_dir = "workdocs/financiero/"
+workdocs_dir = "vault/financiero/"
 schedule.daily = [
     "revisar estado de facturas pendientes",
     "actualizar workdoc de flujo de caja",
@@ -87,7 +87,7 @@ floor_number = 1
 accent = "#f43f5e"
 icon = "📣"
 mission = "Generar demanda y cerrar ventas de Prometeo"
-workdocs_dir = "workdocs/mkt_ventas/"
+workdocs_dir = "vault/mkt_ventas/"
 schedule.daily = [
     "revisar metricas de campanas activas",
     "actualizar pipeline de ventas en workdoc",

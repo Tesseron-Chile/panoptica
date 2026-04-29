@@ -18,6 +18,7 @@ from app.core.event_processor import event_processor
 from app.core.floor_config import get_building_config
 from app.core.scheduler import FloorScheduler
 from app.core.summary_service import get_summary_service
+from app.core.workdoc_watcher import WorkdocWatcher
 from app.db.database import Base, get_engine
 from app.services.git_service import git_service
 
@@ -76,8 +77,12 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     floor_scheduler = FloorScheduler(floors=building.floors)
     floor_scheduler.start()
 
+    workdoc_watcher = WorkdocWatcher(floors=building.floors)
+    workdoc_watcher.start()
+
     yield
 
+    workdoc_watcher.stop()
     floor_scheduler.stop()
     await event_processor.stop_watchers()
     await git_service.stop()
