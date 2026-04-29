@@ -533,7 +533,7 @@ git commit -m "feat(floors): configure Prometeo building with 6 departments"
 ---
 
 ## Task 4: Propagate CLAUDE_OFFICE_FLOOR_ID through hooks
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Modify: `hooks/src/claude_office_hooks/event_mapper.py`
