@@ -36,7 +36,9 @@ import { NewsTickerMode } from "./whiteboard/NewsTickerMode";
 import { CoffeeMode } from "./whiteboard/CoffeeMode";
 import { HeatMapMode } from "./whiteboard/HeatMapMode";
 import { KanbanMode } from "./whiteboard/KanbanMode";
+import { UpdatesMode } from "./whiteboard/UpdatesMode";
 import { MODE_INFO } from "./whiteboard/WhiteboardModeRegistry";
+import { useNavigationStore } from "@/stores/navigationStore";
 
 // ============================================================================
 // WHITEBOARD FRAME
@@ -111,7 +113,7 @@ function WhiteboardFrame({
 
       {/* Mode indicator dots */}
       <pixiContainer x={165} y={193}>
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: 13 }).map((_, i) => (
           <pixiGraphics
             key={i}
             x={(i - 5.5) * 10}
@@ -145,6 +147,7 @@ export function Whiteboard({ todos }: WhiteboardProps): ReactNode {
   const setMode = useGameStore((s) => s.setWhiteboardMode);
   const agentsMap = useGameStore((s) => s.agents);
   const bossTask = useGameStore((s) => s.boss.currentTask);
+  const floorId = useNavigationStore((s) => s.floorId);
 
   // Keyboard hotkeys: T = Todo List (0), B = Background Tasks (1), 0-9 = modes
   useEffect(() => {
@@ -175,6 +178,9 @@ export function Whiteboard({ todos }: WhiteboardProps): ReactNode {
           break;
         case "k":
           setMode(11);
+          break;
+        case "u":
+          setMode(12);
           break;
       }
     };
@@ -230,6 +236,8 @@ export function Whiteboard({ todos }: WhiteboardProps): ReactNode {
         return <HeatMapMode data={whiteboardData} />;
       case 11:
         return <KanbanMode data={whiteboardData} />;
+      case 12:
+        return <UpdatesMode floorId={floorId} />;
       default:
         return <TodoListMode todos={todos} />;
     }

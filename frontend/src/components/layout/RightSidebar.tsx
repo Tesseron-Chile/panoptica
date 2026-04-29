@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AgentStatus } from "@/components/game/AgentStatus";
 import { EventLog } from "@/components/game/EventLog";
 import { ConversationHistory } from "@/components/game/ConversationHistory";
+import { ChatTab } from "@/components/chat/ChatTab";
 import { useDragResize } from "@/hooks/useDragResize";
 
 // ============================================================================
@@ -29,7 +30,7 @@ const getMaxPanelHeight = () => Math.floor(window.innerHeight * 0.7);
  * sidebar width (left edge) and the split between the two panels (divider).
  */
 export function RightSidebar(): React.ReactNode {
-  const [activeTab, setActiveTab] = useState<"events" | "conversation">(
+  const [activeTab, setActiveTab] = useState<"events" | "conversation" | "chat">(
     "events",
   );
 
@@ -106,19 +107,31 @@ export function RightSidebar(): React.ReactNode {
           </button>
           <button
             onClick={() => setActiveTab("conversation")}
-            className={`flex-1 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors rounded-tr-lg ${
+            className={`flex-1 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors ${
               activeTab === "conversation"
                 ? "text-cyan-400 border-b-2 border-cyan-500 bg-slate-950/50"
                 : "text-slate-500 hover:text-slate-300"
             }`}
           >
-            Conversation
+            Convo
+          </button>
+          <button
+            onClick={() => setActiveTab("chat")}
+            className={`flex-1 px-3 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors rounded-tr-lg ${
+              activeTab === "chat"
+                ? "text-violet-400 border-b-2 border-violet-500 bg-slate-950/50"
+                : "text-slate-500 hover:text-slate-300"
+            }`}
+          >
+            Chat
           </button>
         </div>
 
         {/* Tab content */}
         <div className="flex-grow min-h-0 overflow-hidden">
-          {activeTab === "events" ? <EventLog /> : <ConversationHistory />}
+          {activeTab === "events" && <EventLog />}
+          {activeTab === "conversation" && <ConversationHistory />}
+          {activeTab === "chat" && <ChatTab />}
         </div>
       </div>
     </aside>
