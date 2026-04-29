@@ -62,8 +62,9 @@ def test_scheduler_skips_is_c_level_floor():
     )
     dev = _make_floor("dev_software", daily=["task1"], weekly=[])
     scheduler = FloorScheduler(floors=[c_level, dev])
-    # c_level has tasks in its schedule but is_c_level=True → must be skipped
-    assert scheduler.job_count() == 1
+    # c_level schedule tasks are skipped; instead gets 1 Arquitecto weekly job
+    # dev_software adds 1 daily job → total 2
+    assert scheduler.job_count() == 2
 
 
 def test_scheduler_start_and_stop():

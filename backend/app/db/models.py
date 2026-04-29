@@ -116,6 +116,21 @@ class FloorUpdateRecord(Base):
     resolved: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
+class DirectiveRecord(Base):
+    """A @floor_id: instruction sent from C-Level chat to a floor agent."""
+
+    __tablename__ = "directives"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    floor_id: Mapped[str] = mapped_column(String, index=True)
+    instruction: Mapped[str] = mapped_column(String)
+    triggered_by: Mapped[str] = mapped_column(String)  # sender of the c_level message
+    status: Mapped[str] = mapped_column(String, default="triggered")  # triggered | done
+    triggered_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
+
+
 class UserPreference(Base):
     """Database model for user preferences.
 
