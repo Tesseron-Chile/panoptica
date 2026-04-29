@@ -1,29 +1,98 @@
-building_name = "Tesseron"
+building_name = "Prometeo"
 
 [[floors]]
-name = "Herramientas"
+id = "c_level"
+name = "C-Level"
+floor_number = 99
+accent = "#8b5cf6"
+icon = "👔"
+is_c_level = true
+mission = "Vision, estrategia y mejora continua del sistema"
+workdocs_dir = "workdocs/c_level/"
+
+[[floors]]
+id = "dev_software"
+name = "Desarrollo Software"
+floor_number = 5
+accent = "#3b82f6"
+icon = "💻"
+mission = "Construir y mantener el software de Prometeo"
+workdocs_dir = "workdocs/dev_software/"
+schedule.daily = [
+    "revisar PRs abiertos y asignar reviewers",
+    "correr suite de tests y reportar failures",
+    "actualizar workdoc de estado del sprint",
+]
+schedule.weekly = [
+    "reporte de deuda tecnica y prioridades",
+    "review de arquitectura y dependencias",
+]
+
+[[floors]]
+id = "dev_hardware"
+name = "Desarrollo Hardware"
 floor_number = 4
 accent = "#f59e0b"
-icon = "🔧"
-repos = ["panoptica", "prometeo-arius"]
+icon = "⚙️"
+mission = "Disenar y mantener el hardware y firmware de Prometeo"
+workdocs_dir = "workdocs/dev_hardware/"
+schedule.daily = [
+    "revisar issues de firmware abiertos",
+    "actualizar workdoc de estado de dispositivos",
+]
+schedule.weekly = [
+    "reporte de BOM y proveedores",
+    "review de especificaciones de hardware",
+]
 
 [[floors]]
-name = "Recepthor"
+id = "customer_service"
+name = "Customer Service"
 floor_number = 3
-accent = "#2563eb"
-icon = "⚖️"
-repos = ["recepthor-api", "recepthor-hub", "recepthor-scraper", "recepthor-web", "recepthor-serverless"]
+accent = "#10b981"
+icon = "🎧"
+mission = "Resolver tickets y mantener alta satisfaccion de clientes de Prometeo"
+workdocs_dir = "workdocs/customer_service/"
+schedule.daily = [
+    "revisar tickets abiertos y priorizar",
+    "redactar respuestas a tickets pendientes",
+    "actualizar workdoc de estado de soporte",
+]
+schedule.weekly = [
+    "reporte de CSAT y tendencias",
+    "escalaciones y casos criticos de la semana",
+]
 
 [[floors]]
-name = "Lexio"
+id = "financiero"
+name = "Financiero"
 floor_number = 2
-accent = "#7c3aed"
-icon = "📚"
-repos = ["lexio"]
+accent = "#a3e635"
+icon = "💰"
+mission = "Centralizar cobros, pagos y reportes financieros de Prometeo"
+workdocs_dir = "workdocs/financiero/"
+schedule.daily = [
+    "revisar estado de facturas pendientes",
+    "actualizar workdoc de flujo de caja",
+]
+schedule.weekly = [
+    "reporte P&L de la semana",
+    "conciliacion de pagos y cobros",
+]
 
 [[floors]]
-name = "entreperros"
+id = "mkt_ventas"
+name = "MKT y Ventas"
 floor_number = 1
-accent = "#059669"
-icon = "🐕"
-repos = ["entreperros"]
+accent = "#f43f5e"
+icon = "📣"
+mission = "Generar demanda y cerrar ventas de Prometeo"
+workdocs_dir = "workdocs/mkt_ventas/"
+schedule.daily = [
+    "revisar metricas de campanas activas",
+    "actualizar pipeline de ventas en workdoc",
+]
+schedule.weekly = [
+    "reporte de campanas y ROI",
+    "propuesta de contenido para la proxima semana",
+]

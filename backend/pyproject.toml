@@ -20,6 +20,7 @@ dependencies = [
     "greenlet>=3.3.2",
     "anthropic>=0.86.0",
     "tomli>=2.4.1",
+    "apscheduler>=3.10.4",
 ]
 
 [project.optional-dependencies]

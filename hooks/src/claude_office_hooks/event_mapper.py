@@ -372,6 +372,10 @@ def map_event(
     if teammate_name:
         data["teammate_name"] = teammate_name
 
+    floor_id = os.environ.get("CLAUDE_OFFICE_FLOOR_ID")
+    if floor_id:
+        data["floor_id"] = floor_id
+
     payload: dict[str, Any] = {
         "event_type": event_type,
         "session_id": actual_session_id,
