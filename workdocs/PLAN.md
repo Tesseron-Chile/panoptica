@@ -29,7 +29,7 @@
 ---
 
 ## Task 1: Add APScheduler dependency
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Modify: `backend/pyproject.toml`
