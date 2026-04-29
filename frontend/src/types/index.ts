@@ -84,7 +84,8 @@ export type WhiteboardMode =
   | 8 // News Ticker
   | 9 // Coffee
   | 10 // Heat Map
-  | 11; // Kanban Board — hotkey K
+  | 11 // Kanban Board — hotkey K
+  | 12; // Updates Board — hotkey U
 
 /**
  * Shape of the optional event detail payload carried in WebSocket events.
@@ -101,6 +102,12 @@ export interface EventDetail {
   agentName?: string;
   prompt?: string;
 }
+
+// ============================================================================
+// PROMETEO TYPES — Chat + Updates (Panoptica multi-floor features)
+// ============================================================================
+
+export type { ChatMessage, FloorUpdate } from "./prometeo";
 
 /**
  * WebSocket message types sent from the backend over the /ws endpoint.

@@ -39,6 +39,7 @@ import { Breadcrumb } from "@/components/navigation/Breadcrumb";
 import { ViewTransition } from "@/components/navigation/ViewTransition";
 import { BuildingView } from "@/components/views/BuildingView";
 import { FloorView } from "@/components/views/FloorView";
+import { CLevelView } from "@/components/views/CLevelView";
 import { TourOverlay } from "@/components/tour/TourOverlay";
 import { useTourStore } from "@/stores/tourStore";
 import { CommandBar } from "@/components/command/CommandBar";
@@ -138,6 +139,10 @@ export default function V2TestPage(): React.ReactNode {
   // ------------------------------------------------------------------
   useFloorConfig();
   const view = useNavigationStore((s) => s.view);
+  const floorId = useNavigationStore((s) => s.floorId);
+  const buildingConfig = useNavigationStore((s) => s.buildingConfig);
+  const currentFloor = buildingConfig?.floors.find((f) => f.id === floorId);
+  const isCLevel = currentFloor?.is_c_level === true;
 
   // ------------------------------------------------------------------
   // Zoom navigation (scroll/pinch between views)
@@ -471,14 +476,18 @@ export default function V2TestPage(): React.ReactNode {
             view={view}
             buildingView={<BuildingView />}
             floorView={
-              <FloorView
-                sessions={sessions}
-                sessionsLoading={sessionsLoading}
-                sessionId={sessionId}
-                onSessionSelect={handleSessionSelect}
-                onDeleteSession={handleDeleteSession}
-                onRenameSession={handleRenameSession}
-              />
+              isCLevel ? (
+                <CLevelView />
+              ) : (
+                <FloorView
+                  sessions={sessions}
+                  sessionsLoading={sessionsLoading}
+                  sessionId={sessionId}
+                  onSessionSelect={handleSessionSelect}
+                  onDeleteSession={handleDeleteSession}
+                  onRenameSession={handleRenameSession}
+                />
+              )
             }
           />
         </div>

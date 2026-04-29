@@ -1,6 +1,7 @@
 "use client";
 
 import { useNavigationStore } from "@/stores/navigationStore";
+import { UpdatesBar } from "@/components/updates/UpdatesBar";
 import type { FloorConfig } from "@/types/navigation";
 
 function FloorRow({
@@ -122,6 +123,11 @@ export function BuildingView(): React.ReactNode {
 
         {/* Foundation */}
         <div className="h-2 bg-slate-800 rounded-b-lg mx-4" />
+      </div>
+
+      {/* Updates bar — top 3 cross-floor updates */}
+      <div className="w-full max-w-2xl">
+        <UpdatesBar />
       </div>
     </div>
   );
