@@ -2,129 +2,139 @@
 
 ## Scope
 
-Four frontend features on top of existing backend APIs from Run A-2.
+Four frontend features on top of backend APIs from Run A-2.
 
 ---
 
 ## F1 — Chat Tab in RightSidebar
 
-**What:** New "Chat" tab in `RightSidebar` (alongside Events and Conversation). Shows chat history for the active floor with message bubbles (user vs agent) and an input field to send messages.
+**What:** New "Chat" tab in `RightSidebar` (alongside Events and Conversation). Shows chat history for the active floor with message bubbles (user vs agent) and an input field.
 
 **API integration:**
-- `GET http://localhost:8000/api/v1/floors/{floorId}/chat?limit=50` — load history
-- `POST http://localhost:8000/api/v1/floors/{floorId}/chat` — send `{sender: "user", role: "human", content}`
-- WS `ws://localhost:8000/ws/floor/{floorId}` — listen for `{type: "chat_message", ...}` to append in real time
+- `GET /api/v1/floors/{floorId}/chat?limit=50` — load history (returns `ChatMessage[]`, newest-first; reverse for display)
+- `POST /api/v1/floors/{floorId}/chat` — send `{sender: "user", role: "user", content: "..."}`
+- WS `ws://localhost:8000/ws/floor/{floorId}` — listen for `{type: "chat_message", floor_id, message: ChatMessage}`
 
-**Component breakdown:**
-| Component | File | Action |
-|-----------|------|--------|
-| `ChatTab` | `frontend/src/components/game/ChatTab.tsx` | New — message list + input |
-| `RightSidebar` | `frontend/src/components/layout/RightSidebar.tsx` | Modify — add third tab |
-| Tab type | `frontend/src/components/layout/RightSidebar.tsx` | Extend union `"events" \| "conversation" \| "chat"` |
-| Types | `frontend/src/types/prometeo.ts` | New — `ChatMessage`, `FloorUpdate` interfaces |
-| Hook | `frontend/src/hooks/useFloorChat.ts` | New — fetch history, send, WS subscription |
+**Files:**
+| File | Action |
+|------|--------|
+| `frontend/src/types/prometeo.ts` | **Create** — `ChatMessage`, `FloorUpdate` interfaces |
+| `frontend/src/hooks/useFloorChat.ts` | **Create** — fetch history, send, WS subscription |
+| `frontend/src/components/chat/ChatTab.tsx` | **Create** — message list + input |
+| `frontend/src/components/layout/RightSidebar.tsx` | **Modify** — add third tab "Chat", extend `activeTab` union to `"events" | "conversation" | "chat"` |
 
 **Behavior:**
-- Tab shows floor icon + "Chat" label
-- On tab switch or floor change: fetch latest 50 messages
-- WS messages of type `chat_message` append to list in real time
-- Input field at bottom; Enter sends; disable while sending
-- User bubbles right-aligned (purple), agent bubbles left-aligned (slate)
+- `floorId` from `useNavigationStore().floorId`; tab hidden when `floorId` is null (building view)
+- On tab switch / floor change: fetch latest 50 messages, reverse to chronological order
+- WS `chat_message` events append to list in real time
+- User bubbles right-aligned (purple accent), agent/system bubbles left-aligned (slate)
+- Input: Enter sends, disable during POST, clear on success
 - Auto-scroll to bottom on new message
-- `floorId` comes from `useNavigationStore().floorId`
 
 ---
 
 ## F2 — Updates Bar in BuildingView
 
-**What:** Fixed strip at the bottom of `BuildingView` showing the top 3 most recent/urgent updates across all floors.
+**What:** Fixed strip at the bottom of `BuildingView` showing top 3 updates across all floors.
 
-**API integration:**
-- `GET http://localhost:8000/api/v1/updates/latest?limit=3` — polled every 30s
+**API:** `GET /api/v1/updates/latest?limit=3` — polled every 30s
 
-**Component breakdown:**
-| Component | File | Action |
-|-----------|------|--------|
-| `UpdatesBar` | `frontend/src/components/game/UpdatesBar.tsx` | New |
-| `BuildingView` | `frontend/src/components/views/BuildingView.tsx` | Modify — render `<UpdatesBar />` at bottom |
-| Hook | `frontend/src/hooks/useFloorUpdates.ts` | New — fetch + poll updates |
+**Files:**
+| File | Action |
+|------|--------|
+| `frontend/src/hooks/useLatestUpdates.ts` | **Create** — fetch + poll hook |
+| `frontend/src/components/updates/UpdatesBar.tsx` | **Create** — horizontal bar |
+| `frontend/src/components/views/BuildingView.tsx` | **Modify** — render `<UpdatesBar />` below foundation |
 
 **Behavior:**
-- Horizontal bar, dark background, full width at bottom of BuildingView
-- Each update card: colored left border by priority, floor icon, title, relative timestamp
+- Horizontal bar, dark background (`bg-slate-900`), full width, below the foundation div
+- Each update: colored dot by priority + floor name/icon + title + relative time
 - Priority colors: critical=`#ef4444`, alert=`#f59e0b`, info=`#22c55e`, report=`#3b82f6`
-- Empty state: subtle "No updates" text
-- Poll every 30s via `setInterval` + `fetch`
+- Empty state: subtle "No updates" text or hidden
+- Click update → navigate to that floor via `goToFloor(update.floorId)`
 
 ---
 
 ## F3 — Whiteboard Mode 12 (Updates Board)
 
-**What:** New whiteboard mode "UPDATES" (index 12, shortcut `U`) showing floor updates list.
+**What:** New whiteboard mode "UPDATES" (index 12, shortcut `U`) showing floor updates.
 
-**Component breakdown:**
-| Component | File | Action |
-|-----------|------|--------|
-| `UpdatesBoardMode` | `frontend/src/components/game/whiteboard/UpdatesBoardMode.tsx` | New |
-| `WhiteboardModeRegistry` | `frontend/src/components/game/whiteboard/WhiteboardModeRegistry.ts` | Modify — add mode 12 |
-| `WhiteboardMode` type | `frontend/src/types/index.ts` | Modify — add `\| 12` to union |
-| `Whiteboard` | `frontend/src/components/game/Whiteboard.tsx` | Modify — add case 12 + `U` hotkey |
+**API:** `GET /api/v1/floors/{floorId}/updates` — fetched on mode activation
+
+**Files:**
+| File | Action |
+|------|--------|
+| `frontend/src/components/game/whiteboard/UpdatesMode.tsx` | **Create** — PixiJS mode component |
+| `frontend/src/components/game/whiteboard/WhiteboardModeRegistry.ts` | **Modify** — add `12: { name: "UPDATES", icon: "📢" }`, bump `WHITEBOARD_MODE_COUNT` to 13 |
+| `frontend/src/types/index.ts` | **Modify** — add `| 12` to `WhiteboardMode` union |
+| `frontend/src/stores/gameStore.ts` | **Modify** — update `WHITEBOARD_MODE_COUNT` to 13 (currently 11, should be 13 to cover 0-12) |
+| `frontend/src/components/game/Whiteboard.tsx` | **Modify** — add `case 12:` in `renderMode()`, add `U` hotkey in `handleKeyDown`, update mode indicator dots from 12 to 13 |
 
 **Behavior:**
-- Fetches updates for current floor via `GET /api/v1/updates/latest?limit=10`
-- Renders as scrollable list inside whiteboard area
-- Each item: priority dot + title + body preview + timestamp
-- Color-coded by priority (same palette as F2)
+- Renders as list inside whiteboard content area (like KanbanMode)
+- Each item: priority-colored dot + title text (truncated to fit 310px)
+- Shows up to 6 items (content area ~155px tall)
+- Fetches floor updates when mode becomes active; uses `floorId` from navigation store
 
 ---
 
-## F4 — CLevelView (Minimal)
+## F4 — CLevelView Básico
 
-**What:** New React component that replaces `FloorView` when `floorId === "c_level"`. Two-column layout (no PixiJS). Left: floor status cards with LED indicators. Right: C-Level chat (reuses `ChatTab`).
+**What:** React component (NOT PixiJS) replacing `FloorView` when current floor has `isCLevel: true`. Two columns.
 
-**Component breakdown:**
-| Component | File | Action |
-|-----------|------|--------|
-| `CLevelView` | `frontend/src/components/views/CLevelView.tsx` | New |
-| `FloorStatusCard` | `frontend/src/components/views/CLevelView.tsx` | Inline in same file |
-| `page.tsx` | `frontend/src/app/page.tsx` | Modify — conditionally render CLevelView vs FloorView |
-| `ViewTransition` | `frontend/src/components/navigation/ViewTransition.tsx` | Modify — accept `cLevelView` prop or handle inline |
-| Hook | `frontend/src/hooks/useFloorUpdates.ts` | Reuse from F2 |
+**Files:**
+| File | Action |
+|------|--------|
+| `frontend/src/types/navigation.ts` | **Modify** — add `isCLevel?: boolean` and `mission?: string` to `FloorConfig` |
+| `frontend/src/components/views/CLevelView.tsx` | **Create** — two-column dashboard |
+| `frontend/src/app/page.tsx` | **Modify** — conditionally render `CLevelView` vs `FloorView` based on current floor's `isCLevel` |
 
-**Behavior:**
-- Left column: one card per department floor (from `buildingConfig.floors`, excluding c_level)
-  - Card shows: floor icon, name, LED dot colored by latest update priority (green=ok/info, orange=alert, red=critical, gray=no updates)
-  - Latest update title as subtitle
-- Right column: `ChatTab` component with `floorId="c_level"`
-- Responsive: stack columns on narrow viewport
-- No Architect column (deferred to Run C-2)
+**Left column — Floor Status Cards:**
+- One card per non-C-Level floor (from `buildingConfig.floors.filter(f => !f.isCLevel)`)
+- Card: floor icon, name (accent-colored), LED dot colored by latest update priority
+- LED colors: green=info/no-updates, orange=alert, red=critical, blue=report
+- Fetch latest update per floor: `GET /api/v1/floors/{floor_id}/updates?limit=1`
 
-**Injection point:** In `page.tsx`, the `ViewTransition` receives `floorView` prop. We check `floorId === "c_level"` and pass `CLevelView` instead of `FloorView`.
+**Right column — C-Level Chat:**
+- Reuses `ChatTab` component with `floorId="c_level"`
+- Full height, fills right side
+
+**How CLevelView replaces FloorView:**
+- In `page.tsx`, check `useNavigationStore` for current `floorId`, look up floor in `buildingConfig`
+- If `floor.isCLevel === true`, render `<CLevelView />` instead of `<FloorView />`
+- The backend already sends `is_c_level` (serialized as `isCLevel` via camelCase alias) from `floors.toml`; the frontend `FloorConfig` type just needs to accept it
 
 ---
 
-## Types (new file: `frontend/src/types/prometeo.ts`)
+## Types — `frontend/src/types/prometeo.ts`
 
 ```typescript
 export interface ChatMessage {
-  id: string;
+  id: number;
   floorId: string;
   sender: string;
-  role: string;
+  role: "user" | "agent" | "system";
   content: string;
-  timestamp: string;
+  timestamp: string; // ISO 8601
 }
 
 export interface FloorUpdate {
-  id: string;
+  id: number;
   floorId: string;
   priority: "critical" | "alert" | "info" | "report";
   title: string;
   body: string;
-  timestamp: string;
+  timestamp: string; // ISO 8601
   autoExpireHours: number;
   resolved: boolean;
 }
+
+export const PRIORITY_COLORS: Record<FloorUpdate["priority"], string> = {
+  critical: "#ef4444",
+  alert: "#f59e0b",
+  info: "#22c55e",
+  report: "#3b82f6",
+};
 ```
 
 ---
@@ -133,17 +143,19 @@ export interface FloorUpdate {
 
 | # | Criterion | Verification |
 |---|-----------|-------------|
-| S1 | TypeScript compiles cleanly | `cd frontend && npx tsc --noEmit` exits 0 |
-| S2 | Production build succeeds | `cd frontend && npm run build` exits 0 |
-| S3 | No regressions in existing smoke test | `cd frontend && npx vitest run` exits 0 |
-| S4 | Chat tab renders in RightSidebar | Manual: navigate to floor, click Chat tab, see message list + input |
-| S5 | Updates bar visible in BuildingView | Manual: navigate to building view, see bar at bottom |
-| S6 | Whiteboard mode 12 accessible | Manual: press U on keyboard, see Updates mode |
-| S7 | CLevelView renders for c_level floor | Manual: click C-Level floor, see two-column view instead of PixiJS office |
-| S8 | ESLint passes | `cd frontend && npm run lint` exits 0 |
+| S1 | TypeScript compiles | `cd frontend && npx tsc --noEmit` exits 0 |
+| S2 | Build succeeds | `cd frontend && npm run build` exits 0 |
+| S3 | No existing test regressions | `cd frontend && npx vitest run` exits 0 (if tests exist) |
+| S4 | Chat tab renders | Navigate to floor → click Chat tab → message list + input visible |
+| S5 | Updates bar visible | Building view shows bar at bottom with updates |
+| S6 | Whiteboard mode 12 | Press `U` → UPDATES mode shown with floor updates |
+| S7 | CLevelView renders | Click C-Level floor → two-column dashboard (no PixiJS) |
+| S8 | Lint passes | `cd frontend && npm run lint` exits 0 |
 
 ## Non-Functional
 
-- No backend file modifications
-- No new npm dependencies (use native `fetch`, `WebSocket`, existing Zustand/React)
-- Follow existing patterns: Zustand stores, Tailwind utility classes, `http://localhost:8000/api/v1` base URL
+- No backend modifications
+- No new npm dependencies
+- Base URL: `http://localhost:8000/api/v1` (match `useFloorConfig.ts` pattern)
+- WS URL: `ws://localhost:8000/ws/floor/{floor_id}` (match backend endpoint)
+- Follow existing patterns: Tailwind classes, Zustand stores, `"use client"` directives
