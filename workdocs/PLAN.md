@@ -85,7 +85,7 @@ git commit -m "chore(deps): add apscheduler>=3.10.4 for floor task scheduling"
 ---
 
 ## Task 2: Extend FloorConfig with department fields
-**Status:** ⬜
+**Status:** 🔧
 
 **Files:**
 - Modify: `backend/app/core/floor_config.py`
