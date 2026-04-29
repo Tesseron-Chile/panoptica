@@ -1138,3 +1138,7 @@ Expected: `"Prometeo"`, `"Desarrollo Software"`, `"Customer Service"`, etc.
 ```bash
 git commit --allow-empty -m "chore: Run A-1 complete — Company OS backend infrastructure"
 ```
+
+## Phase C Fixes
+
+- [x] C8 minor fixes: TYPE_CHECKING removed, stale comment removed, FileNotFoundError handling added, DEVNULL added, is_c_level test added
