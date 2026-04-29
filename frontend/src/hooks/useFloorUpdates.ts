@@ -31,7 +31,7 @@ export function useFloorUpdates({
     setError(null);
     try {
       const url = floorId
-        ? `${API_BASE}/floors/${floorId}/updates`
+        ? `${API_BASE}/floors/${floorId}/updates?limit=${limit}`
         : `${API_BASE}/updates/latest?limit=${limit}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

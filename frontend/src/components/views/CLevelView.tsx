@@ -3,7 +3,6 @@
 import { ChatTab } from "@/components/chat/ChatTab";
 import { useFloorUpdates } from "@/hooks/useFloorUpdates";
 import { useNavigationStore } from "@/stores/navigationStore";
-import { PRIORITY_COLORS } from "@/types/prometeo";
 import type { FloorConfig } from "@/types/navigation";
 
 const LED_BY_PRIORITY: Record<string, string> = {
@@ -20,9 +19,6 @@ function FloorStatusCard({ floor }: { floor: FloorConfig }) {
   const ledColor = latest
     ? (LED_BY_PRIORITY[latest.priority] ?? "#6b7280")
     : "#6b7280";
-
-  // Suppress unused import warning
-  void PRIORITY_COLORS;
 
   return (
     <button
