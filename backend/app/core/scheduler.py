@@ -15,6 +15,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from app.core.agent_runner import AgentRunner
+from app.core.arquitecto import ArquitectoService
 from app.core.floor_config import FloorConfig
 
 logger = logging.getLogger(__name__)
@@ -31,8 +32,10 @@ class FloorScheduler:
         self,
         floors: list[FloorConfig],
         agent_runner: AgentRunner | None = None,
+        arquitecto: ArquitectoService | None = None,
     ) -> None:
         self._runner = agent_runner or AgentRunner()
+        self._arquitecto = arquitecto or ArquitectoService(agent_runner=self._runner)
         self._scheduler = AsyncIOScheduler()
         self._job_count = 0
         self._register_jobs(floors)
@@ -40,6 +43,12 @@ class FloorScheduler:
     def _register_jobs(self, floors: list[FloorConfig]) -> None:
         for floor in floors:
             if floor.is_c_level:
+                self._scheduler.add_job(
+                    self._arquitecto.run_observation_cycle,
+                    CronTrigger(**_WEEKLY_CRON),
+                    id="arquitecto__weekly",
+                )
+                self._job_count += 1
                 continue
             for task in floor.schedule.daily:
                 self._scheduler.add_job(

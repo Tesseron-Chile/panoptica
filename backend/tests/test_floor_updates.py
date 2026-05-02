@@ -15,9 +15,7 @@ from app.main import app
 
 @pytest_asyncio.fixture
 async def client() -> AsyncIterator[httpx.AsyncClient]:
-    async with httpx.AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as c:
+    async with httpx.AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         yield c
 
 
@@ -179,9 +177,7 @@ async def test_expiry_excludes_non_critical(db_session: AsyncSession) -> None:
     db_session.add(active_record)
     await db_session.commit()
 
-    async with httpx.AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as c:
+    async with httpx.AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         resp = await c.get("/api/v1/floors/floor_expiry_test/updates")
     assert resp.status_code == 200
     updates = resp.json()
@@ -202,9 +198,7 @@ async def test_expiry_include_expired_shows_all(db_session: AsyncSession) -> Non
     db_session.add(expired_record)
     await db_session.commit()
 
-    async with httpx.AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as c:
+    async with httpx.AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         resp = await c.get("/api/v1/floors/floor_inc_expired/updates?include_expired=true")
     assert resp.status_code == 200
     updates = resp.json()
@@ -224,9 +218,7 @@ async def test_critical_never_expires(db_session: AsyncSession) -> None:
     db_session.add(critical_record)
     await db_session.commit()
 
-    async with httpx.AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as c:
+    async with httpx.AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         resp = await c.get("/api/v1/floors/floor_critical_expiry/updates")
     assert resp.status_code == 200
     updates = resp.json()

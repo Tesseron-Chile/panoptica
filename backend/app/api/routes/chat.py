@@ -5,25 +5,27 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.websocket import manager
+from app.core.agent_runner import AgentRunner
+from app.core.directive_parser import parse_directive
+from app.core.floor_config import get_building_config
 from app.db.database import get_db
-from app.db.models import ChatMessageRecord
+from app.db.models import ChatMessageRecord, DirectiveRecord
 from app.models.chat import ChatMessageCreate, ChatMessageResponse
 
 router = APIRouter(prefix="/floors", tags=["chat"])
 
+_runner = AgentRunner()
+_C_LEVEL_ID = "c_level"
 
-@router.post("/{floor_id}/chat")
-async def create_chat_message(
+
+async def _save_and_broadcast(
+    db: AsyncSession,
     floor_id: str,
-    body: ChatMessageCreate,
-    db: Annotated[AsyncSession, Depends(get_db)],
+    sender: str,
+    role: str,
+    content: str,
 ) -> ChatMessageResponse:
-    record = ChatMessageRecord(
-        floor_id=floor_id,
-        sender=body.sender,
-        role=body.role,
-        content=body.content,
-    )
+    record = ChatMessageRecord(floor_id=floor_id, sender=sender, role=role, content=content)
     db.add(record)
     await db.commit()
     await db.refresh(record)
@@ -36,6 +38,52 @@ async def create_chat_message(
         },
         floor_id,
     )
+    return response
+
+
+@router.post("/{floor_id}/chat")
+async def create_chat_message(
+    floor_id: str,
+    body: ChatMessageCreate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> ChatMessageResponse:
+    response = await _save_and_broadcast(db, floor_id, body.sender, body.role, body.content)
+
+    # Directive detection — only for c_level user messages with @floor_id: syntax
+    if floor_id == _C_LEVEL_ID and body.role == "user":
+        directive = parse_directive(body.content)
+        if directive is not None:
+            building = get_building_config()
+            target_floor = building.get_floor(directive.floor_id)
+            if target_floor is not None:
+                db.add(DirectiveRecord(
+                    floor_id=directive.floor_id,
+                    instruction=directive.instruction,
+                    triggered_by=body.sender,
+                ))
+                await db.commit()
+
+                await _runner.run_floor_task(
+                    floor_id=target_floor.id,
+                    task=directive.instruction,
+                    mission=target_floor.mission or "",
+                    workdocs_dir=target_floor.workdocs_dir or f"vault/{target_floor.id}/",
+                )
+
+                await _save_and_broadcast(
+                    db, _C_LEVEL_ID,
+                    sender="sistema",
+                    role="system",
+                    content=f"✓ Directiva enviada a {directive.floor_id}: {directive.instruction}",
+                )
+            else:
+                await _save_and_broadcast(
+                    db, _C_LEVEL_ID,
+                    sender="sistema",
+                    role="system",
+                    content=f"⚠ Piso desconocido: @{directive.floor_id}",
+                )
+
     return response
 
 
