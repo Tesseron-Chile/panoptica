@@ -17,5 +17,11 @@ The existing `daily` and `weekly` schedules use `CronTrigger`. The `every_30min`
 ### TOML schedule syntax
 The design spec shows `[floors.schedule]` table header syntax for the CS floor's schedule. However, TOML table headers can only be used for the last `[[floors]]` entry — CS is floor_number=3, not the last floor. Use inline dot notation instead: `schedule.every_30min = [...]` and `schedule.daily = [...]`, which is the pattern already used by all other floors in `floors.toml`.
 
+### FloorSchedule(**raw_schedule) handles every_30min automatically
+Pydantic maps TOML inline dot notation `schedule.every_30min = [...]` directly to the `every_30min` field with no parser changes needed. SC-3 confirms end-to-end.
+
+### Pre-existing flaky test: test_ralph_pipeline_smoke
+`test_ralph_smoke_end_to_end` fails intermittently with `FileExistsError` on a pytest `tmp_path` directory. Passes when run in isolation. Not related to any CS floor changes.
+
 ### Vault starts empty
 The Obsidian vault is created with placeholder notes containing `[TODO: ...]` markers. The human populates real content over time. The improvement loop (consultas not resolved → human adds notes → future consultas resolved) is described in the design spec's Section 6 but is not part of this implementation scope.

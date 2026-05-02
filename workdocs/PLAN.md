@@ -4,7 +4,7 @@
 
 | # | Task | Status | Depends On |
 |---|------|--------|------------|
-| T1 | Backend model extensions | 🔧 | — |
+| T1 | Backend model extensions | ✅ | — |
 | T2 | Scheduler every_30min support | ⬜ | T1 |
 | T3 | floors.toml + boss prompt | ⬜ | T1 |
 | T4 | Obsidian vault structure | ⬜ | — |
@@ -12,7 +12,7 @@
 
 ---
 
-## T1 — Backend model extensions 🔧
+## T1 — Backend model extensions ✅
 
 **Goal:** Extend `FloorSchedule` and `FloorConfig` models to support CS-specific fields and the `every_30min` schedule type.
 
@@ -45,6 +45,8 @@
 - SC-1, SC-2, SC-3 from SPEC pass
 - `cd backend && uv run pytest tests/test_floor_config_cs_fields.py -v` passes
 - `cd backend && uv run pytest tests/test_floor_config_new_fields.py -v` passes (no regression)
+
+**Session:** Completed cleanly. SC-1/SC-2/SC-3 all pass. 8 new tests + 10 regression tests pass (27 total floor_config tests). Full suite: 844 passed, 1 pre-existing flaky failure in test_ralph_pipeline_smoke unrelated to T1.
 
 ---
 
