@@ -6,8 +6,8 @@
 |-------|----------------|
 | Run start | 2026-05-02T04:26:26Z |
 | Phase A start | 2026-05-02T04:26:26Z |
-| Phase A end | |
-| Phase B start | |
+| Phase A end | 2026-05-02T04:44:31Z |
+| Phase B start | 2026-05-02T04:46:00Z |
 | Phase B end | |
 | Phase C start | |
 | Phase C end | |
