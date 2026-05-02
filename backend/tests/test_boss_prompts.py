@@ -2,8 +2,7 @@
 
 import pytest
 
-from app.core.agent_runner import build_floor_prompt, _load_floor_prompt
-
+from app.core.agent_runner import _load_floor_prompt, build_floor_prompt
 
 FLOORS_WITH_PROMPTS = [
     "dev_software",

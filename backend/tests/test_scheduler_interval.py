@@ -92,6 +92,7 @@ def test_interval_trigger_fires_every_30_minutes():
     assert len(interval_jobs) == 1
     # APScheduler IntervalTrigger stores interval as a timedelta
     import datetime
+
     assert interval_jobs[0].trigger.interval == datetime.timedelta(minutes=30)
 
 

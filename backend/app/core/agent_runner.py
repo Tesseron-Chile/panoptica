@@ -38,7 +38,7 @@ INSTRUCCIONES:
 5. Al terminar, reporta el resultado al updates board usando la herramienta Bash:
    curl -s -X POST http://localhost:8000/api/v1/floors/{floor_id}/updates \\
      -H "Content-Type: application/json" \\
-     -d '{{"title":"<resumen 1 línea>","priority":"<info|alert|critical>","body":"<detalle breve>"}}'
+     -d '{{"title":"<título>","priority":"<info|alert|critical>","body":"<detalle>"}}'
    Usa priority "critical" si encontraste [CRÍTICO], "alert" si hay advertencias, "info" para éxito.
 """
 
