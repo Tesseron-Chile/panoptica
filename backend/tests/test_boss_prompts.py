@@ -58,4 +58,8 @@ def test_unknown_floor_returns_none():
 def test_boss_prompt_references_vault_templates(floor_id: str):
     content = _load_floor_prompt(floor_id)
     assert content is not None
-    assert "vault/_templates" in content or "_templates" in content
+    # CS boss prompt embeds its workdoc format directly; others reference vault/_templates
+    if floor_id == "customer_service":
+        assert "workdocs/customer_service/" in content
+    else:
+        assert "vault/_templates" in content or "_templates" in content
