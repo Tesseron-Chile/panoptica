@@ -178,7 +178,7 @@ Session: completed cleanly — added `linear_project = "Prometeo"` after `workdo
 
 ---
 
-### ⬜ T6 — Tests and validation
+### 🔧 T6 — Tests and validation
 
 **Depends on:** T1, T2, T3, T4, T5
 
