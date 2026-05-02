@@ -20,6 +20,12 @@ The design spec shows `[floors.schedule]` table header syntax for the CS floor's
 ### FloorSchedule(**raw_schedule) handles every_30min automatically
 Pydantic maps TOML inline dot notation `schedule.every_30min = [...]` directly to the `every_30min` field with no parser changes needed. SC-3 confirms end-to-end.
 
+### T2: job_count() method already existed in FloorScheduler
+SC-4 tests `s.job_count()` — this method was already present in the existing `scheduler.py`. No additions needed beyond the every_30min loop.
+
+### T2: IntervalTrigger stores interval as timedelta
+APScheduler `IntervalTrigger(minutes=30)` stores `trigger.interval` as `datetime.timedelta(minutes=30)`. Useful for test assertions.
+
 ### Pre-existing flaky test: test_ralph_pipeline_smoke
 `test_ralph_smoke_end_to_end` fails intermittently with `FileExistsError` on a pytest `tmp_path` directory. Passes when run in isolation. Not related to any CS floor changes.
 

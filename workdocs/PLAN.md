@@ -5,7 +5,7 @@
 | # | Task | Status | Depends On |
 |---|------|--------|------------|
 | T1 | Backend model extensions | ✅ | — |
-| T2 | Scheduler every_30min support | 🔧 | T1 |
+| T2 | Scheduler every_30min support | ✅ | T1 |
 | T3 | floors.toml + boss prompt | ⬜ | T1 |
 | T4 | Obsidian vault structure | ⬜ | — |
 | T5 | Integration validation | ⬜ | T1, T2, T3, T4 |
@@ -50,7 +50,7 @@
 
 ---
 
-## T2 — Scheduler every_30min support 🔧
+## T2 — Scheduler every_30min support ✅
 
 **Depends on:** T1
 
@@ -85,6 +85,8 @@
 - SC-4 from SPEC passes
 - `cd backend && uv run pytest tests/test_scheduler_interval.py -v` passes
 - Existing scheduler tests (if any) still pass
+
+**Session:** Completed cleanly. SC-4 passes. 10 new tests pass. Full suite: 854 passed, 1 pre-existing flaky failure in test_ralph_pipeline_smoke unrelated to T2. `job_count()` method already existed. IntervalTrigger stores interval as `timedelta(minutes=30)`.
 
 ---
 
