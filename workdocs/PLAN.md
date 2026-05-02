@@ -7,7 +7,7 @@
 | T1 | Backend model extensions | ✅ | — |
 | T2 | Scheduler every_30min support | ✅ | T1 |
 | T3 | floors.toml + boss prompt | ✅ | T1 |
-| T4 | Obsidian vault structure | 🔧 | — |
+| T4 | Obsidian vault structure | ✅ | — |
 | T5 | Integration validation | ⬜ | T1, T2, T3, T4 |
 
 ---
@@ -128,7 +128,7 @@
 
 ---
 
-## T4 — Obsidian vault structure 🔧
+## T4 — Obsidian vault structure ✅
 
 **Depends on:** —
 
@@ -160,6 +160,8 @@
 - SC-6 from SPEC passes (all directories and files exist)
 - Each `.md` file is non-empty and contains a title and TODO markers
 - `.obsidian/app.json` is valid JSON
+
+**Session:** Completed cleanly. SC-6 passes. 10 markdown files created (each with H1 + 2 TODO markers in Spanish). `.gitkeep` removed. `.obsidian/app.json` is valid JSON. No backend tests needed.
 
 ---
 
