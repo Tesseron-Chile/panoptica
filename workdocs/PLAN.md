@@ -4,7 +4,7 @@
 
 | # | Task | Status | Depends On |
 |---|------|--------|------------|
-| T1 | Backend model extensions | ⬜ | — |
+| T1 | Backend model extensions | 🔧 | — |
 | T2 | Scheduler every_30min support | ⬜ | T1 |
 | T3 | floors.toml + boss prompt | ⬜ | T1 |
 | T4 | Obsidian vault structure | ⬜ | — |
@@ -12,7 +12,7 @@
 
 ---
 
-## T1 — Backend model extensions ⬜
+## T1 — Backend model extensions 🔧
 
 **Goal:** Extend `FloorSchedule` and `FloorConfig` models to support CS-specific fields and the `every_30min` schedule type.
 
