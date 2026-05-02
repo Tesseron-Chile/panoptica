@@ -6,7 +6,7 @@
 |---|------|--------|------------|
 | T1 | Backend model extensions | ✅ | — |
 | T2 | Scheduler every_30min support | ✅ | T1 |
-| T3 | floors.toml + boss prompt | 🔧 | T1 |
+| T3 | floors.toml + boss prompt | ✅ | T1 |
 | T4 | Obsidian vault structure | ⬜ | — |
 | T5 | Integration validation | ⬜ | T1, T2, T3, T4 |
 
@@ -90,7 +90,7 @@
 
 ---
 
-## T3 — floors.toml + boss prompt 🔧
+## T3 — floors.toml + boss prompt ✅
 
 **Depends on:** T1
 
@@ -123,6 +123,8 @@
 - SC-5 from SPEC passes (floors.toml parses correctly)
 - SC-7 from SPEC passes (boss prompt contains classification rules)
 - `cd backend && uv run pytest tests/test_trigger_endpoint.py -v` passes (no regression)
+
+**Session:** Completed cleanly. SC-5/SC-7 pass. Updated `test_boss_prompts.py` — CS prompt embeds workdoc format directly instead of referencing `vault/_templates`; test assertion updated to check `workdocs/customer_service/` instead. 854 passed, 1 pre-existing flaky failure in test_ralph_pipeline_smoke unrelated to T3.
 
 ---
 

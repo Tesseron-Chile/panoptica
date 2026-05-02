@@ -29,5 +29,11 @@ APScheduler `IntervalTrigger(minutes=30)` stores `trigger.interval` as `datetime
 ### Pre-existing flaky test: test_ralph_pipeline_smoke
 `test_ralph_smoke_end_to_end` fails intermittently with `FileExistsError` on a pytest `tmp_path` directory. Passes when run in isolation. Not related to any CS floor changes.
 
+### T3: test_boss_prompts needed a targeted update
+`test_boss_prompt_references_vault_templates` asserts all floor prompts reference `vault/_templates` or `_templates`. The new CS boss prompt intentionally embeds the workdoc format directly in the prompt (cleaner for a stateless email-processing agent) rather than referencing external templates. The test was updated to assert `workdocs/customer_service/` is present for CS, and the `_templates` check applies to all other floors unchanged.
+
+### T3: workdocs_dir changed from vault/ to workdocs/
+The old CS entry had `workdocs_dir = "vault/customer_service/"`. Updated to `workdocs/customer_service/` per SPEC. The vault path is now `knowledge_vault = "vault/customer_service/"` (for the agent to read knowledge) while workdocs go to `workdocs/customer_service/` (per-interaction documents).
+
 ### Vault starts empty
 The Obsidian vault is created with placeholder notes containing `[TODO: ...]` markers. The human populates real content over time. The improvement loop (consultas not resolved → human adds notes → future consultas resolved) is described in the design spec's Section 6 but is not part of this implementation scope.
