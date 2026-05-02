@@ -18,10 +18,9 @@ accent = "#3b82f6"
 icon = "💻"
 mission = "Construir y mantener el software de Prometeo"
 workdocs_dir = "vault/dev_software/"
+linear_project = "Prometeo"
 schedule.daily = [
-    "revisar PRs abiertos y asignar reviewers",
-    "correr suite de tests y reportar failures",
-    "actualizar workdoc de estado del sprint",
+    "revisar Linear Todo y despachar feature agents via ralph",
 ]
 schedule.weekly = [
     "reporte de deuda tecnica y prioridades",

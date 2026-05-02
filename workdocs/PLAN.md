@@ -143,7 +143,7 @@ Session: completed cleanly — method added after `run_floor_task`, graceful fal
 
 ---
 
-### 🔧 T5 — Update floors.toml for dev_software
+### ✅ T5 — Update floors.toml for dev_software
 
 **Depends on:** T3 (daily task text must align with boss prompt)
 
@@ -173,6 +173,8 @@ for f in config['floors']:
 print('PASS')
 "
 ```
+
+Session: completed cleanly — added `linear_project = "Prometeo"` after `workdocs_dir` and replaced 3 daily tasks with single dispatcher task; weekly tasks unchanged; no other floors touched; all success criteria pass.
 
 ---
 
