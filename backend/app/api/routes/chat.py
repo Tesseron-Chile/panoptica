@@ -56,13 +56,11 @@ async def create_chat_message(
             building = get_building_config()
             target_floor = building.get_floor(directive.floor_id)
             if target_floor is not None:
-                db.add(
-                    DirectiveRecord(
-                        floor_id=directive.floor_id,
-                        instruction=directive.instruction,
-                        triggered_by=body.sender,
-                    )
-                )
+                db.add(DirectiveRecord(
+                    floor_id=directive.floor_id,
+                    instruction=directive.instruction,
+                    triggered_by=body.sender,
+                ))
                 await db.commit()
 
                 await _runner.run_floor_task(
@@ -73,16 +71,14 @@ async def create_chat_message(
                 )
 
                 await _save_and_broadcast(
-                    db,
-                    _C_LEVEL_ID,
+                    db, _C_LEVEL_ID,
                     sender="sistema",
                     role="system",
                     content=f"✓ Directiva enviada a {directive.floor_id}: {directive.instruction}",
                 )
             else:
                 await _save_and_broadcast(
-                    db,
-                    _C_LEVEL_ID,
+                    db, _C_LEVEL_ID,
                     sender="sistema",
                     role="system",
                     content=f"⚠ Piso desconocido: @{directive.floor_id}",

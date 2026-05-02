@@ -48,7 +48,11 @@ async def get_directives(
     limit: int = 20,
 ) -> list[DirectiveResponse]:
     """Return recent directives triggered from C-Level chat."""
-    stmt = select(DirectiveRecord).order_by(DirectiveRecord.triggered_at.desc()).limit(limit)
+    stmt = (
+        select(DirectiveRecord)
+        .order_by(DirectiveRecord.triggered_at.desc())
+        .limit(limit)
+    )
     result = await db.execute(stmt)
     return [DirectiveResponse.model_validate(r) for r in result.scalars().all()]
 
