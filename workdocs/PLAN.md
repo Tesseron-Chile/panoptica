@@ -70,7 +70,7 @@ Session: completed cleanly — prompt created at `backend/prompts/dev_software_f
 
 ---
 
-### 🔧 T3 — Rewrite boss prompt as Linear dispatcher
+### ✅ T3 — Rewrite boss prompt as Linear dispatcher
 
 **Depends on:** T1 (references template path)
 
@@ -102,6 +102,8 @@ rg "Todo" backend/prompts/dev_software_boss.md && \
 rg "In Progress" backend/prompts/dev_software_boss.md && \
 ! rg "correr suite de tests" backend/prompts/dev_software_boss.md
 ```
+
+Session: completed cleanly — boss prompt rewritten as pure dispatcher; all success criteria pass, "correr suite de tests" removed.
 
 ---
 
