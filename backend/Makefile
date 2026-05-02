@@ -19,6 +19,6 @@ fmt:
 	uv run ruff format .
 
 typecheck:
-	uv run pyright .
+	uv run pyright
 
 checkall: fmt lint typecheck test

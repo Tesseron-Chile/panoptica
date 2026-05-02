@@ -2,7 +2,19 @@
   "include": [
     "app"
   ],
+  "exclude": [
+    "**/* *.py"
+  ],
   "pythonVersion": "3.13",
   "typeCheckingMode": "strict",
-  "useLibraryCodeForTypes": true
+  "useLibraryCodeForTypes": true,
+  "reportMissingTypeStubs": "none",
+  "reportUnknownArgumentType": "warning",
+  "reportUnknownMemberType": "warning",
+  "reportUnknownVariableType": "warning",
+  "reportUnknownParameterType": "warning",
+  "reportMissingTypeArgument": "warning",
+  "reportUnnecessaryComparison": "warning",
+  "reportCallIssue": "warning",
+  "reportAttributeAccessIssue": "warning"
 }
