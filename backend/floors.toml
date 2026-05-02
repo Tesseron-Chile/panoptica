@@ -46,22 +46,19 @@ schedule.weekly = [
 ]
 
 [[floors]]
-id = "customer_service"
-name = "Customer Service"
-floor_number = 3
-accent = "#10b981"
-icon = "🎧"
-mission = "Resolver tickets y mantener alta satisfaccion de clientes de Prometeo"
-workdocs_dir = "vault/customer_service/"
-schedule.daily = [
-    "revisar tickets abiertos y priorizar",
-    "redactar respuestas a tickets pendientes",
-    "actualizar workdoc de estado de soporte",
-]
-schedule.weekly = [
-    "reporte de CSAT y tendencias",
-    "escalaciones y casos criticos de la semana",
-]
+id             = "customer_service"
+name           = "Customer Service"
+floor_number   = 3
+accent         = "#10b981"
+icon           = "🎧"
+mission        = "Atender clientes de prometeo@tesseron.cl, resolver bugs y responder consultas"
+workdocs_dir   = "workdocs/customer_service/"
+knowledge_vault = "vault/customer_service/"
+inbox_email    = "prometeo@tesseron.cl"
+gmail_label    = "cs-procesado"
+linear_project = "Prometeo"
+schedule.every_30min = ["revisar inbox prometeo@tesseron.cl"]
+schedule.daily = ["reporte de casos del día"]
 
 [[floors]]
 id = "financiero"
