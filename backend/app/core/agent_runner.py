@@ -138,8 +138,8 @@ class AgentRunner:
         """Fire-and-forget: launch a ralph feature-agent session for a Linear ticket.
 
         Spawns ``claude -p <prompt> --dangerously-skip-permissions`` so the
-        child session can operate unattended. T2 creates the feature-agent
-        prompt file; if it doesn't exist yet this method degrades gracefully.
+        child session can operate unattended. If the feature-agent prompt file
+        does not exist yet, this method degrades gracefully using an empty string.
         """
         feature_agent_prompt_path = _PROMPTS_DIR / "dev_software_feature_agent.md"
         try:

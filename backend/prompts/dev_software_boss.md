@@ -88,12 +88,12 @@ Usa `mcp__plugin_linear_linear__save_issue` para mover el ticket de `Todo` → `
 Publica un floor update indicando los tickets despachados:
 
 ```bash
-curl -s -X PATCH http://localhost:8000/api/floors/dev_software/update \
+curl -s -X POST http://localhost:8000/api/v1/floors/dev_software/updates \
   -H "Content-Type: application/json" \
-  -d '{"status":"done","message":"Despachados N tickets: PRO-X, PRO-Y, ..."}'
+  -d '{"title":"Despachados N tickets: PRO-X, PRO-Y, ...","priority":"info","body":"Tickets despachados a feature agents."}'
 ```
 
-Si no había tickets elegibles, reporta `"message":"Sin tickets Todo en Prometeo"`.
+Si no había tickets elegibles, usa `"title":"Sin tickets Todo en Prometeo"` y `"body":"No se despacharon agentes en esta activación."`.
 
 ## Vault de workdocs
 

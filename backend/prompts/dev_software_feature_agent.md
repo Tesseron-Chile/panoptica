@@ -78,17 +78,17 @@ Publica actualizaciones via API usando la herramienta Bash:
 
 ```bash
 # Al iniciar
-curl -s -X PATCH http://localhost:8000/api/floors/$CLAUDE_OFFICE_FLOOR_ID/update \
+curl -s -X POST http://localhost:8000/api/v1/floors/$CLAUDE_OFFICE_FLOOR_ID/updates \
   -H "Content-Type: application/json" \
-  -d '{"status":"in_progress","message":"Iniciando implementación de <ticket_id>"}'
+  -d '{"title":"Iniciando implementación de <ticket_id>","priority":"info","body":"Sesión de feature agent iniciada."}'
 
-# Al terminar
-curl -s -X PATCH http://localhost:8000/api/floors/$CLAUDE_OFFICE_FLOOR_ID/update \
+# Al terminar (éxito)
+curl -s -X POST http://localhost:8000/api/v1/floors/$CLAUDE_OFFICE_FLOOR_ID/updates \
   -H "Content-Type: application/json" \
-  -d '{"status":"done","message":"<ticket_id> completado: <título>"}'
+  -d '{"title":"<ticket_id> completado: <título>","priority":"info","body":"Implementación y QA exitosos. PR abierto."}'
 ```
 
-Si QA falla, usa `"status":"failed"` en el update final.
+Si QA falla, usa `"priority":"alert"` y describe el fallo en `"body"` en el update final.
 
 ## Restricciones
 
