@@ -6,8 +6,8 @@
 |-------|----------------|
 | Run start | 2026-05-02T05:08:01Z |
 | Phase A start | 2026-05-02T05:08:01Z |
-| Phase A end | |
-| Phase B start | |
+| Phase A end | 2026-05-02T05:16:07Z |
+| Phase B start | 2026-05-02T05:16:07Z |
 | Phase B end | |
 | Phase C start | |
 | Phase C end | |
@@ -17,6 +17,7 @@
 
 | Task | Session | Prompt | Start | End |
 |------|---------|--------|-------|-----|
+| T1 | 1 | NEXT_PROMPT2.md | 2026-05-02T05:16:07Z | |
 
 ## Loop Iterations
 
@@ -24,6 +25,7 @@
 
 | Iteration | Task | Start | End |
 |-----------|------|-------|-----|
+| 1 | T1 | 2026-05-02T05:16:07Z | |
 
 ### Phase C
 
