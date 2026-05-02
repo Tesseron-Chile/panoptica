@@ -37,10 +37,11 @@ class RoomConfig(BaseModel):
 
 
 class FloorSchedule(BaseModel):
-    """Daily and weekly task schedule for a floor."""
+    """Daily, weekly, and interval task schedule for a floor."""
 
     daily: list[str] = Field(default_factory=list)
     weekly: list[str] = Field(default_factory=list)
+    every_30min: list[str] = Field(default_factory=list)
 
 
 class FloorConfig(BaseModel):
@@ -56,6 +57,10 @@ class FloorConfig(BaseModel):
     workdocs_dir: str = ""
     schedule: FloorSchedule = Field(default_factory=FloorSchedule)
     is_c_level: bool = False
+    knowledge_vault: str = ""
+    inbox_email: str = ""
+    gmail_label: str = ""
+    linear_project: str = ""
 
 
 class BuildingConfig(BaseModel):
@@ -114,6 +119,10 @@ def load_building_config(
                 workdocs_dir=str(entry_dict.get("workdocs_dir", "")),
                 schedule=FloorSchedule(**raw_schedule),
                 is_c_level=bool(entry_dict.get("is_c_level", False)),
+                knowledge_vault=str(entry_dict.get("knowledge_vault", "")),
+                inbox_email=str(entry_dict.get("inbox_email", "")),
+                gmail_label=str(entry_dict.get("gmail_label", "")),
+                linear_project=str(entry_dict.get("linear_project", "")),
             )
         )
 
