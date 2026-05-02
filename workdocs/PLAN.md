@@ -41,7 +41,7 @@ Session: completed cleanly — both templates created at `backend/prompts/workdo
 
 ---
 
-### ⬜ T2 — Create feature agent prompt
+### ✅ T2 — Create feature agent prompt
 
 **Files:** `backend/prompts/dev_software_feature_agent.md`
 
@@ -65,6 +65,8 @@ rg "Linear" backend/prompts/dev_software_feature_agent.md && \
 rg "result" backend/prompts/dev_software_feature_agent.md && \
 rg "ralph" backend/prompts/dev_software_feature_agent.md
 ```
+
+Session: completed cleanly — prompt created at `backend/prompts/dev_software_feature_agent.md`, all success criteria pass.
 
 ---
 
