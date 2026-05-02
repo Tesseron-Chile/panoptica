@@ -1,7 +1,0 @@
-Task 18 ✅ complete. All SC-1..SC-9 verified and documented in `TAKEAWAYS.md`. Three commits on this session:
-
-1. `chore(plan): mark Task 18 🔧` — progress marker
-2. `chore: tidy pre-existing WIP` — port fixes (8000→3400) + Prettier formatting across 22 files
-3. `test(runs): Plan 2 final integration + cleanup (Task 18)` — removed stale TODO fallbacks from ViewTransition, final PLAN.md ✅ + TAKEAWAYS verification table
-
-`make checkall` exits 0. All 18 tasks in PLAN.md are now ✅.

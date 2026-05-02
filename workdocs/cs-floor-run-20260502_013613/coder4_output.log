@@ -1,0 +1,1 @@
+T4 ✅ — all done. SC-6 passes, all 10 markdown files have H1 + TODO markers in Spanish, `.obsidian/app.json` is valid JSON, `.gitkeep` removed. Final commit on `ralph/c880279a`. The orchestrator can now proceed to T5 (integration validation).

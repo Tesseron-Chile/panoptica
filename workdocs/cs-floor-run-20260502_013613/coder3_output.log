@@ -1,0 +1,9 @@
+T3 is complete. Summary of what was implemented:
+
+**`backend/floors.toml`** — replaced the generic `customer_service` entry with the CS-specific configuration: `inbox_email`, `gmail_label`, `linear_project`, `knowledge_vault`, `schedule.every_30min` (inbox polling), and a single `schedule.daily` (daily report). `workdocs_dir` correctly points to `workdocs/customer_service/`.
+
+**`backend/prompts/customer_service_boss.md`** — full rewrite with 4-category email classification (Bug/Consulta/Feature Request/Spam), mandatory 3-step post-processing per email (workdoc save + Gmail label + updates board POST), escalation rules for `critical` priority, language matching, and a daily report task section.
+
+**`backend/tests/test_boss_prompts.py`** — updated `test_boss_prompt_references_vault_templates` for CS: the new prompt embeds the workdoc format rather than referencing `vault/_templates`, so the assertion now checks `workdocs/customer_service/` is present.
+
+All success criteria pass (SC-5, SC-7), 854 tests pass, only the pre-existing flaky smoke test fails.

@@ -1,0 +1,10 @@
+T2 complete. Here's what was implemented:
+
+**Changes:**
+- `backend/app/core/scheduler.py`: Added `IntervalTrigger` import and a `every_30min` loop in `_register_jobs` after the daily/weekly loops, using `IntervalTrigger(minutes=30)` with consistent job ID format.
+- `backend/tests/test_scheduler_interval.py`: 10 new tests covering job count, trigger type verification, trigger interval, job ID format, no-tasks case, and multi-floor scenarios.
+
+**Verification:**
+- SC-4 passes
+- 10/10 new tests pass
+- 854 total tests pass (1 pre-existing flaky failure unrelated to this work)

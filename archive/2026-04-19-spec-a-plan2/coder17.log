@@ -1,1 +1,0 @@
-Task 17 complete. Committed `feat(runs): simulate full run lifecycle (Plan 2 Task 17)` — 3 files, 247 insertions. The run_lifecycle scenario drives campus animations purely through marker file + PLAN.md writes; no new backend endpoints needed. Pre-existing pyright failure (547 errors, unchanged) is the acknowledged baseline from TAKEAWAYS.md.

@@ -1,0 +1,11 @@
+T1 is ✅. Summary:
+
+**What was done:**
+- Added `every_30min: list[str]` to `FloorSchedule` — handled transparently by `FloorSchedule(**raw_schedule)` via Pydantic
+- Added `knowledge_vault`, `inbox_email`, `gmail_label`, `linear_project` (all `str = ""`) to `FloorConfig`
+- Updated `load_building_config()` parser to populate the four new fields from TOML entries
+- Created `backend/tests/test_floor_config_cs_fields.py` with 8 tests covering: field population, defaults, TOML end-to-end parsing (SC-3), and backward compatibility
+
+**SC-1, SC-2, SC-3 all pass.** 844 backend tests pass; 1 pre-existing flaky test in `test_ralph_pipeline_smoke` is unrelated.
+
+T2 (scheduler `every_30min` support) and T3 (floors.toml + boss prompt) both depend on T1 and are now unblocked.

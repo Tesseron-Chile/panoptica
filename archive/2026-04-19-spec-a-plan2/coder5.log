@@ -1,1 +1,0 @@
-Task 5 done. Extended `ViewMode` with `"campus" | "run-office" | "nook"`, added `activeRunId` + `activeNookSessionId` state, added the three navigation actions — all legacy consumers unchanged, 10 new tests pass, TypeScript and lint clean.

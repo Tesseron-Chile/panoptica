@@ -1,9 +1,0 @@
-Task 3 complete. Here's what was delivered:
-
-**`frontend/src/hooks/useRunWebSocket.ts`** — connects to `ws://localhost:3400/ws/_run:<runId>`, parses `run_state` messages and calls `useRunStore.getState().setRun(run)`, reconnects with 2s→4s→8s→10s backoff, and cleans up via a `let active = false` flag on unmount/runId change.
-
-**`frontend/src/hooks/useRunWebSocket.test.ts`** — 7 tests covering: correct URL, null runId no-op, setRun dispatch, unknown message ignored, unmount cleanup, runId change, runId→null.
-
-**`frontend/vitest.config.ts`** — new file; `@/` alias was missing, causing test resolution failure for value imports.
-
-Key deviation from existing hook pattern: used a local `active` flag instead of `currentRef.current = prop` during render — required by the new `react-hooks/refs` rule in v7. All 17 frontend tests pass, TypeScript clean, my files lint-clean (pre-existing WIP lint errors unchanged).

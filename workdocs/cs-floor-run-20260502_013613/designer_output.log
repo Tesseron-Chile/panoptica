@@ -1,0 +1,18 @@
+**Phase A is complete.** All workdocs are committed on `ralph/c880279a`.
+
+Here's what was produced:
+
+| Workdoc | Content |
+|---------|---------|
+| **SPEC.md** | Full specification with 8 programmatic success criteria (SC-1 through SC-8), covering model extensions, scheduler, TOML parsing, vault structure, boss prompt, and test suite |
+| **PLAN.md** | 5 tasks with clear dependencies: T1 (model extensions) → T2 (scheduler) / T3 (config+prompt) → T5 (validation), T4 (vault, independent) |
+| **SETUP.md** | Dev environment verification — all deps already installed, no external services needed for dev/test |
+| **TAKEAWAYS.md** | 5 design decisions: boss prompt location, no agent_runner changes, FloorConfig fields are informational, IntervalTrigger vs CronTrigger, TOML schedule syntax |
+
+Key design decisions:
+- **No modifications to `agent_runner.py`** — all CS-specific behavior lives in the boss prompt
+- **`IntervalTrigger(minutes=30)`** for the new schedule type (not CronTrigger)
+- **Inline TOML syntax** (`schedule.every_30min = [...]`) since CS isn't the last floor entry
+- **5 tasks**, estimated at one focused coder session each, with T1/T4 parallelizable
+
+The orchestrator can proceed to Phase B.
