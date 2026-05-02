@@ -18,7 +18,7 @@ T1 and T2 are independent. T3 depends on T1 (boss references template path). T4 
 
 ## Tasks
 
-### 🔧 T1 — Create workdoc templates (brief + result)
+### ✅ T1 — Create workdoc templates (brief + result)
 
 **Files:** `backend/prompts/workdoc_templates/brief.md`, `backend/prompts/workdoc_templates/result.md`
 
@@ -36,6 +36,8 @@ test -f backend/prompts/workdoc_templates/result.md && \
 rg "ticket_id" backend/prompts/workdoc_templates/result.md && \
 rg "qa_result" backend/prompts/workdoc_templates/result.md
 ```
+
+Session: completed cleanly — both templates created at `backend/prompts/workdoc_templates/`, all success criteria pass.
 
 ---
 
