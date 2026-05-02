@@ -37,3 +37,6 @@ The old CS entry had `workdocs_dir = "vault/customer_service/"`. Updated to `wor
 
 ### Vault starts empty
 The Obsidian vault is created with placeholder notes containing `[TODO: ...]` markers. The human populates real content over time. The improvement loop (consultas not resolved → human adds notes → future consultas resolved) is described in the design spec's Section 6 but is not part of this implementation scope.
+
+### Stray commit in T4 session
+Coder 4 accidentally committed `docs/superpowers/brainstorm/2026-05-02-linear-driven-floor-design.md` (d82df80) — a brainstorming artifact from the visual companion session. File is harmless documentation but unrelated to CS floor. Reviewer will flag this; coder in C8 should remove it from the PR diff.
