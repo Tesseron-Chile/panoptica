@@ -3,19 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { ChatTab } from "@/components/chat/ChatTab";
-import { useFloorUpdates } from "@/hooks/useFloorUpdates";
 import { useNavigationStore } from "@/stores/navigationStore";
 import type { FloorConfig } from "@/types/navigation";
 
 const API_BASE = "http://localhost:8000/api/v1";
-const C_LEVEL_ID = "c_level";
-
-const LED_BY_PRIORITY: Record<string, string> = {
-  critical: "#ef4444",
-  alert: "#f59e0b",
-  info: "#22c55e",
-  report: "#3b82f6",
-};
 
 interface Proposal {
   filename: string;
@@ -33,64 +24,7 @@ interface Directive {
   triggeredAt: string;
 }
 
-// ─── Left column ─────────────────────────────────────────────────────────────
-
-function FloorStatusCard({ floor }: { floor: FloorConfig }) {
-  const { goToFloor } = useNavigationStore();
-  const { updates } = useFloorUpdates({ floorId: floor.id, limit: 1 });
-  const latest = updates[0];
-  const ledColor = latest
-    ? (LED_BY_PRIORITY[latest.priority] ?? "#6b7280")
-    : "#6b7280";
-
-  return (
-    <button
-      onClick={() => goToFloor(floor.id)}
-      className="w-full text-left bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700 rounded-lg overflow-hidden transition-colors"
-    >
-      <div className="h-0.5 w-full" style={{ backgroundColor: floor.accent }} />
-      <div className="flex items-center gap-2 px-3 py-2">
-        <div
-          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-          style={{ backgroundColor: ledColor, boxShadow: `0 0 5px ${ledColor}` }}
-        />
-        <span className="text-sm">{floor.icon}</span>
-        <div className="min-w-0 flex-grow">
-          <div className="text-xs font-semibold text-slate-200 truncate">{floor.name}</div>
-          {latest && (
-            <div className="text-[10px] text-slate-500 truncate">{latest.title}</div>
-          )}
-        </div>
-        <span className="text-slate-600 text-xs flex-shrink-0">→</span>
-      </div>
-    </button>
-  );
-}
-
-function LeftColumn({ floors }: { floors: FloorConfig[] }) {
-  return (
-    <div className="w-64 flex-shrink-0 flex flex-col border-r border-slate-800 overflow-hidden">
-      <div className="flex-shrink-0 px-4 py-3 border-b border-slate-800">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-violet-400">Pisos</h2>
-      </div>
-      <div className="flex-shrink-0 overflow-y-auto max-h-64 p-2 flex flex-col gap-1.5">
-        {floors.map((f) => (
-          <FloorStatusCard key={f.id} floor={f} />
-        ))}
-      </div>
-      <div className="flex-shrink-0 border-t border-slate-800 px-3 py-2">
-        <span className="text-[10px] text-violet-400 font-bold uppercase tracking-wider">
-          Chat C-Level
-        </span>
-      </div>
-      <div className="flex-grow min-h-0">
-        <ChatTab floorId={C_LEVEL_ID} />
-      </div>
-    </div>
-  );
-}
-
-// ─── Center column — El Arquitecto ───────────────────────────────────────────
+// ─── Arquitecto tab ───────────────────────────────────────────────────────────
 
 function ProposalCard({
   proposal,
@@ -110,7 +44,7 @@ function ProposalCard({
   return (
     <div className="bg-slate-800/60 border border-slate-700 rounded-lg overflow-hidden">
       <button
-        className="w-full text-left px-4 py-3 flex items-start justify-between gap-2"
+        className="w-full text-left px-3 py-2 flex items-start justify-between gap-2"
         onClick={() => setExpanded((v) => !v)}
       >
         <div className="min-w-0">
@@ -121,8 +55,8 @@ function ProposalCard({
       </button>
 
       {expanded && (
-        <div className="px-4 pb-3">
-          <pre className="text-[11px] text-slate-300 whitespace-pre-wrap font-mono leading-relaxed max-h-48 overflow-y-auto border-t border-slate-700 pt-2 mb-3">
+        <div className="px-3 pb-3">
+          <pre className="text-[11px] text-slate-300 whitespace-pre-wrap font-mono leading-relaxed max-h-40 overflow-y-auto border-t border-slate-700 pt-2 mb-2">
             {proposal.content}
           </pre>
           <div className="flex gap-2">
@@ -145,7 +79,7 @@ function ProposalCard({
   );
 }
 
-function ArquitectoColumn() {
+function ArquitectoTab() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [triggering, setTriggering] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
@@ -198,11 +132,11 @@ function ArquitectoColumn() {
   }, []);
 
   return (
-    <div className="flex-grow flex flex-col border-r border-slate-800 overflow-hidden min-w-0">
-      <div className="flex-shrink-0 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-violet-400">
+    <div className="flex flex-col h-full">
+      <div className="flex-shrink-0 px-3 py-2 border-b border-slate-700 flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400">
           ⚙ El Arquitecto
-        </h2>
+        </span>
         <button
           onClick={() => void handleTrigger()}
           disabled={triggering}
@@ -212,9 +146,9 @@ function ArquitectoColumn() {
         </button>
       </div>
 
-      <div className="flex-grow overflow-y-auto p-3 flex flex-col gap-2">
+      <div className="flex-grow overflow-y-auto p-2 flex flex-col gap-2">
         {proposals.length === 0 ? (
-          <div className="text-[11px] text-slate-600 text-center mt-8">
+          <div className="text-[11px] text-slate-600 text-center mt-6">
             Sin propuestas pendientes
           </div>
         ) : (
@@ -232,7 +166,7 @@ function ArquitectoColumn() {
   );
 }
 
-// ─── Right column — Visión + Costos + Directivas ─────────────────────────────
+// ─── Gestión tab ──────────────────────────────────────────────────────────────
 
 function VisionEditor() {
   const [vision, setVision] = useState("");
@@ -319,7 +253,7 @@ function CostCenter({ floor }: { floor: FloorConfig }) {
           onChange={(e) => setCost(e.target.value)}
           onBlur={handleBlur}
           placeholder="0"
-          className="w-16 bg-slate-800/60 border border-slate-700 rounded text-[11px] text-slate-300 px-1.5 py-0.5 text-right focus:outline-none focus:border-violet-600"
+          className="w-14 bg-slate-800/60 border border-slate-700 rounded text-[11px] text-slate-300 px-1.5 py-0.5 text-right focus:outline-none focus:border-violet-600"
         />
         <span className="text-[9px] text-slate-600">/mes</span>
       </div>
@@ -382,41 +316,74 @@ function DirectivesList() {
   );
 }
 
-function RightColumn({ floors }: { floors: FloorConfig[] }) {
+function GestionTab({ floors }: { floors: FloorConfig[] }) {
   return (
-    <div className="w-72 flex-shrink-0 flex flex-col border-l border-slate-800 overflow-hidden">
-      <div className="flex-shrink-0 px-4 py-3 border-b border-slate-800">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-violet-400">Gestión</h2>
-      </div>
-      <div className="flex-grow overflow-y-auto p-4 flex flex-col gap-5">
-        <VisionEditor />
-        <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400 block mb-2">
-            Centros de costo
-          </span>
-          <div className="flex flex-col gap-1.5">
-            {floors.map((f) => (
-              <CostCenter key={f.id} floor={f} />
-            ))}
-          </div>
+    <div className="overflow-y-auto h-full p-3 flex flex-col gap-4">
+      <VisionEditor />
+      <div>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400 block mb-1.5">
+          Centros de costo
+        </span>
+        <div className="flex flex-col gap-1.5">
+          {floors.map((f) => (
+            <CostCenter key={f.id} floor={f} />
+          ))}
         </div>
-        <DirectivesList />
       </div>
+      <DirectivesList />
     </div>
   );
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
-export function CLevelView() {
+export function CLevelSidebar() {
+  const [activeTab, setActiveTab] = useState<"arquitecto" | "gestion" | "chat">("arquitecto");
   const buildingConfig = useNavigationStore((s) => s.buildingConfig);
   const regularFloors = buildingConfig?.floors.filter((f) => !f.is_c_level) ?? [];
 
   return (
-    <div className="flex h-full bg-slate-950 text-white overflow-hidden">
-      <LeftColumn floors={regularFloors} />
-      <ArquitectoColumn />
-      <RightColumn floors={regularFloors} />
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Tab header */}
+      <div className="flex border-b border-slate-700 bg-slate-900 rounded-t-lg flex-shrink-0">
+        <button
+          onClick={() => setActiveTab("arquitecto")}
+          className={`flex-1 px-2 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors rounded-tl-lg ${
+            activeTab === "arquitecto"
+              ? "text-violet-400 border-b-2 border-violet-500 bg-slate-950/50"
+              : "text-slate-500 hover:text-slate-300"
+          }`}
+        >
+          ⚙ Plan
+        </button>
+        <button
+          onClick={() => setActiveTab("gestion")}
+          className={`flex-1 px-2 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors ${
+            activeTab === "gestion"
+              ? "text-violet-400 border-b-2 border-violet-500 bg-slate-950/50"
+              : "text-slate-500 hover:text-slate-300"
+          }`}
+        >
+          Gestión
+        </button>
+        <button
+          onClick={() => setActiveTab("chat")}
+          className={`flex-1 px-2 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors rounded-tr-lg ${
+            activeTab === "chat"
+              ? "text-violet-400 border-b-2 border-violet-500 bg-slate-950/50"
+              : "text-slate-500 hover:text-slate-300"
+          }`}
+        >
+          Chat
+        </button>
+      </div>
+
+      {/* Tab content */}
+      <div className="flex-grow min-h-0 overflow-hidden">
+        {activeTab === "arquitecto" && <ArquitectoTab />}
+        {activeTab === "gestion" && <GestionTab floors={regularFloors} />}
+        {activeTab === "chat" && <ChatTab floorId="c_level" />}
+      </div>
     </div>
   );
 }

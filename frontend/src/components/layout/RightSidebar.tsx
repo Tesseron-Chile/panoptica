@@ -5,7 +5,9 @@ import { AgentStatus } from "@/components/game/AgentStatus";
 import { EventLog } from "@/components/game/EventLog";
 import { ConversationHistory } from "@/components/game/ConversationHistory";
 import { ChatTab } from "@/components/chat/ChatTab";
+import { CLevelSidebar } from "@/components/layout/CLevelSidebar";
 import { useDragResize } from "@/hooks/useDragResize";
+import { useNavigationStore } from "@/stores/navigationStore";
 
 // ============================================================================
 // CONSTANTS
@@ -30,9 +32,10 @@ const getMaxPanelHeight = () => Math.floor(window.innerHeight * 0.7);
  * sidebar width (left edge) and the split between the two panels (divider).
  */
 export function RightSidebar(): React.ReactNode {
-  const [activeTab, setActiveTab] = useState<"events" | "conversation" | "chat">(
-    "events",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "events" | "conversation" | "chat"
+  >("events");
+  const floorId = useNavigationStore((s) => s.floorId);
 
   const {
     size: sidebarWidth,
@@ -59,6 +62,24 @@ export function RightSidebar(): React.ReactNode {
   });
 
   const isDragging = isWidthDragging || isHeightDragging;
+
+  if (floorId === "c_level") {
+    return (
+      <aside
+        className={`relative flex flex-col overflow-hidden ${
+          isDragging ? "select-none" : ""
+        }`}
+        style={{ width: sidebarWidth, maxHeight: "calc(100vh - 60px)" }}
+      >
+        <div
+          className="absolute left-0 top-0 w-1.5 h-full cursor-ew-resize z-10 hover:bg-purple-500/40 active:bg-purple-500/60 transition-colors"
+          onMouseDown={handleWidthDragStart}
+          title="Drag to resize"
+        />
+        <CLevelSidebar />
+      </aside>
+    );
+  }
 
   return (
     <aside
