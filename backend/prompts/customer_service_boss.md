@@ -113,7 +113,8 @@ Haz un `POST` a `http://localhost:8000/api/v1/floors/customer_service/updates` c
 
 ```json
 {
-  "content": "<descripción breve del email procesado y acción tomada>",
+  "title": "<resumen 1 línea: categoría + acción tomada>",
+  "body": "<descripción breve del email procesado y acción tomada>",
   "priority": "critical | alert | info | report"
 }
 ```
