@@ -36,4 +36,9 @@ Templates live under `backend/prompts/` (co-located with prompt files) rather th
 - `floor_config.py` `FloorConfig` has `linear_project: str | None` — the customer_service floor already uses it with `linear_project = "Prometeo"`.
 - All existing boss prompts are in Spanish — maintaining that convention.
 
+## T6 Notes
+
+- Pre-existing pyright errors (562) in `event_processor.py` and unrelated test files; none introduced by T6 changes. `make checkall` fails on typecheck due to these — but `ruff format`, `ruff check`, and all tests pass cleanly. Files touched in T6 (`agent_runner.py`, `test_agent_runner.py`, `floors.py`) have 0 pyright errors.
+- Fixed two pre-existing ruff lint errors during T6: `E501` in `agent_runner.py` (template string) and `B008` in `floors.py` (mutable default arg). `I001` was auto-fixed by `ruff --fix`.
+
 ## Workflow Notes

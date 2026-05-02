@@ -33,9 +33,7 @@ async def test_get_proposals_empty(client: httpx.AsyncClient, tmp_path: Path) ->
     assert resp.json() == []
 
 
-async def test_get_proposals_returns_files(
-    client: httpx.AsyncClient, proposals_dir: Path
-) -> None:
+async def test_get_proposals_returns_files(client: httpx.AsyncClient, proposals_dir: Path) -> None:
     (proposals_dir / "2026-05-01-mejorar-scheduler.md").write_text(
         "# Mejorar scheduler de tareas\n\nPropuesta detallada...", encoding="utf-8"
     )
@@ -50,9 +48,7 @@ async def test_get_proposals_returns_files(
     assert "createdAt" in data[0]
 
 
-async def test_reject_proposal_deletes_file(
-    client: httpx.AsyncClient, proposals_dir: Path
-) -> None:
+async def test_reject_proposal_deletes_file(client: httpx.AsyncClient, proposals_dir: Path) -> None:
     f = proposals_dir / "2026-05-01-test.md"
     f.write_text("# Test proposal", encoding="utf-8")
     with patch("app.api.routes.clevel._PROPOSALS_DIR", proposals_dir):
@@ -61,9 +57,7 @@ async def test_reject_proposal_deletes_file(
     assert not f.exists()
 
 
-async def test_reject_proposal_not_found(
-    client: httpx.AsyncClient, proposals_dir: Path
-) -> None:
+async def test_reject_proposal_not_found(client: httpx.AsyncClient, proposals_dir: Path) -> None:
     with patch("app.api.routes.clevel._PROPOSALS_DIR", proposals_dir):
         resp = await client.delete("/api/v1/floors/c_level/proposals/nonexistent.md")
     assert resp.status_code == 404

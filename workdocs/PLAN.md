@@ -178,7 +178,7 @@ Session: completed cleanly — added `linear_project = "Prometeo"` after `workdo
 
 ---
 
-### 🔧 T6 — Tests and validation
+### ✅ T6 — Tests and validation
 
 **Depends on:** T1, T2, T3, T4, T5
 
@@ -202,3 +202,5 @@ print('floors.toml OK')
 " && \
 uv run python -c "import app.core.agent_runner; print('import OK')"
 ```
+
+Session: completed cleanly — 3 new tests added (run_ralph_session subprocess args, graceful fallback on missing prompt, run_floor_task regression); 7/7 tests pass; fmt/lint clean; fixed 2 pre-existing ruff errors (E501 in agent_runner.py template string, B008 in floors.py default arg); all 5 SPEC criteria steps pass. Pre-existing pyright errors (562) in event_processor.py are unrelated to T6 changes.

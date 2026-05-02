@@ -28,9 +28,11 @@ async def get_floors() -> dict[str, Any]:
 @router.post("/floors/{floor_id}/tasks/trigger", status_code=202)
 async def trigger_floor_task(
     floor_id: str,
-    body: TriggerTaskRequest = TriggerTaskRequest(),
+    body: TriggerTaskRequest | None = None,
 ) -> dict[str, Any]:
     """Manually trigger a floor task without waiting for the cron schedule."""
+    if body is None:
+        body = TriggerTaskRequest()
     building = get_building_config()
     floor = building.get_floor(floor_id)
     if floor is None:
