@@ -5,7 +5,7 @@
 | # | Task | Status | Depends On |
 |---|------|--------|------------|
 | T1 | Backend model extensions | ✅ | — |
-| T2 | Scheduler every_30min support | ⬜ | T1 |
+| T2 | Scheduler every_30min support | 🔧 | T1 |
 | T3 | floors.toml + boss prompt | ⬜ | T1 |
 | T4 | Obsidian vault structure | ⬜ | — |
 | T5 | Integration validation | ⬜ | T1, T2, T3, T4 |
@@ -50,7 +50,7 @@
 
 ---
 
-## T2 — Scheduler every_30min support ⬜
+## T2 — Scheduler every_30min support 🔧
 
 **Depends on:** T1
 
