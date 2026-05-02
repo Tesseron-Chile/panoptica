@@ -13,6 +13,7 @@ import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 from app.core.agent_runner import AgentRunner
 from app.core.arquitecto import ArquitectoService
@@ -64,6 +65,14 @@ class FloorScheduler:
                     CronTrigger(**_WEEKLY_CRON),
                     args=[floor.id, task, floor.mission, floor.workdocs_dir],
                     id=f"{floor.id}__weekly__{self._job_count}",
+                )
+                self._job_count += 1
+            for task in floor.schedule.every_30min:
+                self._scheduler.add_job(
+                    self._trigger_task,
+                    IntervalTrigger(minutes=30),
+                    args=[floor.id, task, floor.mission, floor.workdocs_dir],
+                    id=f"{floor.id}__every_30min__{self._job_count}",
                 )
                 self._job_count += 1
 
