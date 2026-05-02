@@ -143,7 +143,7 @@ Session: completed cleanly — method added after `run_floor_task`, graceful fal
 
 ---
 
-### ⬜ T5 — Update floors.toml for dev_software
+### 🔧 T5 — Update floors.toml for dev_software
 
 **Depends on:** T3 (daily task text must align with boss prompt)
 
