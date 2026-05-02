@@ -41,4 +41,14 @@ Templates live under `backend/prompts/` (co-located with prompt files) rather th
 - Pre-existing pyright errors (562) in `event_processor.py` and unrelated test files; none introduced by T6 changes. `make checkall` fails on typecheck due to these — but `ruff format`, `ruff check`, and all tests pass cleanly. Files touched in T6 (`agent_runner.py`, `test_agent_runner.py`, `floors.py`) have 0 pyright errors.
 - Fixed two pre-existing ruff lint errors during T6: `E501` in `agent_runner.py` (template string) and `B008` in `floors.py` (mutable default arg). `I001` was auto-fixed by `ruff --fix`.
 
+## Phase C — Verifier C7 Iteration 1 Findings
+
+- **All 8 programmatic success criteria PASS**
+- **29/29 unit tests pass**
+- **11 of 12 requirements fully met**, 1 partially met (floor update endpoint bug)
+- **Major issue confirmed:** Both `dev_software_boss.md` and `dev_software_feature_agent.md` use wrong floor update API endpoint — `PATCH .../api/floors/.../update` with `{status, message}` but correct is `POST .../api/v1/floors/.../updates` with `{title, priority, body}`. Will 404 at runtime.
+- **Minor:** Formatting-only changes in unrelated files (ruff auto-format side-effects from T6 lint pass). Harmless but inflate diff.
+- **Nit:** `agent_runner.py` docstring references "T2" task name — should be rephrased.
+- **No AI reviewer comments** — empty responses on all PR comment endpoints. No external reviewers triggered.
+
 ## Workflow Notes
