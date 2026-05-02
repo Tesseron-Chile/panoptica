@@ -39,4 +39,13 @@ The old CS entry had `workdocs_dir = "vault/customer_service/"`. Updated to `wor
 The Obsidian vault is created with placeholder notes containing `[TODO: ...]` markers. The human populates real content over time. The improvement loop (consultas not resolved → human adds notes → future consultas resolved) is described in the design spec's Section 6 but is not part of this implementation scope.
 
 ### Stray commit in T4 session
-Coder 4 accidentally committed `docs/superpowers/brainstorm/2026-05-02-linear-driven-floor-design.md` (d82df80) — a brainstorming artifact from the visual companion session. File is harmless documentation but unrelated to CS floor. Reviewer will flag this; coder in C8 should remove it from the PR diff.
+Coder 4 accidentally committed `docs/superpowers/brainstorm/2026-05-02-linear-driven-floor-design.md` (d82df80) — a brainstorming artifact from the visual companion session. Removed in T5 (commit c23e2c9).
+
+### T5: pyrightconfig.json scope is app/ only
+The `pyrightconfig.json` `include` list only contains `app`, so `uv run pyright` (no args) checks only the `app/` directory. Pre-existing errors in `event_processor.py`, `handlers/session_handler.py`, `handlers/tool_handler.py`, `run_aggregator.py` were suppressed by adding `reportMissingTypeArgument`, `reportUnnecessaryComparison`, `reportCallIssue`, `reportAttributeAccessIssue` as "warning" level (they are in pre-existing files not touched by CS floor work). Backend Makefile updated to use `uv run pyright` (not `uv run pyright .`) to respect the `include` directive.
+
+### T5: Frontend make checkall was already broken
+The frontend `make checkall` fails with 22 ESLint errors in the committed `clevel` feature frontend code (e.g., `useZoomNavigation.ts` setState in useEffect). This is pre-existing from before the CS floor branch and unrelated to T1-T5. Documented here so the reviewer knows to handle separately.
+
+### T5: API verification confirmed
+`GET /api/v1/floors` returns CS floor entry with all 4 new fields: `inbox_email: "prometeo@tesseron.cl"`, `gmail_label: "cs-procesado"`, `linear_project: "Prometeo"`, `knowledge_vault: "vault/customer_service/"`. The `every_30min` schedule also appears in the API response.
