@@ -127,3 +127,56 @@ class AgentRunner:
                 task,
                 floor_id,
             )
+
+    async def run_ralph_session(
+        self,
+        *,
+        floor_id: str,
+        ticket_id: str,
+        brief_path: str,
+    ) -> None:
+        """Fire-and-forget: launch a ralph feature-agent session for a Linear ticket.
+
+        Spawns ``claude -p <prompt> --dangerously-skip-permissions`` so the
+        child session can operate unattended. T2 creates the feature-agent
+        prompt file; if it doesn't exist yet this method degrades gracefully.
+        """
+        feature_agent_prompt_path = _PROMPTS_DIR / "dev_software_feature_agent.md"
+        try:
+            feature_agent_prompt = feature_agent_prompt_path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            feature_agent_prompt = ""
+
+        prompt = (
+            f"Lee el brief en: {brief_path}\n\n"
+            f"Sigue las instrucciones del feature agent prompt:\n{feature_agent_prompt}\n\n"
+            "Usa el skill ralph para planificar, implementar, hacer QA y cerrar el ticket."
+        )
+
+        env = {
+            **os.environ,
+            "CLAUDE_OFFICE_FLOOR_ID": floor_id,
+            "CLAUDE_OFFICE_TASK": ticket_id,
+        }
+
+        logger.info(
+            "AgentRunner: launching ralph session ticket=%r floor=%r",
+            ticket_id,
+            floor_id,
+        )
+        try:
+            await asyncio.create_subprocess_exec(
+                "claude",
+                "-p",
+                prompt,
+                "--dangerously-skip-permissions",
+                env=env,
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.DEVNULL,
+            )
+        except FileNotFoundError:
+            logger.exception(
+                "AgentRunner: 'claude' not found on PATH — ticket=%r floor=%r",
+                ticket_id,
+                floor_id,
+            )
