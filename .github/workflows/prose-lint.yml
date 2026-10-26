@@ -1,0 +1,24 @@
+name: Prose Lint
+
+# Error mode (required from day one, decided in P160): a finding fails the job. Vale.sh flags em dashes, voseo, filler and other AI tells on
+# the Markdown lines a PR changes. Rules and docs: shared-workflows docs/prose-lint.md.
+# Depends on shared-workflows#39: until it merges the action does not resolve and this check is red.
+# Keep the PR in draft until then, then pin to the commit left on main.
+#
+# pull-requests: read lets Vale.sh read the PR diff. Drafts are skipped by the workflow.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: prose-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prose:
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: Tesseron-Chile/shared-workflows/.github/workflows/prose-lint.yml@8d2d403984282576f0e9fb05f52a1fa1ffbe5908
+    with:
+      mode: error
